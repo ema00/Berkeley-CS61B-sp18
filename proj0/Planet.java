@@ -42,6 +42,21 @@ public class Planet {
 
 
     /**
+     * Calculates and updates the change in velocity and position, based on the net exerted force on this planet.
+     * @param dt is the lapse of time used for calculating the change in velocity.
+     * @param fx net force exerted on this planet in the X direction.
+     * @param fy net force exerted on this planet in the Y direction.
+     */
+    public void update(double dt, double fx, double fy) {
+        double ax = fx / mass;
+        double ay = fy / mass;
+        xxVel += ax * dt;
+        yyVel += ay * dt;
+        xxPos += xxVel * dt;
+        yyPos += yyVel * dt;
+    }
+
+    /**
      * Calculate the force exerted on this planet by other planets, in the X direction.
      * @param planets are the planets whose force is exerted on this planet.
      * @return the total force exerted on this planet by planets, in the X direction.
