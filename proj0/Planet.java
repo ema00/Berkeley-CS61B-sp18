@@ -1,9 +1,12 @@
 /**
  * Planet
- * Representation of a planet, its position, velocitiy, and mass.
+ * Representation of a planet, its position, velocity, and mass.
  */
 
 public class Planet {
+
+    /* Gravitational constant G = 6.67x10^-11 [M * m^2 / kg^2] */
+    public static final double G = 6.67e-11;
 
     /* Current x position */
     public double xxPos;
@@ -35,6 +38,28 @@ public class Planet {
         this.yyVel = p.yyVel;
         this.mass = p.mass;
         this.imgFileName = p.imgFileName;
+    }
+
+
+    /**
+     * Calculate distance between this planet and another planet.
+     * @param p is the other planet whose distance is calculated.
+     * @return distance between planet p, passed as parameter, and this planet.
+     */
+    public double calcDistance(Planet p) {
+        double dx = p.xxPos - this.xxPos;
+        double dy = p.yyPos - this.yyPos;
+        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    }
+
+    /**
+     * Calculate the force exerted on this planet by another planet.
+     * @param p is the planet whose force is exerted on this planet.
+     * @return the force exerted on this planet by planet p, passed as parameter.
+     */
+    public double calcForceExertedBy(Planet p) {
+        double d = this.calcDistance(p);
+        return G * this.mass * p.mass / Math.pow(d, 2);
     }
 
 }
