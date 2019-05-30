@@ -42,6 +42,34 @@ public class Planet {
 
 
     /**
+     * Calculate the force exerted on this planet by other planets, in the X direction.
+     * @param planets are the planets whose force is exerted on this planet.
+     * @return the total force exerted on this planet by planets, in the X direction.
+     */
+    public double calcNetForceExertedByX(Planet[] planets) {
+        double netForceX = 0;
+        for (Planet p : planets) {
+            if (p == this) { continue; }
+            netForceX += calcForceExertedByX(p);
+        }
+        return netForceX;
+    }
+
+    /**
+     * Calculate the force exerted on this planet by other planets, in the Y direction.
+     * @param planets are the planets whose force is exerted on this planet.
+     * @return the total force exerted on this planet by planets, in the Y direction.
+     */
+    public double calcNetForceExertedByY(Planet[] planets) {
+        double netForceY = 0;
+        for (Planet p : planets) {
+            if (p == this) { continue; }
+            netForceY += calcForceExertedByY(p);
+        }
+        return netForceY;
+    }
+
+    /**
      * Calculate the force exerted on this planet by another planet, in the X direction.
      * @param p is the planet whose force is exerted on this planet.
      * @return the force exerted on this planet by planet p, in the X direction.
