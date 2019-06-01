@@ -57,6 +57,13 @@ public class Planet {
     }
 
     /**
+     * Draws this planet at its current position.
+     */
+    public void draw() {
+        StdDraw.picture(xxPos, yyPos, imgFileName);
+    }
+
+    /**
      * Calculate the force exerted on this planet by other planets, in the X direction.
      * @param planets are the planets whose force is exerted on this planet.
      * @return the total force exerted on this planet by planets, in the X direction.
