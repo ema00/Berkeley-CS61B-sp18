@@ -30,8 +30,18 @@ public class NBody {
         StdDraw.picture(0, 0, IMAGES_PATH + BACKGROUND);
         StdDraw.show();
 
-        // DRAW A SINGLE PLANET
-        planets[0].draw();
+        drawPlanets(planets);
+        StdDraw.enableDoubleBuffering();
+    }
+
+    /**
+     * Draws all the planets in the universe.
+     * @param planets are all the planets to be drawn.
+     */
+    private static void drawPlanets(Planet[] planets) {
+        for (Planet p : planets) {
+            StdDraw.picture(p.xxPos, p.yyPos, p.imgFileName);
+        }
     }
 
     /**
