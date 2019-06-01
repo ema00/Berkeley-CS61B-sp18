@@ -8,6 +8,28 @@ import java.io.File;
 
 public class NBody {
 
+    private static final String BACKGROUND = "images/starfield.jpg";
+
+    private static double T;
+    private static double dt;
+    private static String filename;
+    private static double radius;
+    private static Planet[] planets;
+
+
+    public static void main(String[] args) {
+        T = Double.parseDouble(args[0]);
+        dt = Double.parseDouble(args[1]);
+        filename = args[2];
+        radius = readRadius(filename);
+        planets = readPlanets(filename);
+
+        StdDraw.setScale(-radius, radius);
+        StdDraw.clear();
+        StdDraw.picture(0, 0, BACKGROUND);
+        StdDraw.show();
+    }
+
     /**
      * Reads the radius of the universe in the file containing data about the universe to be simulated.
      * @param filename is the file that contains data about the universe to be simulated.
