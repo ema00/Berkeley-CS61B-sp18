@@ -8,7 +8,8 @@ import java.io.File;
 
 public class NBody {
 
-    private static final String BACKGROUND = "images/starfield.jpg";
+    private static final String BACKGROUND = "starfield.jpg";
+    private static final String IMAGES_PATH = "images/";
 
     private static double T;
     private static double dt;
@@ -26,8 +27,11 @@ public class NBody {
 
         StdDraw.setScale(-radius, radius);
         StdDraw.clear();
-        StdDraw.picture(0, 0, BACKGROUND);
+        StdDraw.picture(0, 0, IMAGES_PATH + BACKGROUND);
         StdDraw.show();
+
+        // DRAW A SINGLE PLANET
+        planets[0].draw();
     }
 
     /**
@@ -62,7 +66,7 @@ public class NBody {
             double vx = in.readDouble();
             double vy = in.readDouble();
             double mass = in.readDouble();
-            String imgFileName = in.readString();
+            String imgFileName = IMAGES_PATH + in.readString();
             planets[i] = new Planet(x, y, vx, vy, mass, imgFileName);
         }
         in.close();
