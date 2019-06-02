@@ -26,12 +26,60 @@ public class NBody {
         planets = readPlanets(filename);
 
         StdDraw.setScale(-radius, radius);
+        StdDraw.enableDoubleBuffering();
+
         StdDraw.clear();
         StdDraw.picture(0, 0, IMAGES_PATH + BACKGROUND);
         StdDraw.show();
-
         drawPlanets(planets);
-        StdDraw.enableDoubleBuffering();
+        for (double time = 0; time < T; time += dt) {
+            double[] xForces = calcNetXForces(planets);
+            double[] yForces = calcNetYForces(planets);
+            updatePlanetsPositions(planets, xForces, yForces);
+            StdDraw.clear();
+            StdDraw.picture(0, 0, IMAGES_PATH + BACKGROUND);
+            drawPlanets(planets);
+            StdDraw.show();
+            StdDraw.pause(10);
+        }
+    }
+
+    /**
+     * Updates the positions of all the planets in the universe.
+     * @param planets array containing all the planets in the universe.
+     * @param xForces array containing all the forces exerted in the X direction for each Planet in planets array.
+     * @param yForces array containing all the forces exerted in the Y direction for each Planet in planets array.
+     */
+    private static void updatePlanetsPositions(Planet[] planets, double[] xForces, double[] yForces) {
+        for (int i = 0; i < planets.length; i++) {
+            planets[i].update(dt, xForces[i], yForces[i]);
+        }
+    }
+
+    /**
+     * Calculates the forces exerted in the X direction on planets[i] by the other planets in the planets array.
+     * @param planets array containing all the planets in the universe.
+     * @return the forces exerted in the X direction on each planet by all the other planets.
+     */
+    private static double[] calcNetXForces(Planet[] planets) {
+        double[] xForces = new double[planets.length];
+        for (int i = 0; i < planets.length; i++) {
+            xForces[i] = planets[i].calcNetForceExertedByX(planets);
+        }
+        return xForces;
+    }
+
+    /**
+     * Calculates the forces exerted in the Y direction on planets[i] by the other planets in the planets array.
+     * @param planets array containing all the planets in the universe.
+     * @return the forces exerted in the Y direction on each planet by all the other planets.
+     */
+    private static double[] calcNetYForces(Planet[] planets) {
+        double[] yForces = new double[planets.length];
+        for (int i = 0; i < planets.length; i++) {
+            yForces[i] = planets[i].calcNetForceExertedByY(planets);
+        }
+        return yForces;
     }
 
     /**
@@ -40,7 +88,8 @@ public class NBody {
      */
     private static void drawPlanets(Planet[] planets) {
         for (Planet p : planets) {
-            StdDraw.picture(p.xxPos, p.yyPos, p.imgFileName);
+            //StdDraw.picture(p.xxPos, p.yyPos, p.imgFileName);
+            p.draw();;
         }
     }
 
