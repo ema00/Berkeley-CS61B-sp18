@@ -6,7 +6,7 @@
 public class Planet {
 
     /* Gravitational constant G = 6.67x10^-11 [M * m^2 / kg^2] */
-    public static final double G = 6.67e-11;
+    private static final double G = 6.67e-11;
 
     /* Current x position */
     public double xxPos;
