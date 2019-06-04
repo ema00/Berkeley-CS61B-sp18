@@ -42,6 +42,7 @@ public class NBody {
             StdDraw.show();
             StdDraw.pause(10);
         }
+        StdOut.printf(toStr());
     }
 
     /**
@@ -88,8 +89,7 @@ public class NBody {
      */
     private static void drawPlanets(Planet[] planets) {
         for (Planet p : planets) {
-            //StdDraw.picture(p.xxPos, p.yyPos, p.imgFileName);
-            p.draw();;
+            p.draw();
         }
     }
 
@@ -130,5 +130,20 @@ public class NBody {
         }
         in.close();
         return planets;
+    }
+
+    /**
+     * Converts the state of the simulation to its String representation.
+     * @return a String containing the number of planets, the radius of the universe and the position of the planets.
+     */
+    public static String toStr() {
+        String str = "";
+        str = str + String.format("%d\n", planets.length);
+        str = str + String.format("%.2e\n", radius);
+        for (Planet p: planets) {
+            str = str + String.format("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
+                    p.xxPos, p.yyPos, p.xxVel, p.yyVel, p.mass, p.imgFileName);
+        }
+        return str.replaceAll(IMAGES_PATH, " ");
     }
 }
