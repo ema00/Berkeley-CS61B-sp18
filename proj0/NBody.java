@@ -42,7 +42,7 @@ public class NBody {
             StdDraw.show();
             StdDraw.pause(10);
         }
-        StdOut.printf(toStr());
+        printToStdOut();
     }
 
     /**
@@ -89,7 +89,7 @@ public class NBody {
      */
     private static void drawPlanets(Planet[] planets) {
         for (Planet p : planets) {
-            p.draw();
+            StdDraw.picture(p.xxPos, p.yyPos, IMAGES_PATH + p.imgFileName);
         }
     }
 
@@ -125,7 +125,7 @@ public class NBody {
             double vx = in.readDouble();
             double vy = in.readDouble();
             double mass = in.readDouble();
-            String imgFileName = IMAGES_PATH + in.readString();
+            String imgFileName = in.readString();
             planets[i] = new Planet(x, y, vx, vy, mass, imgFileName);
         }
         in.close();
@@ -136,7 +136,7 @@ public class NBody {
      * Converts the state of the simulation to its String representation.
      * @return a String containing the number of planets, the radius of the universe and the position of the planets.
      */
-    public static String toStr() {
+    private static String toStr() {
         String str = "";
         str = str + String.format("%d\n", planets.length);
         str = str + String.format("%.2e\n", radius);
@@ -145,5 +145,18 @@ public class NBody {
                     p.xxPos, p.yyPos, p.xxVel, p.yyVel, p.mass, p.imgFileName).replaceFirst(" ", "");
         }
         return str.replaceAll(IMAGES_PATH, " ");
+    }
+
+    /**
+     * Prints the state of the simulation to standard output.
+     */
+    private static void printToStdOut() {
+        StdOut.printf("%d\n", planets.length);
+        StdOut.printf("%.2e\n", radius);
+        for (int i = 0; i < planets.length; i++) {
+            StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
+                    planets[i].xxPos, planets[i].yyPos, planets[i].xxVel,
+                    planets[i].yyVel, planets[i].mass, planets[i].imgFileName);
+        }
     }
 }
