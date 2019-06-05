@@ -81,8 +81,12 @@ public class IntList {
      */
 
     public static IntList dcatenate(IntList A, IntList B) {
-        //TODO:  fill in method
-        return null;
+        IntList p = A;
+        while (p.rest != null) {
+            p = p.rest;
+        }
+        p.rest = B;
+        return A;
     }
 
     /**
@@ -90,10 +94,27 @@ public class IntList {
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
     public static IntList catenate(IntList A, IntList B) {
-        //TODO:  fill in method
-        return null;
+        IntList result = copy(A);
+        return dcatenate(result, B);
     }
 
+    /**
+     * Returns a deep copy of the list passed as parameter.
+     * @param L is the list to be copied (cloned).
+     * @return a copy of L.
+     */
+    private static IntList copy(IntList L) {
+        IntList result = new IntList(L.first, null);
+        IntList p = L.rest;
+        IntList c = result;
+        while (p != null) {
+            IntList node = new IntList(p.first, null);
+            c.rest = node;
+            p = p.rest;
+            c = c.rest;
+        }
+        return result;
+    }
 
 
 
