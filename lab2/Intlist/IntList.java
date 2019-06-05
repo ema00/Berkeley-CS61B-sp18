@@ -122,6 +122,9 @@ public class IntList {
      * @return a copy of L.
      */
     private static IntList copy(IntList L) {
+        if (L == null) {
+            return null;
+        }
         IntList result = new IntList(L.first, null);
         IntList p = L.rest;
         IntList c = result;
