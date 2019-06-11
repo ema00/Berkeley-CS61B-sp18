@@ -66,7 +66,7 @@ public class IntListTest {
         assertEquals(IntList.of(1, 2, 3), A);
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testReverse() {
         IntList list = IntList.of(1, 2, 3, 4, 5);
         IntList expected = IntList.of(5, 4, 3, 2, 1);
