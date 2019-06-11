@@ -68,20 +68,19 @@ public class IntListTest {
 
     @Test
     public void testReverse() {
+        IntList list = IntList.of(1, 2, 3, 4, 5);
         IntList expected = IntList.of(5, 4, 3, 2, 1);
-        IntList expectedNull = new IntList();
+        IntList expectedNull = null;
 
-        IntList actual = IntList.reverse(IntList.of(1, 2, 3, 4, 5));
-        IntList actualNull = IntList.reverse(IntList.of());
-
-        IntList referenceToExpected = expected;
+        IntList actual = IntList.reverse(list);
+        IntList actualNull = IntList.reverse(null);
 
         // Test reversed on list
         assertEquals(expected, actual);
         // Test reversed on null list
         assertEquals(expectedNull, actualNull);
         // Test that method is destructive
-        assertNotEquals(expected, referenceToExpected);
+        assertNotEquals(actual, list);
     }
 
     /** If you're running this from the command line, you'll need

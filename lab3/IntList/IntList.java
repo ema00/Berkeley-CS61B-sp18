@@ -137,9 +137,30 @@ public class IntList {
         return result;
     }
 
+    /**
+     * Reverses an IntList.
+     * @param list is the list to be reversed.
+     * @return the reversed version of the list passed as parameter.
+     */
+    public static IntList reverse(IntList list) {
+        return reverse(null, list);
+    }
 
-
-
+    /**
+     * Helper method for recurisvely reversing a list. Wrapped by reverse().
+     * The parameter next has to be the node following the curr node.
+     * @param curr the current node from which to reverse the list.
+     * @param next the node following th current node in the list.
+     * @return a reversed list starting at curr, and whose next node is next.
+     */
+    private static IntList reverse(IntList curr, IntList next) {
+        if (next == null) {
+            return curr;
+        }
+        IntList rest = next.rest;
+        next.rest = curr;
+        return reverse(next, rest);
+    }
 
 
 
