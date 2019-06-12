@@ -43,21 +43,41 @@ public class LinkedListDeque<T> {
     }
 
     public LinkedListDeque(T value) {
-        sentinel = new Node<T>();
-        sentinel.next = new Node<T>(value);
-        sentinel.prev = sentinel.next;
-        size = 1;
+        super();
+        this.addFirst(value);
     }
 
 
-    // TODO
+    /**
+     * Adds an item at the beginning of the deque.
+     * @param value the item to be added at the beginning of the deque.
+     */
     public void addFirst(T value) {
+        Node<T> node = new Node<T>(value);
+        Node<T> next = sentinel.next;
 
+        node.next = next;
+        next.prev = node;
+        sentinel.next = node;
+        node.prev = sentinel;
+
+        size += 1;
     }
 
-    // TODO
+    /**
+     * Adds an item at the end of the deque.
+     * @param value the item to be added at the end of the deque.
+     */
     public void addLast(T value) {
+        Node<T> node = new Node<T>(value);
+        Node<T> prev = sentinel.prev;
 
+        node.prev = prev;
+        prev.next = node;
+        sentinel.prev = node;
+        node.next = sentinel;
+
+        size += 1;
     }
 
     /**
@@ -76,9 +96,13 @@ public class LinkedListDeque<T> {
         return size;
     }
 
-    // TODO
+    /**
+     * Prints the items in the deque from first to last.
+     */
     public void printDeque() {
-        System.out.println("hello!!!");
+        for (Node<T> p = sentinel.next; p != sentinel; p = p.next) {
+            System.out.print(p.value + " ");
+        }
     }
 
     // TODO
