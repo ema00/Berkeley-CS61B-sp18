@@ -37,12 +37,14 @@ public class LinkedListDeque<T> {
 
     public LinkedListDeque() {
         sentinel = new Node<T>();
+        size = 0;
     }
 
     public LinkedListDeque(T value) {
         sentinel = new Node<T>();
         sentinel.next = new Node<T>(value);
         sentinel.prev = sentinel.next;
+        size = 1;
     }
 
 
@@ -61,9 +63,12 @@ public class LinkedListDeque<T> {
         return true;
     }
 
-    // TODO
+    /**
+     * Returns the number of elements in the deque.
+     * @return the size of the deque.
+     */
     public int size() {
-        return 0;
+        return size;
     }
 
     // TODO
