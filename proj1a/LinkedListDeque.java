@@ -105,14 +105,20 @@ public class LinkedListDeque<T> {
         }
     }
 
-    // TODO
+    /**
+     * Removes the first item in the deque and returns it.
+     * @return the first item in the deque.
+     */
     public T removeFirst() {
-        return new Node<T>().value;
+        return remove(sentinel.next);
     }
 
-    // TODO
+    /**
+     * Removes the last item in the deque and returns it.
+     * @return the last item in the deque.
+     */
     public T removeLast() {
-        return new Node<T>().value;
+        return remove(sentinel.prev);
     }
 
     // TODO
@@ -123,6 +129,26 @@ public class LinkedListDeque<T> {
     // TODO
     public T getRecursive(int index) {
         return new Node<T>().value;
+    }
+
+    /**
+     * Removes a particular node from the doubly linked list, and returns its value.
+     * @param node is the node to be removed (a reference to it).
+     * @return the value of the removed node.
+     */
+    private T remove(Node<T> node) {
+        if (node == sentinel) {
+            return null;
+        }
+
+        Node<T> next = node.next;
+        Node<T> prev = node.prev;
+
+        prev.next = next;
+        next.prev = prev;
+        size--;
+
+        return node.value;
     }
 
 }
