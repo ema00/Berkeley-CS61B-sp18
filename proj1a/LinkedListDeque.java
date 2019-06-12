@@ -121,14 +121,35 @@ public class LinkedListDeque<T> {
         return remove(sentinel.prev);
     }
 
-    // TODO
+    /**
+     * Gets the item at the given index, where 0 is the front item.
+     * @param index of the item to be returned, 0 based.
+     * @return the item at the given index, or null if the index is beyond the
+     * length of the deque.
+     */
     public T get(int index) {
-        return new Node<T>().value;
+        int i = 0;
+        Node<T> n = sentinel.next;
+
+        while (true) {
+            if (i == index || n == sentinel) {
+                break;
+            }
+            n = n.next;
+            i++;
+        }
+
+        return n.value;
     }
 
-    // TODO
+    /**
+     * Gets the item at the given index, where 0 is the front item.
+     * @param index of the item to be returned, 0 based.
+     * @return the item at the given index, or null if the index is beyond the
+     * length of the deque.
+     */
     public T getRecursive(int index) {
-        return new Node<T>().value;
+        return getRecursive(index, sentinel.next);
     }
 
     /**
@@ -149,6 +170,20 @@ public class LinkedListDeque<T> {
         size--;
 
         return node.value;
+    }
+
+    /**
+     * Returns the item that is at the given forward distance from the given node.
+     * @param distance from the given node to the node whose item is to be returned.
+     * @param n the node form which to count the forward distance.
+     * @return the value at the node that is at the given distance from the node
+     * passed as parameter.
+     */
+    private T getRecursive(int distance, Node<T> n) {
+        if (distance == 0 || n == sentinel) {
+            return n.value;
+        }
+        return getRecursive(distance - 1, n.next);
     }
 
 }
