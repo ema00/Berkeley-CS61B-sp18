@@ -37,6 +37,8 @@ public class LinkedListDeque<T> {
 
     public LinkedListDeque() {
         sentinel = new Node<T>();
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
         size = 0;
     }
 
@@ -49,18 +51,21 @@ public class LinkedListDeque<T> {
 
 
     // TODO
-    public void addFirst(T item) {
+    public void addFirst(T value) {
 
     }
 
     // TODO
-    public void addLast(T item) {
+    public void addLast(T value) {
 
     }
 
-    // TODO
+    /**
+     * Returns true or false whether the list is empty or not.
+     * @return true if the list is empty and false otherwise.
+     */
     public boolean isEmpty() {
-        return true;
+        return size == 0;
     }
 
     /**
