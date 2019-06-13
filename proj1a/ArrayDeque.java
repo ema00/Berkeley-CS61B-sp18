@@ -12,7 +12,7 @@ public class ArrayDeque<T> {
     private static final int DOWNSIZE_FACTOR = 4;
 
 
-    private T arr[];
+    private T[] arr;
     private int start;
     private int end;
     private int size;
@@ -71,7 +71,7 @@ public class ArrayDeque<T> {
      * Prints the items in the deque from first to last.
      */
     public void printDeque() {
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             int index = (start + i) % arr.length;
             System.out.print(arr[index] + " ");
         }
@@ -127,7 +127,7 @@ public class ArrayDeque<T> {
      */
     private void changeCapacity(int length) {
         T[] resized = (T[]) new Object[length];
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             int src = (start + i) % arr.length;
             int dest = i;
             resized[dest] = arr[src];

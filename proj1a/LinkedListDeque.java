@@ -42,11 +42,6 @@ public class LinkedListDeque<T> {
         size = 0;
     }
 
-    public LinkedListDeque(T value) {
-        super();
-        this.addFirst(value);
-    }
-
 
     /**
      * Adds an item at the beginning of the deque.

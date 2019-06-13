@@ -1,6 +1,6 @@
 /** Performs some basic array-based deque tests. */
 public class ArrayDequeTest {
-	
+
 	/* Utility method for printing out empty checks. */
 	public static boolean checkEmpty(boolean expected, boolean actual) {
 		if (expected != actual) {
@@ -124,7 +124,7 @@ public class ArrayDequeTest {
 
 	}
 
-	/** Adds 4 items, the gets items at certain positions, then removes 2, prints so the user can check. */
+	/** Adds 4 items, the gets items at certain positions, then removes 2, and prints. */
 	public static void getTest() {
 
 		System.out.println("\n");
