@@ -33,7 +33,8 @@ public class ArrayDeque<T> {
         if (size == arr.length) {
             changeCapacity(arr.length * UPSIZE_FACTOR);
         }
-        arr[--start] = item;
+        start = (--start + arr.length) % arr.length;
+        arr[start] = item;
         size++;
     }
 
@@ -45,7 +46,8 @@ public class ArrayDeque<T> {
         if (size == arr.length) {
             changeCapacity(arr.length * UPSIZE_FACTOR);
         }
-        arr[++end] = item;
+        end = (++end) % arr.length;
+        arr[end] = item;
         size++;
     }
 
@@ -65,24 +67,58 @@ public class ArrayDeque<T> {
         return size;
     }
 
-    // TODO
+    /**
+     * Prints the items in the deque from first to last.
+     */
     public void printDeque() {
-
+        for(int i = 0; i < size; i++) {
+            int index = (start + i) % arr.length;
+            System.out.print(arr[index] + " ");
+        }
     }
 
-    // TODO
+    /**
+     * Removes the first item in the deque and returns it.
+     * @return the first item in the deque.
+     */
     public T removeFirst() {
-
+        if (size <= 0) {
+            return null;
+        }
+        if (size < arr.length / DOWNSIZE_FACTOR && size > INITIAL_LENGTH) {
+            changeCapacity(arr.length / UPSIZE_FACTOR);
+        }
+        T item = arr[start];
+        start = (start + 1) % arr.length;
+        size--;
+        return item;
     }
 
-    // TODO
+    /**
+     * Removes the last item in the deque and returns it.
+     * @return the last item in the deque.
+     */
     public T removeLast() {
-
+        if (size <= 0) {
+            return null;
+        }
+        if (size < arr.length / DOWNSIZE_FACTOR && size > INITIAL_LENGTH) {
+            changeCapacity(arr.length / UPSIZE_FACTOR);
+        }
+        T item = arr[end];
+        end = ((end - 1) + arr.length) % arr.length;
+        size--;
+        return item;
     }
 
-    // TODO
+    /**
+     * Gets the item at the given index, where 0 is the front item.
+     * @param index of the item to be returned, 0 based.
+     * @return the item at the given index, or null if the index is beyond the
+     * length of the deque.
+     */
     public T get(int index) {
-
+        return arr[(start + index) % arr.length];
     }
 
     /**
@@ -91,7 +127,7 @@ public class ArrayDeque<T> {
      */
     private void changeCapacity(int length) {
         T[] resized = (T[]) new Object[length];
-        for(i = 0; i < size; i++) {
+        for(int i = 0; i < size; i++) {
             int src = (start + i) % arr.length;
             int dest = i;
             resized[dest] = arr[src];
