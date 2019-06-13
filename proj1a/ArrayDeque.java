@@ -33,7 +33,7 @@ public class ArrayDeque<T> {
         if (size == arr.length) {
             changeCapacity(arr.length * UPSIZE_FACTOR);
         }
-        start = (--start + arr.length) % arr.length;
+        start = (start - 1 + arr.length) % arr.length;
         arr[start] = item;
         size++;
     }
@@ -46,7 +46,7 @@ public class ArrayDeque<T> {
         if (size == arr.length) {
             changeCapacity(arr.length * UPSIZE_FACTOR);
         }
-        end = (++end) % arr.length;
+        end = (end + 1) % arr.length;
         arr[end] = item;
         size++;
     }

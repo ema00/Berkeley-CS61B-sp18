@@ -160,4 +160,4 @@ public class LinkedListDequeTest {
 		removeTest();
 		getTest();
 	}
-} 
+}
