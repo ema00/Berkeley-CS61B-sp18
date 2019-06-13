@@ -45,7 +45,7 @@ public class ArrayDeque<T> {
         if (size == arr.length) {
             changeCapacity(arr.length * UPSIZE_FACTOR);
         }
-        arr[++start] = item;
+        arr[++end] = item;
         size++;
     }
 
@@ -57,9 +57,12 @@ public class ArrayDeque<T> {
         return size == 0;
     }
 
-    // TODO
+    /**
+     * Returns the number of elements in the deque.
+     * @return the size of the deque.
+     */
     public int size() {
-
+        return size;
     }
 
     // TODO
