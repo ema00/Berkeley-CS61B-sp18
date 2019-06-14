@@ -3,6 +3,12 @@
  * Double Ended Queue (deque) data structure.
  * Implemented internally using an array.
  * @param <T> is the type of objects to be stored in the deque.
+ *
+ * - The implementation uses a circular array, with 2 pointers for marking start and end.
+ * - start and end pointers are always pointing at the first and last items respectively.
+ * - size contains the number of elements in the deque.
+ * - If the underlying array is full, its size is increased by UPSIZE_FACTOR.
+ * - If the number of items is less than DOWNSIZE_FACTOR times arr.length, arr is reduced.
  */
 
 public class ArrayDeque<T> {
@@ -114,8 +120,7 @@ public class ArrayDeque<T> {
     /**
      * Gets the item at the given index, where 0 is the front item.
      * @param index of the item to be returned, 0 based.
-     * @return the item at the given index, or null if the index is beyond the
-     * length of the deque.
+     * @return the item at the given index, or null if the index is beyond the length of the deque.
      */
     public T get(int index) {
         return arr[(start + index) % arr.length];
