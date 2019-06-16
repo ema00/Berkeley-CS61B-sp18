@@ -15,4 +15,35 @@ public class TestPalindrome {
         }
         assertEquals("persiflage", actual);
     }
+
+    @Test
+    public void testIsPalindromeLengthZero() {
+        String wordOfLengthZero = "";
+        assertTrue(palindrome.isPalindrome(wordOfLengthZero));
+    }
+
+    @Test
+    public void testIsPalindromeLengthOne() {
+        String wordOfLengthOne = "a";
+        assertTrue(palindrome.isPalindrome(wordOfLengthOne));
+    }
+
+    @Test
+    public void testIsPalindromeIsPalindrome() {
+        String wordIsPalindrome = "racecar";
+        assertTrue(palindrome.isPalindrome(wordIsPalindrome));
+    }
+
+    @Test
+    public void testIsPalindromeIsNotPalindrome1() {
+        String wordIsNotPalindrome = "house";
+        assertFalse(palindrome.isPalindrome(wordIsNotPalindrome));
+    }
+
+    @Test
+    public void testIsPalindromeIsNotPalindrome2() {
+        String wordIsNotPalindrome = "Racecar";
+        assertFalse(palindrome.isPalindrome(wordIsNotPalindrome));
+    }
+
 }
