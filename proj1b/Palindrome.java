@@ -64,7 +64,7 @@ public class Palindrome {
         }
         Character first = chars.removeFirst();
         Character last = chars.removeLast();
-        return cc.equalChars(first, last) && isPalindrome(chars);
+        return cc.equalChars(first, last) && isPalindrome(chars, cc);
     }
 
 }
