@@ -67,10 +67,9 @@ public class TestPalindrome {
         assertTrue(palindrome.isPalindrome(wordOfLengthOne, cc));
     }
 
-    // TODO
     @Test
     public void testIsPalindromeCCIsPalindrome() {
-        String wordIsPalindrome = "racecar";
+        String wordIsPalindrome = "flake";
         assertTrue(palindrome.isPalindrome(wordIsPalindrome, cc));
     }
 
@@ -81,10 +80,15 @@ public class TestPalindrome {
         assertFalse(palindrome.isPalindrome(wordIsNotPalindrome, cc));
     }
 
-    // TODO
     @Test
     public void testIsPalindromeCCIsNotPalindrome2() {
-        String wordIsNotPalindrome = "Racecar";
+        String wordIsNotPalindrome = "Flake";
+        assertFalse(palindrome.isPalindrome(wordIsNotPalindrome, cc));
+    }
+
+    @Test
+    public void testIsPalindromeCCIsNotPalindrome3() {
+        String wordIsNotPalindrome = "anana";
         assertFalse(palindrome.isPalindrome(wordIsNotPalindrome, cc));
     }
 
