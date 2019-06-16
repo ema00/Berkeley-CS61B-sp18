@@ -95,6 +95,7 @@ public class ArrayDeque<T> {
             changeCapacity(arr.length / UPSIZE_FACTOR);
         }
         T item = arr[start];
+        arr[start] = null;
         start = (start + 1) % arr.length;
         size--;
         return item;
@@ -112,6 +113,7 @@ public class ArrayDeque<T> {
             changeCapacity(arr.length / UPSIZE_FACTOR);
         }
         T item = arr[end];
+        arr[end] = null;
         end = ((end - 1) + arr.length) % arr.length;
         size--;
         return item;
