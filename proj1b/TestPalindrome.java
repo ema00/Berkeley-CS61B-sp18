@@ -6,6 +6,8 @@ public class TestPalindrome {
     // new Palindromes, or the autograder might be upset.
     static Palindrome palindrome = new Palindrome();
 
+    /* These test Palindrome.isPalindrome(String word) */
+
     @Test
     public void testWordToDeque() {
         Deque d = palindrome.wordToDeque("persiflage");
@@ -44,6 +46,46 @@ public class TestPalindrome {
     public void testIsPalindromeIsNotPalindrome2() {
         String wordIsNotPalindrome = "Racecar";
         assertFalse(palindrome.isPalindrome(wordIsNotPalindrome));
+    }
+
+
+    /* These test Palindrome.isPalindrome(String word, CharacterComparator cc) */
+
+    static CharacterComparator cc = new OffByOne();
+
+    // TODO
+    @Test
+    public void testIsPalindromeCCLengthZero() {
+        String wordOfLengthZero = "";
+        assertTrue(palindrome.isPalindrome(wordOfLengthZero, cc));
+    }
+
+    // TODO
+    @Test
+    public void testIsPalindromeCCLengthOne() {
+        String wordOfLengthOne = "a";
+        assertTrue(palindrome.isPalindrome(wordOfLengthOne, cc));
+    }
+
+    // TODO
+    @Test
+    public void testIsPalindromeCCIsPalindrome() {
+        String wordIsPalindrome = "racecar";
+        assertTrue(palindrome.isPalindrome(wordIsPalindrome, cc));
+    }
+
+    // TODO
+    @Test
+    public void testIsPalindromeCCIsNotPalindrome1() {
+        String wordIsNotPalindrome = "house";
+        assertFalse(palindrome.isPalindrome(wordIsNotPalindrome, cc));
+    }
+
+    // TODO
+    @Test
+    public void testIsPalindromeCCIsNotPalindrome2() {
+        String wordIsNotPalindrome = "Racecar";
+        assertFalse(palindrome.isPalindrome(wordIsNotPalindrome, cc));
     }
 
 }
