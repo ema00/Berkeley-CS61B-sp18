@@ -24,6 +24,6 @@ public class OffByN implements CharacterComparator {
         if (('A' <= x && x <= 'Z') && (('A' <= y && y <= 'Z'))) {
             return Math.abs(x - y) == N;
         }
-        return false;
+        return Math.abs(x - y) == N;
     }
 }

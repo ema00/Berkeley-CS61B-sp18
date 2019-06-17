@@ -16,7 +16,7 @@ public class OffByOne implements CharacterComparator {
         if (('A' <= x && x <= 'Z') && (('A' <= y && y <= 'Z'))) {
             return Math.abs(x - y) == 1;
         }
-        return false;
+        return Math.abs(x - y) == 1;
     }
 
 }
