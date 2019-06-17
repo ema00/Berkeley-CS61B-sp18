@@ -10,84 +10,84 @@ public class TestOffbyN {
     public void testEqualCharsDifferentCharsLowercase1() {
         char x = 'm';
         char y = (char) (x + N + 2);
+        char z = (char) (x + N - 2);
         assertFalse(offByN.equalChars(x, y));
+        assertFalse(offByN.equalChars(x, z));
     }
 
     @Test
     public void testEqualCharsDifferentCharsLowercase2() {
         char x = 'm';
-        char y = (char) (x + N - 2);
-        assertFalse(offByN.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsDifferentCharsLowercase3() {
-        char x = 'm';
         char y = (char) (x - N + 2);
+        char z = (char) (x - N - 2);
         assertFalse(offByN.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsDifferentCharsLowercase4() {
-        char x = 'm';
-        char y = (char) (x - N - 2);
-        assertFalse(offByN.equalChars(x, y));
+        assertFalse(offByN.equalChars(x, z));
     }
 
     @Test
     public void testEqualCharsDifferentCharsUppercase1() {
         char x = 'M';
         char y = (char) (x + N + 2);
+        char z = (char) (x + N - 2);
         assertFalse(offByN.equalChars(x, y));
+        assertFalse(offByN.equalChars(x, z));
     }
 
     @Test
     public void testEqualCharsDifferentCharsUppercase2() {
         char x = 'M';
-        char y = (char) (x + N - 2);
-        assertFalse(offByN.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsDifferentCharsUppercase3() {
-        char x = 'M';
         char y = (char) (x - N + 2);
+        char z = (char) (x - N - 2);
         assertFalse(offByN.equalChars(x, y));
+        assertFalse(offByN.equalChars(x, z));
     }
 
     @Test
-    public void testEqualCharsDifferentCharsUppercase4() {
-        char x = 'M';
-        char y = (char) (x - N - 2);
-        assertFalse(offByN.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsSameCharsLowercase1() {
+    public void testEqualCharsEqualCharsLowercase() {
         char x = 'm';
         char y = (char) (x + N);
+        char z = (char) (x - N);
         assertTrue(offByN.equalChars(x, y));
+        assertTrue(offByN.equalChars(x, z));
     }
 
     @Test
-    public void testEqualCharsSameCharsLowercase2() {
-        char x = 'm';
-        char y = (char) (x - N);
-        assertTrue(offByN.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsSameCharsUppercase1() {
+    public void testEqualCharsEqualCharsUppercase() {
         char x = 'M';
         char y = (char) (x + N);
+        char z = (char) (x - N);
         assertTrue(offByN.equalChars(x, y));
+        assertTrue(offByN.equalChars(x, z));
     }
 
     @Test
-    public void testEqualCharsSameCharsUppercase2() {
-        char x = 'M';
+    public void testEqualCharsDifferentCase() {
+        char v = 'm';
+        char w = 'M';
+        char x = (char) (w + N);
+        char y = (char) (v + N);
+        assertFalse(offByN.equalChars(v, x));
+        assertFalse(offByN.equalChars(w, y));
+        assertFalse(offByN.equalChars(x, v));
+        assertFalse(offByN.equalChars(y, w));
+    }
+
+    @Test
+    public void testEqualCharsEqualNonLetters() {
+        char x = '(';
         char y = (char) (x - N);
+        char z = (char) (x + N);
         assertTrue(offByN.equalChars(x, y));
+        assertTrue(offByN.equalChars(x, z));
+    }
+
+    @Test
+    public void testEqualCharsDifferentNonLetters() {
+        char x = '%';
+        char y = (char) (x  + N - 2);
+        char z = (char) (x  + N + 2);
+        assertFalse(offByN.equalChars(x, y));
+        assertFalse(offByN.equalChars(x, z));
     }
 
 }
