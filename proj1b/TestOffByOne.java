@@ -50,6 +50,36 @@ public class TestOffByOne {
     }
 
     @Test
+    public void testEqualCharsDifferentCase() {
+        char v = 'c';
+        char w = 'C';
+        char x = 'D';
+        char y = 'd';
+        assertFalse(offByOne.equalChars(v, x));
+        assertFalse(offByOne.equalChars(w, y));
+        assertFalse(offByOne.equalChars(x, v));
+        assertFalse(offByOne.equalChars(y, w));
+    }
+
+    @Test
+    public void testEqualCharsEqualNonLetters() {
+        char x = '%';
+        char y = (char) (x - 1);
+        char z = (char) (x + 1);
+        assertTrue(offByOne.equalChars(x, y));
+        assertTrue(offByOne.equalChars(x, z));
+    }
+
+    @Test
+    public void testEqualCharsDifferentNonLetters() {
+        char x = '%';
+        char y = (char) (x - 2);
+        char z = (char) (x + 2);
+        assertFalse(offByOne.equalChars(x, y));
+        assertFalse(offByOne.equalChars(x, z));
+    }
+
+    @Test
     public void testEqualCharsEqualCharsLowercase1() {
         char x = 'c';
         char y = (char) (x + 1);
