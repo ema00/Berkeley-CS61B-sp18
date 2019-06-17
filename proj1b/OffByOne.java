@@ -5,12 +5,18 @@
 
 public class OffByOne implements CharacterComparator {
 
-    @Override
     /**
      * Returns true for characters that are different by exactly one.
      */
+    @Override
     public boolean equalChars(char x, char y) {
-        return Math.abs(x - y) == 1;
+        if (('a' <= x && x <= 'z') && (('a' <= y && y <= 'z'))) {
+            return Math.abs(x - y) == 1;
+        }
+        if (('A' <= x && x <= 'Z') && (('A' <= y && y <= 'Z'))) {
+            return Math.abs(x - y) == 1;
+        }
+        return false;
     }
 
 }
