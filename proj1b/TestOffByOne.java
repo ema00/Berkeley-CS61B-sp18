@@ -22,31 +22,21 @@ public class TestOffByOne {
     }
 
     @Test
-    public void testEqualCharsDifferentCharsLowercase1() {
+    public void testEqualCharsDifferentCharsLowercase() {
         char x = 'c';
         char y = (char) (x + 2);
+        char z = (char) (x - 2);
         assertFalse(offByOne.equalChars(x, y));
+        assertFalse(offByOne.equalChars(x, z));
     }
 
     @Test
-    public void testEqualCharsDifferentCharsLowercase2() {
-        char x = 'c';
-        char y = (char) (x - 2);
-        assertFalse(offByOne.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsDifferentCharsUppercase1() {
+    public void testEqualCharsDifferentCharsUppercase() {
         char x = 'C';
         char y = (char) (x + 2);
+        char z = (char) (x - 2);
         assertFalse(offByOne.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsDifferentCharsUppercase2() {
-        char x = 'C';
-        char y = (char) (x - 2);
-        assertFalse(offByOne.equalChars(x, y));
+        assertFalse(offByOne.equalChars(x, z));
     }
 
     @Test
@@ -80,31 +70,21 @@ public class TestOffByOne {
     }
 
     @Test
-    public void testEqualCharsEqualCharsLowercase1() {
+    public void testEqualCharsEqualCharsLowercase() {
         char x = 'c';
         char y = (char) (x + 1);
+        char z = (char) (x - 1);
         assertTrue(offByOne.equalChars(x, y));
+        assertTrue(offByOne.equalChars(x, z));
     }
 
     @Test
-    public void testEqualCharsEqualCharsLowercase2() {
-        char x = 'c';
-        char y = (char) (x - 1);
-        assertTrue(offByOne.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsEqualCharsUppercase1() {
+    public void testEqualCharsEqualCharsUppercase() {
         char x = 'C';
         char y = (char) (x + 1);
+        char z = (char) (x - 1);
         assertTrue(offByOne.equalChars(x, y));
-    }
-
-    @Test
-    public void testEqualCharsEqualCharsUppercase2() {
-        char x = 'C';
-        char y = (char) (x - 1);
-        assertTrue(offByOne.equalChars(x, y));
+        assertTrue(offByOne.equalChars(x, z));
     }
 
 }

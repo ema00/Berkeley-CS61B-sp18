@@ -26,4 +26,5 @@ public class OffByN implements CharacterComparator {
         }
         return Math.abs(x - y) == N;
     }
+
 }
