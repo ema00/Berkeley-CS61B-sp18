@@ -11,50 +11,34 @@ public class TestArrayDequeGold {
 
     @Test
     public void randomTestArrayDeque() {
-        final int NUM_TESTS = 50;
+
+        /* Number of elements to load to the Deque under test and the reference implementation */
+        final int NUM_TESTS = 8;
 
         /* Implementation under test */
         StudentArrayDeque<Integer> dequeTest = new StudentArrayDeque<>();
         /* Reference implementation */
         ArrayDequeSolution<Integer> dequeRef = new ArrayDequeSolution<>();
 
-        /* add and remove, starting empty, to and from both implementations */
-        for (int i = 0; i < NUM_TESTS; i++) {
-            Integer randInt = StdRandom.uniform(0, 5);
-            switch (randInt) {
-                case 0:
-                    dequeTest.addFirst(randInt);
-                    dequeRef.addFirst(randInt);
-                    break;
-                case 1:
-                    dequeTest.addLast(randInt);
-                    dequeRef.addLast(randInt);
-                    break;
-                case 2:
-                    if (!dequeTest.isEmpty() && !dequeRef.isEmpty()) {
-                        assertEquals(dequeRef.removeFirst(), dequeTest.removeFirst());
-                    }
-                    break;
-                case 3:
-                    if (!dequeTest.isEmpty() && !dequeRef.isEmpty()) {
-                        assertEquals(dequeRef.removeLast(), dequeTest.removeLast());
-                    }
-                    break;
-                case 4:
-                    assertEquals(dequeRef.size(), dequeTest.size());
-                    break;
-            }
-        }
+        /* Message to be displayed to the user, containing the sequence of method calls */
+        String message = "";
+        String methodCallString = "";
 
         /* add numbers to reference implementation and implementation under test */
         for (int i = 0; i < NUM_TESTS; i++) {
             Integer randInt = StdRandom.uniform(-10000, 10000);
 
             if (i % 2 == 0) {
+                methodCallString = "addFirst(" + randInt + ")" + "\n";
+                message += methodCallString;
+
                 dequeTest.addFirst(randInt);
                 dequeRef.addFirst(randInt);
             }
             else {
+                methodCallString = "addLast(" + randInt + ")" + "\n";
+                message += methodCallString;
+
                 dequeTest.addLast(randInt);
                 dequeRef.addLast(randInt);
             }
@@ -63,12 +47,16 @@ public class TestArrayDequeGold {
         while (!dequeRef.isEmpty()) {
             double randDouble = StdRandom.uniform();
 
-            assertEquals(dequeRef.isEmpty(), dequeTest.isEmpty());
-
             if (randDouble < 0.5) {
-                assertEquals(dequeRef.removeFirst(), dequeTest.removeFirst());
+                methodCallString = "removeFirst()" + "\n";
+                message += methodCallString;
+
+                assertEquals(message, dequeRef.removeFirst(), dequeTest.removeFirst());
             } else {
-                assertEquals(dequeRef.removeLast(), dequeTest.removeLast());
+                methodCallString = "removeLast()" + "\n";
+                message += methodCallString;
+
+                assertEquals(message, dequeRef.removeLast(), dequeTest.removeLast());
             }
         }
     }
