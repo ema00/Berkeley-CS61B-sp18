@@ -37,6 +37,8 @@ public class HexWorld {
         }
 
         addHexagon(20, 20, 3, Tileset.FLOWER, world);
+        addHexagon(40, 10, 2, Tileset.MOUNTAIN, world);
+        addHexagon(50, 5, 4, Tileset.TREE, world);
         addColumn(world[0], 10, 0, 5, Tileset.FLOWER);
 
         // draws the world to the screen
@@ -60,25 +62,50 @@ public class HexWorld {
      * @param tile is the type of tile used to generate the hexagon.
      */
     private static void addHexagon(int x, int y, int size, TETile tile, TETile[][] world) {
-        int numCols = (size - 1) + size + (size - 1);
-        int maxHeight = 2 * size;
-        int numTiles = 2;
+        int height = calculateHeight(size);
+        int[] numTilesPerColumn = calculateNumberTilesPerColumn(size);
+        int numCols = numTilesPerColumn.length;
         for (int c = 0; c < numCols; c++) {
+            int numTilesInCol = numTilesPerColumn[c];
+            int offset = (height - numTilesInCol) / 2;
             TETile[] col = world[x + c];
-            int offset = (maxHeight - numTiles) / 2;
-            addColumn(col, y, offset, numTiles, tile);
-            if (c < size - 1) { numTiles += 2; }
-            if (c >= 2 * (size - 1)) { numTiles -= 2; }
+            addColumn(col, y, offset, numTilesInCol, tile);
         }
     }
 
     /**
-     *
-     * @param col
-     * @param y
-     * @param offset
-     * @param numTiles
-     * @param tile
+     * Calculates the number of tiles to be drawn at each column for drawing an hexagon.
+     * @param size is the size of the sides of the hexagon.
+     * @return an array containing the number of tiles to be drawn in each column.
+     */
+    private static int[] calculateNumberTilesPerColumn(int size) {
+        int numCols = (size - 1) + size + (size - 1);
+        int[] numTilesPerColumn = new int[numCols];
+        int height = calculateHeight(size);
+        for (int i = 0; i < numCols; i++) {
+            if (i < size - 1) { numTilesPerColumn[i] = 2 * (i + 1); }
+            else if (i >= 2 * (size - 1)) { numTilesPerColumn[i] = 2 * (numCols - i); }
+            else { numTilesPerColumn[i] = height; }
+        }
+        return numTilesPerColumn;
+    }
+
+    /**
+     * Calculates the total height, in tiles, of an hexagon, based on the size (in tiles) of its sides.
+     * @param size is the size of the sides of the hexagon.
+     * @return the total height of an hexagon, in tiles.
+     */
+    private static int calculateHeight(int size) {
+        return 2 * size;
+    }
+
+    /**
+     * Draws a column of tiles, at the offset of the y position of the given column.
+     * @param col is the column of the world on which to draw the tiles.
+     * @param y is the base y position from where to start drawing the tiles.
+     * @param offset is the offset from y, from where the drawing starts.
+     * @param numTiles is the number of tiles to be drawn.
+     * @param tile is the type of tile to be drawn.
      */
     private static void addColumn(TETile[] col, int y, int offset, int numTiles, TETile tile) {
         int start = y + offset;
