@@ -60,6 +60,13 @@ public class HexWorld {
         ter.renderFrame(world);
     }
 
+    /**
+     * Draws a column of hexagons, made by random tiles.
+     * @param p are the coordinates of the bottom hexagon.
+     * @param n is the number of hexagons that the column contains.
+     * @param size is the size of the hexagons to be drawn.
+     * @param world is the world where the hexagons are to be drawn.
+     */
     private static void drawRandomVerticalHexes(Point p, int n, int size, TETile[][] world) {
         int height = calculateHeight(size);
         for (int i = 0; i < n; i++) {
