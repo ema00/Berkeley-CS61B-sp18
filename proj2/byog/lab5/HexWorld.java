@@ -16,6 +16,9 @@ public class HexWorld {
     private static final int WIDTH = 60;
     private static final int HEIGHT = 30;
 
+    private static final long SEED = 2873123;
+    private static final Random RANDOM = new Random(SEED);
+
     public static void main(String[] args) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         TERenderer ter = new TERenderer();
@@ -51,8 +54,20 @@ public class HexWorld {
         addHexagon(50, 5, 4, Tileset.TREE, world);
         addColumn(world, 0, 0, 0, 5, 10, Tileset.FLOWER);
 
+        drawRandomVerticalHexes(new Point(0, 0), 5, 3, world);
+
         // draws the world to the screen
         ter.renderFrame(world);
+    }
+
+    private static void drawRandomVerticalHexes(Point p, int n, int size, TETile[][] world) {
+        int height = calculateHeight(size);
+        for (int i = 0; i < n; i++) {
+            int x = p.x;
+            int y = p.y + i * height;
+            TETile tile = randomTile();
+            addHexagon(x, y, size, tile, world);
+        }
     }
 
 
@@ -153,6 +168,23 @@ public class HexWorld {
         int x = p.x + size + (size - 1);
         int y = p.y - size;
         return new Point(x, y);
+    }
+
+    /**
+     * Picks a RANDOM tile with equal chances between a subset of the available tile types.
+     */
+    private static TETile randomTile() {
+        int tileNum = RANDOM.nextInt(6);
+        switch (tileNum) {
+            case 0: return Tileset.FLOWER;
+            case 1: return Tileset.TREE;
+            case 2: return Tileset.WALL;
+            case 3: return Tileset.MOUNTAIN;
+            case 4: return Tileset.SAND;
+            case 5: return Tileset.WATER;
+            case 6: return Tileset.GRASS;
+            default: return Tileset.NOTHING;
+        }
     }
 
 }
