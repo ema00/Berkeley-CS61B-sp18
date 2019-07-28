@@ -10,21 +10,41 @@ import java.util.Random;
 
 /**
  * Draws a world consisting of hexagonal regions.
+ * The hexagons are arranged in 5 columns of: 3, 4, 5, 4 and 3 hexagons each.
  */
 public class HexWorld {
 
-    private static final int WIDTH = 60;
-    private static final int HEIGHT = 30;
+    /* The following are necessary to determine the width and height of the world */
+    /* Size of the hexagons to be drawn */
+    private static final int HEXAGON_SIZE = 3;
+    /* Maximum number of hexagons in the vertical direction */
+    private static final int MAX_NUM_VERTICAL_HEXES = 5;
 
-    private static final long SEED = 2873123;
+    /* This is for selecting the tiles randomly */
+    private static final long SEED = 2873122;
     private static final Random RANDOM = new Random(SEED);
 
     public static void main(String[] args) {
-        // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
+
+        /* Calculate height of the world */
+        final int HEIGHT = MAX_NUM_VERTICAL_HEXES * calculateHeight(HEXAGON_SIZE);
+
+        /* Calculate the positions of the hexagons, for 5 columns of hexagons */
+        Point p0 = new Point(0, calculateHeight(HEXAGON_SIZE));
+        Point p1 = bottomRightNeighborPosition(p0, HEXAGON_SIZE);
+        Point p2 = bottomRightNeighborPosition(p1, HEXAGON_SIZE);
+        Point p3 = topRightNeighborPosition(p2, HEXAGON_SIZE);
+        Point p4 = topRightNeighborPosition(p3, HEXAGON_SIZE);
+
+        /* Calculate width of the world, for 5 columns of hexagons */
+        Point p5 = bottomRightNeighborPosition(p4, HEXAGON_SIZE);
+        final int WIDTH = p5.x + HEXAGON_SIZE;
+
+        // Initialize the tile rendering engine with a window of size WIDTH x HEIGHT
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
 
-        // initialize tiles
+        // Initialize tiles
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         for (int x = 0; x < WIDTH; x += 1) {
             for (int y = 0; y < HEIGHT; y += 1) {
@@ -32,29 +52,12 @@ public class HexWorld {
             }
         }
 
-        // fills in a block 14 tiles wide by 4 tiles tall
-        for (int x = 20; x < 35; x += 1) {
-            for (int y = 5; y < 10; y += 1) {
-                world[x][y] = Tileset.WALL;
-            }
-        }
-
-        addHexagon(20, 20, 3, Tileset.FLOWER, world);
-        Point trnOrigin1 = topRightNeighborPosition(new Point(20, 20), 3);
-        Point brnOrigin1 = bottomRightNeighborPosition(new Point(20, 20), 3);
-        addHexagon(trnOrigin1.x, trnOrigin1.y, 3, Tileset.WATER, world);
-        addHexagon(brnOrigin1.x, brnOrigin1.y, 3, Tileset.TREE, world);
-
-        addHexagon(40, 10, 2, Tileset.MOUNTAIN, world);
-        Point trnOrigin2 = topRightNeighborPosition(new Point(40, 10), 2);
-        Point brnOrigin2 = bottomRightNeighborPosition(new Point(40, 10), 2);
-        addHexagon(trnOrigin2.x, trnOrigin2.y, 2, Tileset.SAND, world);
-        addHexagon(brnOrigin2.x, brnOrigin2.y, 2, Tileset.FLOWER, world);
-
-        addHexagon(50, 5, 4, Tileset.TREE, world);
-        addColumn(world, 0, 0, 0, 5, 10, Tileset.FLOWER);
-
-        drawRandomVerticalHexes(new Point(0, 0), 5, 3, world);
+        // Draw columns of hexagons
+        drawRandomVerticalHexes(p0, 3, HEXAGON_SIZE, world);
+        drawRandomVerticalHexes(p1, 4, HEXAGON_SIZE, world);
+        drawRandomVerticalHexes(p2, 5, HEXAGON_SIZE, world);
+        drawRandomVerticalHexes(p3, 4, HEXAGON_SIZE, world);
+        drawRandomVerticalHexes(p4, 3, HEXAGON_SIZE, world);
 
         // draws the world to the screen
         ter.renderFrame(world);
