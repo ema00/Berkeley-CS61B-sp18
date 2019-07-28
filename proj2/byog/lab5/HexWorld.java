@@ -37,7 +37,17 @@ public class HexWorld {
         }
 
         addHexagon(20, 20, 3, Tileset.FLOWER, world);
+        Point trnOrigin1 = topRightNeighborPosition(new Point(20, 20), 3);
+        Point brnOrigin1 = bottomRightNeighborPosition(new Point(20, 20), 3);
+        addHexagon(trnOrigin1.x, trnOrigin1.y, 3, Tileset.WATER, world);
+        addHexagon(brnOrigin1.x, brnOrigin1.y, 3, Tileset.TREE, world);
+
         addHexagon(40, 10, 2, Tileset.MOUNTAIN, world);
+        Point trnOrigin2 = topRightNeighborPosition(new Point(40, 10), 2);
+        Point brnOrigin2 = bottomRightNeighborPosition(new Point(40, 10), 2);
+        addHexagon(trnOrigin2.x, trnOrigin2.y, 2, Tileset.SAND, world);
+        addHexagon(brnOrigin2.x, brnOrigin2.y, 2, Tileset.FLOWER, world);
+
         addHexagon(50, 5, 4, Tileset.TREE, world);
         addColumn(world, 0, 0, 0, 5, 10, Tileset.FLOWER);
 
@@ -115,6 +125,34 @@ public class HexWorld {
         for (int r = start; r < end; r++) {
             world[x + xOffset][r] = tile;
         }
+    }
+
+    /**
+     * Computes the position of the coordinate of the origin of the hexagon that could be located
+     * to the top right of an hexagon (whose origin is p), in a way that both are adjacent.
+     * Both hexagons must be of the same size.
+     * @param p is the origin of the hexagon taken as reference.
+     * @param size is the size of the hexagons, in tiles.
+     * @return the position of the origin of the hexagon adjacent to the top right.
+     */
+    private static Point topRightNeighborPosition(Point p, int size) {
+        int x = p.x + size + (size - 1);
+        int y = p.y + size;
+        return new Point(x, y);
+    }
+
+    /**
+     * Computes the position of the coordinate of the origin of the hexagon that could be located
+     * to the bottom right of an hexagon (whose origin is p), in a way that both are adjacent.
+     * Both hexagons must be of the same size.
+     * @param p is the origin of the hexagon taken as reference.
+     * @param size is the size of the hexagons, in tiles.
+     * @return the position of the origin of the hexagon adjacent to the bottom right.
+     */
+    private static Point bottomRightNeighborPosition(Point p, int size) {
+        int x = p.x + size + (size - 1);
+        int y = p.y - size;
+        return new Point(x, y);
     }
 
 }
