@@ -7,6 +7,7 @@ package synthesizer;
  * Items can only be enqueued at the back of the Queue.
  * Items can only be dequeued at the front of the Queue.
  * No item is allowed to be enqueued if the Queue is full.
+ * @author CS 61B / Emanuel Aguirre
  */
 public interface BoundedQueue<T> {
 

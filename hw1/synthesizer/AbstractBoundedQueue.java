@@ -5,6 +5,7 @@ package synthesizer;
  * AbstractBoundedQueue
  * Inherits behavior from BoundedQueue interface.
  * Implements methods that are common to all implementations of BoundedQueue.
+ * @author Emanuel Aguirre
  */
 public abstract class AbstractBoundedQueue<T> implements BoundedQueue<T> {
 

@@ -8,6 +8,7 @@ import java.util.Iterator;
  * ArrayRingBuffer
  * Ring Buffer implemented using an Array as its underlying data structure.
  * Has a fixed capacity.
+ * @author Emanuel Aguirre
  */
 public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
 
