@@ -3,7 +3,6 @@ package synthesizer;
 import java.util.Iterator;
 
 
-//TODO: Make sure to make this class and all of its methods public
 /**
  * ArrayRingBuffer
  * Ring Buffer implemented using an Array as its underlying data structure.
