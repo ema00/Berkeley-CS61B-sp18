@@ -1,5 +1,7 @@
 package synthesizer;
 
+import java.util.Iterator;
+
 
 /**
  * BoundedQueue
@@ -9,7 +11,7 @@ package synthesizer;
  * No item is allowed to be enqueued if the Queue is full.
  * @author CS 61B / Emanuel Aguirre
  */
-public interface BoundedQueue<T> {
+public interface BoundedQueue<T> extends Iterable<T> {
 
     /* Return the size of the Queue */
     int capacity();

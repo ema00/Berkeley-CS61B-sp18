@@ -32,6 +32,6 @@ public class GuitarHeroLite {
             stringC.tic();
         }
     }
-    
+
 }
 

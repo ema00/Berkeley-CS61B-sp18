@@ -16,7 +16,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     /* Index for the next enqueue. One beyond de most recently inserted item. */
     private int last;
     /* Array for storing the buffer data. */
-    private T[] rb;
+    private final T[] rb;
 
     /**
      * Create a new ArrayRingBuffer with the given capacity.
@@ -30,7 +30,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     }
 
     /**
-     * Adds item x to the end of the ring buffer.
+     * Adds item x to the end of the Ring Buffer.
      */
     public void enqueue(T x) {
         if (this.isFull()) {
@@ -42,11 +42,11 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     }
 
     /**
-     * Dequeue oldest item in the ring buffer.
+     * Dequeue oldest item in the Ring Buffer.
      */
     public T dequeue() {
         if (this.isEmpty()) {
-            throw new RuntimeException("Ring buffer underflow.");
+            throw new RuntimeException("Ring Buffer underflow.");
         }
         T item = rb[first];
         rb[first] = null;
@@ -62,5 +62,46 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
         return this.isEmpty() ? null : rb[first];
     }
 
-    // TODO: When you get to part 5, implement the needed code to support iteration.
+    /**
+     * @return an Iterator over the elements of the Ring Buffer.
+     */
+    public IteratorAB iterator() {
+        return new IteratorAB(this.rb);
+    }
+
+
+    /**
+     * Iterator class. Represents an Iterator over the elements of the Ring Buffer.
+     */
+    private class IteratorAB implements Iterator<T> {
+
+        private final T[] items;
+        private int index;
+
+        private IteratorAB(T[] items) {
+            this.items = items;
+            this.index = 0;
+        }
+
+        /**
+         * @return true or false whether there are more elements to iterate or not.
+         */
+        public boolean hasNext() {
+            return index < items.length;
+        }
+
+        /**
+         * @return the next item of the iteration.
+         */
+        public T next() {
+            if (!hasNext()) {
+                throw new RuntimeException();
+            }
+            T item = items[index];
+            index += 1;
+            return item;
+        }
+
+    }
+
 }
