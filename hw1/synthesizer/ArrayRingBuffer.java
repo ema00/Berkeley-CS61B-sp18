@@ -65,7 +65,10 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
      */
     @Override
     public T peek() {
-        return this.isEmpty() ? null : rb[first];
+        if (this.isEmpty()) {
+            throw new RuntimeException("Attempt to peek from empty Ring Buffer.");
+        }
+        return rb[first];
     }
 
     /**

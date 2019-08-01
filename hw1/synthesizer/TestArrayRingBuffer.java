@@ -87,9 +87,6 @@ public class TestArrayRingBuffer {
 
         arb.dequeue();
         assertEquals(2L, (long) arb.peek());
-
-        arb.dequeue();
-        assertNull(arb.peek());
     }
 
     @Test
