@@ -22,6 +22,9 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
      * Create a new ArrayRingBuffer with the given capacity.
      */
     public ArrayRingBuffer(int capacity) {
+        if (capacity < 1) {
+            throw new RuntimeException("Attempt to initialize Array Ring Buffer to size < 1.");
+        }
         this.rb = (T[]) new Object[capacity];
         this.capacity = rb.length;
         this.fillCount = 0;
@@ -35,7 +38,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     @Override
     public void enqueue(T x) {
         if (this.isFull()) {
-            throw new RuntimeException("Ring buffer overflow.");
+            throw new RuntimeException("Ring Buffer overflow.");
         }
         rb[last] = x;
         last = (last + 1) % capacity;
@@ -69,15 +72,15 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
      * @return an Iterator over the elements of the Ring Buffer.
      */
     @Override
-    public IteratorAB iterator() {
-        return new IteratorAB(this.rb);
+    public IteratorAB<T> iterator() {
+        return new IteratorAB<T>(this.rb);
     }
 
 
     /**
      * Iterator class. Represents an Iterator over the elements of the Ring Buffer.
      */
-    private class IteratorAB implements Iterator<T> {
+    private class IteratorAB<T> implements Iterator<T> {
 
         /* Items on which to iterate. */
         private final T[] items;
@@ -103,7 +106,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
         @Override
         public T next() {
             if (!hasNext()) {
-                throw new RuntimeException();
+                throw new RuntimeException("Attempt to iterate beyond the end of Array Buffer.");
             }
             T item = items[index];
             index += 1;
