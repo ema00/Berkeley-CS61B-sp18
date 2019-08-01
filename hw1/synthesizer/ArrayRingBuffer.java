@@ -75,7 +75,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
      * @return an Iterator over the elements of the Ring Buffer.
      */
     @Override
-    public IteratorAB<T> iterator() {
+    public Iterator<T> iterator() {
         return new IteratorAB<T>(this.rb);
     }
 
