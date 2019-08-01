@@ -32,6 +32,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     /**
      * Adds item x to the end of the Ring Buffer.
      */
+    @Override
     public void enqueue(T x) {
         if (this.isFull()) {
             throw new RuntimeException("Ring buffer overflow.");
@@ -44,6 +45,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     /**
      * Dequeue oldest item in the Ring Buffer.
      */
+    @Override
     public T dequeue() {
         if (this.isEmpty()) {
             throw new RuntimeException("Ring Buffer underflow.");
@@ -58,6 +60,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     /**
      * Return oldest item, but don't remove it.
      */
+    @Override
     public T peek() {
         return this.isEmpty() ? null : rb[first];
     }
@@ -65,6 +68,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
     /**
      * @return an Iterator over the elements of the Ring Buffer.
      */
+    @Override
     public IteratorAB iterator() {
         return new IteratorAB(this.rb);
     }
@@ -75,7 +79,9 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
      */
     private class IteratorAB implements Iterator<T> {
 
+        /* Items on which to iterate. */
         private final T[] items;
+        /* Current position of the Iterator. */
         private int index;
 
         private IteratorAB(T[] items) {
@@ -86,6 +92,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
         /**
          * @return true or false whether there are more elements to iterate or not.
          */
+        @Override
         public boolean hasNext() {
             return index < items.length;
         }
@@ -93,6 +100,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T>  {
         /**
          * @return the next item of the iteration.
          */
+        @Override
         public T next() {
             if (!hasNext()) {
                 throw new RuntimeException();

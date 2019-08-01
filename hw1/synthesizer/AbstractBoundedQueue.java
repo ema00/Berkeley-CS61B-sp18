@@ -15,11 +15,13 @@ public abstract class AbstractBoundedQueue<T> implements BoundedQueue<T> {
     protected int capacity;
 
     /* Returns the capacity of the Queue */
+    @Override
     public int capacity() {
         return this.capacity;
     }
 
     /* Returns the number of items currently in the Queue */
+    @Override
     public int fillCount() {
         return this.fillCount;
     }
