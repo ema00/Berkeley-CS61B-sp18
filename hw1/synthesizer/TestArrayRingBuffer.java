@@ -1,6 +1,9 @@
 package synthesizer;
 
 import org.junit.Test;
+
+import java.util.Iterator;
+
 import static org.junit.Assert.*;
 
 
@@ -13,6 +16,12 @@ public class TestArrayRingBuffer {
     @Test
     public void someTest() {
         ArrayRingBuffer arb = new ArrayRingBuffer(10);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testConstructorRuntimeException() {
+        int CAPACITY = 0;
+        BoundedQueue<Long> bq = new ArrayRingBuffer<>(CAPACITY);
     }
 
     @Test
@@ -30,7 +39,6 @@ public class TestArrayRingBuffer {
         assertEquals(CAPACITY_2, arb2.capacity());
     }
 
-    // TODO
     @Test
     public void testFillCount() {
         int CAPACITY = 300;
@@ -91,6 +99,14 @@ public class TestArrayRingBuffer {
         assertEquals(2L, (long) arb.peek());
     }
 
+    @Test(expected = RuntimeException.class)
+    public void testPeekRuntimeException() {
+        int CAPACITY = 1;
+        BoundedQueue<Long> bq = new ArrayRingBuffer<>(CAPACITY);
+
+        bq.dequeue();
+    }
+
     @Test
     public void testEnqueueDeque01() {
         int CAPACITY = 2;
@@ -100,6 +116,25 @@ public class TestArrayRingBuffer {
 
         assertEquals(1L, (long) arb.dequeue());
         assertEquals(2L, (long) arb.dequeue());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testEnqueueRuntimeException() {
+        int CAPACITY = 1;
+        BoundedQueue<Long> bq = new ArrayRingBuffer<>(CAPACITY);
+
+        bq.enqueue(1L);
+        bq.enqueue(1L);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testDequeueRuntimeException() {
+        int CAPACITY = 1;
+        BoundedQueue<Long> bq = new ArrayRingBuffer<>(CAPACITY);
+
+        bq.enqueue(1L);
+        bq.dequeue();
+        bq.dequeue();
     }
 
     @Test
@@ -127,8 +162,38 @@ public class TestArrayRingBuffer {
         assertEquals(6L, (long) arb.dequeue());
     }
 
+    @Test
+    public void testIterator1() {
+        int CAPACITY = 4;
+        ArrayRingBuffer<Long> arb = new ArrayRingBuffer<>(CAPACITY);
+
+        // enqueue 1, 2, 3, 4
+        for (Long i = 1L; i <= 4L; i++) {
+            arb.enqueue(i);
+        }
+
+        Iterator<Long> it = arb.iterator();
+
+        for (Long i = 1L; i <= 4L; i++) {
+            assertTrue(it.hasNext());
+            assertEquals(i, it.next());
+        }
+        assertFalse(it.hasNext());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testIteratorRuntimeException() {
+        int CAPACITY = 1;
+        ArrayRingBuffer<Long> arb = new ArrayRingBuffer<>(CAPACITY);
+
+        Iterator<Long> it = arb.iterator();
+        it.next();
+    }
+
+
     /** Calls tests for ArrayRingBuffer. */
     public static void main(String[] args) {
         jh61b.junit.textui.runClasses(TestArrayRingBuffer.class);
     }
+
 } 
