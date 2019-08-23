@@ -25,6 +25,10 @@ public class Room {
     private final TETile[][] world;
 
 
+    public Room(Point p, int width, int height, TETile floor, TETile wall, TETile[][] world) {
+        this(p.x, p.y, width, height, floor, wall, world);
+    }
+
     public Room(int x, int y, int width, int height, TETile floor, TETile wall, TETile[][] world) {
         this.x = x;
         this.y = y;
