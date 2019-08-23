@@ -28,4 +28,20 @@ public class Point {
         return p1.x == p2.x;
     }
 
+    /**
+     * Equality operator.
+     * @return true if both Point instances are equal.
+     */
+    static boolean equals(Point p1, Point p2) {
+        return p1.x == p2.x && p1.y == p2.y;
+    }
+
+    /**
+     * Equality operator.
+     * @return true if this point is equal to the one passed as parameter.
+     */
+    boolean equals(Point other) {
+        return this.x == other.x && this.y == other.y;
+    }
+
 }
