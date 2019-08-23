@@ -18,14 +18,14 @@ public class Point {
      * Returns true if both Point instances are aligned on the x (horizontal) axis.
      */
     public static boolean alignedOnX(Point p1, Point p2) {
-        return p1.x == p2.x;
+        return p1.y == p2.y;
     }
 
     /**
      * Returns true if both Point instances are aligned on the y (vertical) axis.
      */
     public static boolean alignedOnY(Point p1, Point p2) {
-        return p1.y == p2.y;
+        return p1.x == p2.x;
     }
 
 }
