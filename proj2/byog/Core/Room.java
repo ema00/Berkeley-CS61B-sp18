@@ -9,6 +9,7 @@ import byog.TileEngine.TETile;
  * Represents a square room in the game.
  * The room is completely determined by its position (x, y), size (width, height), tile type for the floor and the
  * walls, and by the world in which it is placed.
+ * The walls representation is not included in this class.
  */
 public class Room {
 
@@ -80,6 +81,23 @@ public class Room {
         return world;
     }
 
+    /**
+     * Takes two Room objects as parameters, and returns true if the body of both objects overlaps on the x direction.
+     */
+    static boolean overlapOnX(Room r1, Room r2) {
+        return (r1.x <= r2.x && r2.x <= (r1.x + r1.width - 1)) || (r2.x <= r1.x && r1.x <= (r2.x + r2.width - 1));
+    }
+
+    /**
+     * Takes two Room objects as parameters, and returns true if the body of both objects overlaps on the y direction.
+     */
+    static boolean overlapOnY(Room r1, Room r2) {
+        return (r1.y <= r2.y && r2.y <= (r1.y + r1.height - 1)) || (r2.y <= r1.y && r1.y <= (r2.y + r2.height - 1));
+    }
+
+    /**
+     * Draws this Room on the world which it references.
+     */
     public void draw() {
         for (int i = x; i < x + width; i++) {
             for (int j = y; j < y + height; j++) {
