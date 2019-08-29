@@ -203,4 +203,47 @@ public class RandomWorldGenerator {
                 world, floor, wall);
     }
 
+    public void drawWalls() {
+        // sweep left-right and bottom-up, draw right and upper walls, and top-right corners
+        for (int x = 1; x < world.length; x++) {
+            for (int y = 1; y < world[x].length; y++) {
+                if (world[x - 1][y] == floor && world[x][y] != floor) {
+                    world[x][y] = wall;
+                }
+                if (world[x][y - 1] == floor && world[x][y] != floor) {
+                    world[x][y] = wall;
+                }
+                if (world[x - 1][y] == wall && world[x][y - 1] == wall &&
+                        world[x - 1][y - 1] == floor && world[x][y] != floor) {
+                    world[x][y] = wall;
+                }
+            }
+        }
+        // sweep right-left and top-down, draw left and lower walls, and bottom-left corners
+        for (int x = world.length - 2; x >= 0 ; x--) {
+            for (int y = world[x].length - 2; y >= 0 ; y--) {
+                if (world[x + 1][y] == floor && world[x][y] != floor) {
+                    world[x][y] = wall;
+                }
+                if (world[x][y + 1] == floor && world[x][y] != floor) {
+                    world[x][y] = wall;
+                }
+                if (world[x + 1][y] == wall && world[x][y + 1] == wall &&
+                        world[x + 1][y + 1] == floor && world[x][y] != floor) {
+                    world[x][y] = wall;
+                }
+            }
+        }
+        // sweep left-right and bottom-up, draw top-left and bottom-right corners
+        for (int x = 1; x < world.length; x++) {
+            for (int y = 1; y < world[x].length; y++) {
+                if (world[x][y] == wall && world[x][y - 1] == floor && world[x - 1][y] != floor && world[x - 1][y - 1] == wall) {
+                    world[x - 1][y] = wall;
+                }
+                if (world[x][y] == wall && world[x][y - 1] != floor && world[x - 1][y] == floor && world[x - 1][y - 1] == wall) {
+                    world[x][y - 1] = wall;
+                }
+            }
+        }
+    }
 }
