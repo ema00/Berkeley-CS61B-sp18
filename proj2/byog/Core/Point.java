@@ -1,5 +1,7 @@
 package byog.Core;
 
+
+
 /**
  * Represents a point coordinate in a plane, consisting of two coordinates: x and y.
  * The class is immutable.
