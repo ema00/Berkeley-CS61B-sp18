@@ -1,5 +1,7 @@
 package byog.Core;
 
+import java.util.ArrayList;
+import java.util.List;
 import byog.TileEngine.TETile;
 
 
@@ -97,6 +99,19 @@ public abstract class Hallway {
             }
         }
         return false;
+    }
+
+    /**
+     * Return the Room representation as a  List of Points, representing the set of coordinates occupied by the room.
+     */
+    public List<Point> getPoints() {
+        List<Point> points = new ArrayList<>();
+        for (Segment segment : segments) {
+            for (Point p : segment.points) {
+                points.add(p);
+            }
+        }
+        return points;
     }
 
     /**

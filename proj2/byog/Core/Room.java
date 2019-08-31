@@ -1,5 +1,7 @@
 package byog.Core;
 
+import java.util.ArrayList;
+import java.util.List;
 import byog.TileEngine.TETile;
 
 
@@ -93,6 +95,19 @@ public class Room {
      */
     static boolean overlapOnY(Room r1, Room r2) {
         return (r1.y <= r2.y && r2.y <= (r1.y + r1.height - 1)) || (r2.y <= r1.y && r1.y <= (r2.y + r2.height - 1));
+    }
+
+    /**
+     * Return the Room representation as a  List of Points, representing the set of coordinates occupied by the room.
+     */
+    public List<Point> getPoints() {
+        List<Point> points = new ArrayList<>();
+        for (int i = x; i < x + width; i++) {
+            for (int j = y; j < y + height; j++) {
+                points.add(new Point(i, j));
+            }
+        }
+        return points;
     }
 
     /**
