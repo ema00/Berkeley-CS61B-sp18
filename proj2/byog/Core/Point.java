@@ -30,6 +30,20 @@ public class Point {
 
     /**
      * Equality operator.
+     * @param o object on which to perform comparison.
+     * @return true if objects are equal (deep equality).
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Point)) {
+            return false;
+        }
+        Point other = (Point) o;
+        return this.x == other.x && this.y == other.y;
+    }
+
+    /**
+     * Equality operator. Custom, not usable with java.util.Collections.
      * @return true if both Point instances are equal.
      */
     static boolean equals(Point p1, Point p2) {
@@ -37,7 +51,7 @@ public class Point {
     }
 
     /**
-     * Equality operator.
+     * Equality operator. Custom, not usable with java.util.Collections.
      * @return true if this point is equal to the one passed as parameter.
      */
     boolean equals(Point other) {
