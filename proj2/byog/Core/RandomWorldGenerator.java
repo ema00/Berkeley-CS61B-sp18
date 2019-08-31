@@ -3,9 +3,20 @@ package byog.Core;
 import java.util.Arrays;
 import java.util.Random;
 import byog.TileEngine.TETile;
-import byog.TileEngine.Tileset;
 
 
+
+/**
+ * RandomWorldGenerator
+ * Class to generate random world consisting of rooms, hallways, and walls (that set the boundaries).
+ * Can generate: Rooms, Hallways (that connect Rooms), and Walls.
+ * The order in which the objects must be generated is: Rooms, Hallways, Walls.
+ * Usage:
+ *      RandomWorldGenerator rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, new Random());
+ *      Room[] rooms = rwg.generateRooms(5, 6, 1, 13);
+ *      Hallway[] hallways = rwg.generateHallways(rooms);
+ *      Walls walls = rwg.generateWalls(rooms, hallways);
+ */
 public class RandomWorldGenerator {
 
     private TETile[][] world;
@@ -89,6 +100,14 @@ public class RandomWorldGenerator {
             }
         }
         return hallways;
+    }
+
+    /**
+     * Generates all the walls as the boundaries of the rooms and hallways passed as parameters.
+     * @return a List of walls to be drawn in the world.
+     */
+    public Walls generateWalls(Room[] rooms, Hallway[] hallways) {
+        return new Walls(rooms, hallways, floor, wall, world);
     }
 
     /**
@@ -203,47 +222,4 @@ public class RandomWorldGenerator {
                 world, floor, wall);
     }
 
-    public void drawWalls() {
-        // sweep left-right and bottom-up, draw right and upper walls, and top-right corners
-        for (int x = 1; x < world.length; x++) {
-            for (int y = 1; y < world[x].length; y++) {
-                if (world[x - 1][y] == floor && world[x][y] != floor) {
-                    world[x][y] = wall;
-                }
-                if (world[x][y - 1] == floor && world[x][y] != floor) {
-                    world[x][y] = wall;
-                }
-                if (world[x - 1][y] == wall && world[x][y - 1] == wall &&
-                        world[x - 1][y - 1] == floor && world[x][y] != floor) {
-                    world[x][y] = wall;
-                }
-            }
-        }
-        // sweep right-left and top-down, draw left and lower walls, and bottom-left corners
-        for (int x = world.length - 2; x >= 0 ; x--) {
-            for (int y = world[x].length - 2; y >= 0 ; y--) {
-                if (world[x + 1][y] == floor && world[x][y] != floor) {
-                    world[x][y] = wall;
-                }
-                if (world[x][y + 1] == floor && world[x][y] != floor) {
-                    world[x][y] = wall;
-                }
-                if (world[x + 1][y] == wall && world[x][y + 1] == wall &&
-                        world[x + 1][y + 1] == floor && world[x][y] != floor) {
-                    world[x][y] = wall;
-                }
-            }
-        }
-        // sweep left-right and bottom-up, draw top-left and bottom-right corners
-        for (int x = 1; x < world.length; x++) {
-            for (int y = 1; y < world[x].length; y++) {
-                if (world[x][y] == wall && world[x][y - 1] == floor && world[x - 1][y] != floor && world[x - 1][y - 1] == wall) {
-                    world[x - 1][y] = wall;
-                }
-                if (world[x][y] == wall && world[x][y - 1] != floor && world[x - 1][y] == floor && world[x - 1][y - 1] == wall) {
-                    world[x][y - 1] = wall;
-                }
-            }
-        }
-    }
 }
