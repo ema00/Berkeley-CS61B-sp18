@@ -2,6 +2,7 @@ package byog.Core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import byog.TileEngine.TETile;
 
 
@@ -21,8 +22,8 @@ public class Walls {
     private final List<Point> points;
     /* gPoints (geometry points) List represents where points for rooms and walls are placed. */
     private final List<Point> gPoints;
-    private final Room[] rooms;
-    private final Hallway[] hallways;
+    private final List<Room> rooms;
+    private final List<Hallway> hallways;
     private final TETile[][] world;
     /* TETile that represent the floor for rooms and hallways in the world. */
     private final TETile floor;
@@ -31,6 +32,18 @@ public class Walls {
 
 
     public Walls(Room[] rooms, Hallway[] hallways, TETile floor, TETile wall, TETile[][] world) {
+        this.rooms = Arrays.asList(rooms);
+        this.hallways = Arrays.asList(hallways);
+        this.floor = floor;
+        this.wall = wall;
+        this.world = world;
+        this.points = new ArrayList<>();
+        this.gPoints = new ArrayList<>();
+        populateGeometryPoints();
+        generateWalls();
+    }
+
+    public Walls(List<Room> rooms, List<Hallway> hallways, TETile floor, TETile wall, TETile[][] world) {
         this.rooms = rooms;
         this.hallways = hallways;
         this.floor = floor;
