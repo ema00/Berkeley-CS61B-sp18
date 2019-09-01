@@ -1,8 +1,13 @@
 package byog.Core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import byog.TileEngine.TETile;
+import static byog.Core.Room.overlapOnX;
+import static byog.Core.Room.overlapOnY;
 
 
 
@@ -19,9 +24,15 @@ import byog.TileEngine.TETile;
  */
 public class RandomWorldGenerator {
 
+    /* The width of the walls in number of tiles. */
+    private static final int WALL_SIZE = 1;
+
+    /* World on which the room is to be generated. */
     private TETile[][] world;
+    /* Tile types for the floor and the walls. */
     private TETile floor;
     private TETile wall;
+    /* Random number generator from java.util */
     private Random random;
 
 
@@ -41,21 +52,12 @@ public class RandomWorldGenerator {
      * @param n the number of rooms to draw.
      */
     public Room[] generateRooms(int sideMin, int sideMax, int deltaWH, int n) {
-        final int WALL_SIZE = 1;
-
         if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
             throw new RuntimeException("Room size is too big for world size.");
         }
 
-        int[] widths = new int[n];
-        int[] heights = new int[n];
-        for (int i = 0; i < n; i++) {
-            widths[i] = RandomUtils.uniform(random, sideMin, sideMax + 1);
-        }
-        for (int i = 0; i < n; i++) {
-            heights[i] = widths[i] + RandomUtils.uniform(random, -deltaWH, deltaWH + 1);
-        }
-
+        int[] widths = randomUniformArray(sideMin, sideMax + 1, n);
+        int[] heights = randomUniformArray(sideMin - deltaWH, sideMax + deltaWH + 1, n);
         int xMin = WALL_SIZE;
         int yMin = WALL_SIZE;
         int xMax = world.length - (sideMax + deltaWH + WALL_SIZE);
@@ -67,6 +69,48 @@ public class RandomWorldGenerator {
             rooms[i] = new Room(new Point(x, y), widths[i], heights[i], floor, wall, world);
         }
         return rooms;
+    }
+
+    /**
+     * Generates random rooms in the world.
+     * Collision detection between rooms, which means that room floors won't overlap.
+     * Every room will be tried to be added a fixed number of times, if fails, won't be added.
+     * As some rooms may not be added, the total number of rooms might be lower than n.
+     * @param sideMin is the minimum dimension for the width or height of a room.
+     * @param sideMax is the maximum dimension for the width or height of a room.
+     * @param deltaWH is the maximum allowable difference between the width and height of any room.
+     * @param n the maximum number of rooms to draw (the actual number may be lower due to collisions).
+     * @param numTries is the number of times that each room will be tried to be added.
+     */
+
+    public Room[] generateRoomsNoOverlap(int sideMin, int sideMax, int deltaWH, int n, int numTries) {
+        if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
+            throw new RuntimeException("Room size is too big for world size.");
+        }
+
+        int[] widths = randomUniformArray(sideMin, sideMax + 1, n);
+        int[] heights = randomUniformArray(sideMin - deltaWH, sideMax + deltaWH + 1, n);
+        int xMin = WALL_SIZE;
+        int yMin = WALL_SIZE;
+        int xMax = world.length - (sideMax + deltaWH + WALL_SIZE);
+        int yMax = world[0].length - (sideMax + deltaWH + WALL_SIZE);
+        List<Room> rooms = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int x = RandomUtils.uniform(random, xMin, xMax);
+            int y = RandomUtils.uniform(random, yMin, yMax);
+            for (int j = 0; j < numTries; j++) {
+                Room room = new Room(new Point(x, y), widths[i], heights[i], floor, wall, world);
+                List<Room> overlapping = rooms.stream().filter(
+                        (r)-> overlapOnX(r, room) && overlapOnY(r, room))
+                        .collect(Collectors.toList());
+                if (overlapping.isEmpty()) {
+                    rooms.add(room);
+                    break;
+                }
+            }
+        }
+        Room[] result = new Room[rooms.size()];
+        return rooms.toArray(result);
     }
 
     /**
@@ -86,10 +130,10 @@ public class RandomWorldGenerator {
                 randomRoom = rooms[RandomUtils.uniform(random, 0, rooms.length)];
             }
             connected[i] = randomRoom;
-            if (Room.overlapOnX(randomRoom, connected[i - 1])) {
+            if (overlapOnX(randomRoom, connected[i - 1])) {
                 hallways[i - 1] = connectAlongY(randomRoom, connected[i - 1]);
             }
-            else if (Room.overlapOnY(randomRoom, connected[i - 1])) {
+            else if (overlapOnY(randomRoom, connected[i - 1])) {
                 hallways[i - 1] = connectAlongX(randomRoom, connected[i - 1]);
             }
             else if (RandomUtils.bernoulli(random)) {
@@ -220,6 +264,21 @@ public class RandomWorldGenerator {
         int x = RandomUtils.uniform(random, right.x(), left.x() + left.width());
         return new StraightHallway(new Point(x, low.y() + low.height()), new Point(x, high.y() - 1),
                 world, floor, wall);
+    }
+
+    /**
+     * Returns an Array of n random integers uniformly distributed in [min, max).
+     * @param min the minimum value that any number in the array will take (closed interval).
+     * @param max the minimum value that any number in the array will take (open interval).
+     * @param n the number of integers in the resulting array.
+     * @return an Array of int, with random values uniformly distributed in [min, max).
+     */
+    private int[] randomUniformArray(int min, int max, int n) {
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = RandomUtils.uniform(random, min, max);
+        }
+        return result;
     }
 
 }
