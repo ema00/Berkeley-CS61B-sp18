@@ -51,7 +51,7 @@ public class RandomWorldGenerator {
      * @param deltaWH is the maximum allowable difference between the width and height of any room.
      * @param n the number of rooms to draw.
      */
-    public Room[] generateRooms(int sideMin, int sideMax, int deltaWH, int n) {
+    public List<Room> generateRooms(int sideMin, int sideMax, int deltaWH, int n) {
         if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
             throw new RuntimeException("Room size is too big for world size.");
         }
@@ -62,11 +62,11 @@ public class RandomWorldGenerator {
         int yMin = WALL_SIZE;
         int xMax = world.length - (sideMax + deltaWH + WALL_SIZE);
         int yMax = world[0].length - (sideMax + deltaWH + WALL_SIZE);
-        Room[] rooms = new Room[n];
+        List<Room> rooms = new ArrayList<>();
         for (int i = n - 1; i >= 0; i--) {
             int x = RandomUtils.uniform(random, xMin, xMax);
             int y = RandomUtils.uniform(random, yMin, yMax);
-            rooms[i] = new Room(new Point(x, y), widths[i], heights[i], floor, wall, world);
+            rooms.add(new Room(new Point(x, y), widths[i], heights[i], floor, wall, world));
         }
         return rooms;
     }
@@ -83,7 +83,7 @@ public class RandomWorldGenerator {
      * @param numTries is the number of times that each room will be tried to be added.
      */
 
-    public Room[] generateRoomsNoOverlap(int sideMin, int sideMax, int deltaWH, int n, int numTries) {
+    public List<Room> generateRoomsNoOverlap(int sideMin, int sideMax, int deltaWH, int n, int numTries) {
         if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
             throw new RuntimeException("Room size is too big for world size.");
         }
@@ -109,39 +109,41 @@ public class RandomWorldGenerator {
                 }
             }
         }
-        Room[] result = new Room[rooms.size()];
-        return rooms.toArray(result);
+        return rooms;
     }
 
     /**
      * Generates random straight and bent hallways to connect the rooms passed as parameter.
+     * First shuffle rooms passed as parameter, to add randomness in connections.
+     * Then connects rooms one by one. If n rooms, makes n - 1 connections.
      * @param rooms the Room instances to connect among.
      * @return an array of hallways connecting the rooms passed as parameter.
      */
-    public Hallway[] generateHallways(Room[] rooms) {
-        Hallway[] hallways = new Hallway[rooms.length - 1];
-        RandomUtils.shuffle(random, rooms);
-        Room[] connected = new Room[rooms.length];
+    public List<Hallway> generateHallways(List<Room> rooms) {
+        List<Hallway> hallways = new ArrayList<>();
+        List<Room> connected = new ArrayList<>();
 
-        connected[0] = rooms[0];
-        for (int i = 1; i < rooms.length; i++) {
-            Room randomRoom = rooms[RandomUtils.uniform(random, 0, rooms.length)];
-            while (Arrays.asList(connected).contains(randomRoom)) {
-                randomRoom = rooms[RandomUtils.uniform(random, 0, rooms.length)];
+        Room[] roomsShuffled = new Room[rooms.size()];
+        roomsShuffled = rooms.toArray(roomsShuffled);
+        RandomUtils.shuffle(random, roomsShuffled);
+        rooms = Arrays.asList(roomsShuffled);
+
+        connected.add(rooms.get(0));
+        for (int i = 1; i < rooms.size(); i++) {
+            Room randomRoom = rooms.get(i);
+            if (overlapOnX(randomRoom, connected.get(i - 1))) {
+                hallways.add(connectAlongY(randomRoom, connected.get(i - 1)));
             }
-            connected[i] = randomRoom;
-            if (overlapOnX(randomRoom, connected[i - 1])) {
-                hallways[i - 1] = connectAlongY(randomRoom, connected[i - 1]);
-            }
-            else if (overlapOnY(randomRoom, connected[i - 1])) {
-                hallways[i - 1] = connectAlongX(randomRoom, connected[i - 1]);
+            else if (overlapOnY(randomRoom, connected.get(i - 1))) {
+                hallways.add(connectAlongX(randomRoom, connected.get(i - 1)));
             }
             else if (RandomUtils.bernoulli(random)) {
-                hallways[i - 1] = connectRight(randomRoom, connected[i - 1]);
+                hallways.add(connectRight(randomRoom, connected.get(i - 1)));
             }
             else {
-                hallways[i - 1] = connectLeft(randomRoom, connected[i - 1]);
+                hallways.add(connectLeft(randomRoom, connected.get(i - 1)));
             }
+            connected.add(i, randomRoom);
         }
         return hallways;
     }
@@ -150,7 +152,7 @@ public class RandomWorldGenerator {
      * Generates all the walls as the boundaries of the rooms and hallways passed as parameters.
      * @return a List of walls to be drawn in the world.
      */
-    public Walls generateWalls(Room[] rooms, Hallway[] hallways) {
+    public Walls generateWalls(List<Room> rooms, List<Hallway> hallways) {
         return new Walls(rooms, hallways, floor, wall, world);
     }
 
