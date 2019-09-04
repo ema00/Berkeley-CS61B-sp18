@@ -157,6 +157,28 @@ public class RandomWorldGenerator {
     }
 
     /**
+     * Returns a List of all the coordinates occupied for the rooms and hallways passed as parameters.
+     * This method is helpful to get all the points on which a player can move.
+     * @param rooms a List of rooms.
+     * @param hallways a List of hallways.
+     * @return a List of all the coordinates (Point objects) that the parameters occupy.
+     */
+    public List<Point> getCoordinates(List<Room> rooms, List<Hallway> hallways) {
+        List<Point> coordinates = new ArrayList<>();
+        for (Room room : rooms) {
+            room.getPoints().forEach(point -> {
+                if (!coordinates.contains(point)) { coordinates.add(point); }
+            });
+        }
+        for (Hallway hallway : hallways) {
+            hallway.getPoints().forEach(point -> {
+                if (!coordinates.contains(point)) { coordinates.add(point); }
+            });
+        }
+        return coordinates;
+    }
+
+    /**
      * Connects two rooms with a bent hallway, starting from the leftmost room to the rightmost room.
      * The hallway is generated randomly.
      * @return a hallway connecting both rooms passed as parameters.
