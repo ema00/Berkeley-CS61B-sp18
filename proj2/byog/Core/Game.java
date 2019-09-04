@@ -1,11 +1,11 @@
 package byog.Core;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-
-import java.util.Arrays;
-import java.util.Random;
 
 
 
@@ -13,10 +13,37 @@ public class Game {
 
     TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
-    public static final int WIDTH = 40;
+    public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
+    /* Game control keys. */
+    public static final char NEW_GAME = 'N';
+    public static final char LOAD_GAME = 'L';
+    public static final char PRE_QUIT_SAVE = ':';
+    public static final char QUIT_SAVE = 'Q';
+    /* Character direction keys. */
+    public static final char UP = 'W';
+    public static final char DOWN = 'S';
+    public static final char LEFT = 'A';
+    public static final char RIGHT = 'D';
+    /* Maximum and minimum room sides sizes, and difference between width and height for rooms. */
+    private static int MIN_SIDE = 4;
+    private static int MAX_SIDE = 4;
+    private static int DELTA_WIDTH_HEIGHT = 1;
+    /* Maximum number of rooms to draw. */
+    private static int MAX_ROOMS = 30;
+    /* Maximum number of tries when adding a room at a random position that does not overlaps with others. */
+    private static int MAX_TRIES = 30;
+
+    /* Pseudo-random number generator for generating the world. */
+    private Random random;
+    /* Random world generator to generate a random world when a new game is started. */
+    RandomWorldGenerator rwg ;
+    /* Player in the world. */
+    Player player;
+
 
     /**
+     * TODO
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
@@ -41,11 +68,80 @@ public class Game {
      */
     public TETile[][] playWithInputString(String input) {
         // TODO: Fill out this method to run the game using the input passed in,
+        // TODO: Add commands for starting new game, saving and quitting.
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
-        TETile[][] finalWorldFrame = null;
-        return finalWorldFrame;
+        input = input.toUpperCase();
+        long seed = 0;
+        String commands = null;
+        List<Room> rooms = null;
+        List<Hallway> hallways = null;
+        List<Point> allowedCoordinates = null;
+        Walls walls = null;
+
+        TETile[][] world = new TETile[WIDTH][HEIGHT];
+        ter.initialize(WIDTH, HEIGHT);
+        initializeWorldBackground(world, Tileset.NOTHING);
+
+        char firstCommand = input.charAt(0);
+        if (firstCommand == NEW_GAME) {
+            String numberRegex = "\\d+";
+            String[] parts = input.split(numberRegex);
+            try {
+                int seedStart = input.indexOf(parts[0]) + 1;
+                int seedEnd = input.indexOf(parts[1]);
+                seed = Long.parseLong(input.substring(seedStart, seedEnd));
+            }
+            catch (Exception ex) {
+                throw new RuntimeException("Program arguments not valid.");
+            }
+            random = new Random(seed);
+            commands = parts[1];
+            rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, random);
+            rooms = rwg.generateRoomsNoOverlap(MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
+            hallways = rwg.generateHallways(rooms);
+            walls = rwg.generateWalls(rooms, hallways);
+            allowedCoordinates = rwg.getCoordinates(rooms, hallways);
+            player = new Player(
+                    allowedCoordinates.get(RandomUtils.uniform(random, 0, allowedCoordinates.size())),
+                    allowedCoordinates, Tileset.PLAYER, world);
+        }
+        else if (firstCommand == LOAD_GAME) {
+            commands = input.substring(1);
+        }
+        else {
+            return null;
+        }
+
+        movePlayerWithString(commands, world, player);
+
+        drawRooms(rooms);
+        drawHallways(hallways);
+        walls.draw();
+        player.draw();
+        ter.renderFrame(world);
+
+        return world;
+    }
+
+    private void movePlayerWithString(String movements, TETile[][] world, Player player) {
+        for (char c : movements.toCharArray()) {
+            switch(c) {
+                case UP:
+                    player.moveUp();
+                    break;
+                case DOWN:
+                    player.moveDown();
+                    break;
+                case LEFT:
+                    player.moveLeft();
+                    break;
+                case RIGHT:
+                    player.moveRight();
+                    break;
+            }
+        }
     }
 
     /**
@@ -56,13 +152,30 @@ public class Game {
         ter.initialize(WIDTH, HEIGHT);
         initializeWorldBackground(world, Tileset.NOTHING);
 
-        Room[] rooms = generateRandomRooms(4, 8, 2, 12, world,
-                Tileset.FLOOR, Tileset.WALL, new Random());
+        random = new Random(333);
+        RandomWorldGenerator rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, random);
+        //Room[] rooms = rwg.generateRooms(5, 6, 1, 13);
+        List<Room> rooms = rwg.generateRoomsNoOverlap(4, 4, 1, 30, 30);
+        List<Hallway> hallways = rwg.generateHallways(rooms);
+        Walls walls = rwg.generateWalls(rooms, hallways);
+
+        List<Point> allowedCoordinates = new ArrayList<>();
+        for (Room room : rooms) {
+            allowedCoordinates.addAll(room.getPoints());
+        }
+        for (Hallway hallway : hallways) {
+            allowedCoordinates.addAll(hallway.getPoints());
+        }
+        Player player =  new Player(allowedCoordinates.get(0), allowedCoordinates, Tileset.PLAYER, world);
 
         drawRooms(rooms);
+        drawHallways(hallways);
+        walls.draw();
+        player.draw();
+
         ter.renderFrame(world);
 
-        // Y ACÁ SIGUE...
+        // Y SIGUE...
     }
 
     /**
@@ -79,56 +192,24 @@ public class Game {
     }
 
     /**
-     * Generates random rooms in the world.
-     * No collision detection between rooms, which means that room floors can be overlapping.
-     * @param sideMin is the minimum dimension for the width or height of a room.
-     * @param sideMax is the maximum dimension for the width or height of a room.
-     * @param deltaWH is the maximum allowable difference between the width and height of any room.
-     * @param max the number of rooms to draw.
-     * @param world is the world on which the rooms are to be drawn.
-     * @param floor is the type of TETile to be used in the floor of the rooms.
-     * @param wall is the type of TETile to be used in the wall of the rooms.
-     * @param random is a random generator class instance.
-     * @return an array of Room objects placed within the bounds of the world.
-     */
-    private Room[] generateRandomRooms(int sideMin, int sideMax, int deltaWH, int max, TETile[][] world, TETile floor,
-                                      TETile wall, Random random) {
-        final int WALL_SIZE = 1;
-
-        if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
-            throw new RuntimeException("Room size is too big for world size.");
-        }
-
-        int[] widths = new int[max];
-        int[] heights = new int[max];
-        for (int i = 0; i < max; i++) {
-            widths[i] = RandomUtils.uniform(random, sideMin, sideMax + 1);
-        }
-        Arrays.sort(widths);    // sorted in ascending order, so the biggest are placed first
-        for (int i = 0; i < max; i++) {
-            heights[i] = widths[i] + RandomUtils.uniform(random, -deltaWH, deltaWH + 1);
-        }
-
-        int xMin = WALL_SIZE;
-        int yMin = WALL_SIZE;
-        int xMax = world.length - (sideMax + deltaWH + WALL_SIZE);
-        int yMax = world[0].length - (sideMax + deltaWH + WALL_SIZE);
-        Room[] rooms = new Room[max];
-        for (int i = max - 1; i >= 0; i--) {
-            int x = RandomUtils.uniform(random, xMin, xMax);
-            int y = RandomUtils.uniform(random, yMin, yMax);
-            rooms[i] = new Room(x, y, widths[i], heights[i], floor, wall, world);
-        }
-        return rooms;
-    }
-
-    /**
      * Helper method that draws the generated rooms in the world.
      * @param rooms a non null array of rooms to be drawn on the world.
      */
-    private void drawRooms(Room[] rooms) {
+    private void drawRooms(List<Room> rooms) {
         for (Room room : rooms) {
             room.draw();
+        }
+    }
+
+    /**
+     * Helper method that draws the generated hallways in the world.
+     * @param hallways a non null array of hallways to be drawn on the world.
+     */
+    private void drawHallways(List<Hallway> hallways) {
+        for (Hallway hallway : hallways) {
+            if (hallway != null) {
+                hallway.draw();
+            }
         }
     }
 
