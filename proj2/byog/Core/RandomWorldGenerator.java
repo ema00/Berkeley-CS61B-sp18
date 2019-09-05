@@ -150,10 +150,19 @@ public class RandomWorldGenerator {
 
     /**
      * Generates all the walls as the boundaries of the rooms and hallways passed as parameters.
-     * @return a List of walls to be drawn in the world.
+     * @return a Walls object to be drawn in the world.
      */
     public Walls generateWalls(List<Room> rooms, List<Hallway> hallways) {
         return new Walls(rooms, hallways, floor, wall, world);
+    }
+
+    /**
+     * Generates all the walls as the boundaries of the coordinates passed as parameters.
+     * @param coordinates the points that comprise the geometry around which to draw the walls.
+     * @return a Walls object to be drawn in the world.
+     */
+    public Walls generateWalls(List<Point> coordinates) {
+        return new Walls(coordinates, floor, wall, world);
     }
 
     /**

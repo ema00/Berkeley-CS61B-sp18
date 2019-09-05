@@ -40,6 +40,8 @@ public class Game {
     RandomWorldGenerator rwg ;
     /* Player in the world. */
     Player player;
+    /* Game state, used mainly for saving the game state. */
+    //GameState gameState;
 
 
     /**
@@ -83,6 +85,7 @@ public class Game {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         ter.initialize(WIDTH, HEIGHT);
         initializeWorldBackground(world, Tileset.NOTHING);
+        //gameState = new GameState();
 
         char firstCommand = input.charAt(0);
         if (firstCommand == NEW_GAME) {
@@ -101,17 +104,24 @@ public class Game {
             rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, random);
             rooms = rwg.generateRoomsNoOverlap(MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
             hallways = rwg.generateHallways(rooms);
-            walls = rwg.generateWalls(rooms, hallways);
             allowedCoordinates = rwg.getCoordinates(rooms, hallways);
+            walls = rwg.generateWalls(allowedCoordinates);
             player = new Player(
                     allowedCoordinates.get(RandomUtils.uniform(random, 0, allowedCoordinates.size())),
                     allowedCoordinates, Tileset.PLAYER, world);
+            //gameState = new GameState();
+            ////world = gameState.createWorld();
+            //player = gameState.createPlayer();
         }
         else if (firstCommand == LOAD_GAME) {
             commands = input.substring(1);
+            //gameState = new GameState().load(GAME_STATE_FILE);
+            //allowedCoordinates = gameState.getAllowedCoordinates();
+            //player = gameState.getPlayer(Tileset.PLAYER, world);
+            //walls = rwg.generateWalls(allowedCoordinates);
         }
         else {
-            return null;
+            return world;
         }
 
         movePlayerWithString(commands, world, player);
