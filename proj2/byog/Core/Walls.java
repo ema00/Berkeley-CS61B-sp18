@@ -55,6 +55,17 @@ public class Walls {
         generateWalls();
     }
 
+    public Walls(List<Point> gPoints, TETile floor, TETile wall, TETile[][] world) {
+        this.rooms = null;
+        this.hallways = null;
+        this.floor = floor;
+        this.wall = wall;
+        this.world = world;
+        this.points = new ArrayList<>();
+        this.gPoints = gPoints;
+        generateWalls();
+    }
+
     /**
      * Populates List<Point> gPoints, which contains all the points corresponding to rooms and walls that
      * are in the world.
