@@ -9,9 +9,10 @@ import byog.TileEngine.TETile;
 /**
  * Room
  * Represents a square room in the game.
- * The room is completely determined by its position (x, y), size (width, height), tile type for the floor and the
- * walls, and by the world in which it is placed.
+ * The room is completely determined by its position (x, y), size (width, height), tile type for
+ * the floor and the walls, and by the world in which it is placed.
  * The walls representation is not included in this class.
+ * @author Emanuel Aguirre
  */
 public class Room {
 
@@ -28,18 +29,19 @@ public class Room {
     private final TETile[][] world;
 
 
-    public Room(Point p, int width, int height, TETile floor, TETile wall, TETile[][] world) {
-        this(p.x, p.y, width, height, floor, wall, world);
+    public Room(Point p, int widthP, int heightP, TETile floorP, TETile wallP, TETile[][] worldP) {
+        this(p.x, p.y, widthP, heightP, floorP, wallP, worldP);
     }
 
-    public Room(int x, int y, int width, int height, TETile floor, TETile wall, TETile[][] world) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.floor = floor;
-        this.wall = wall;
-        this.world = world;
+    public Room(int xp, int yp, int widthP, int heightP, TETile floorP, TETile wallP,
+                TETile[][] worldP) {
+        this.x = xp;
+        this.y = yp;
+        this.width = widthP;
+        this.height = heightP;
+        this.floor = floorP;
+        this.wall = wallP;
+        this.world = worldP;
 
         if (x < 0) {
             throw new RuntimeException("Room out of bounds, x: " + x + ".");
@@ -51,7 +53,8 @@ public class Room {
             throw new RuntimeException("Room out of bounds, x: " + x + ", width: " + width + ".");
         }
         if (world[0].length < y + height) {
-            throw new RuntimeException("Room out of bounds, y: " + y + ", height: " + height + ".");
+            throw new RuntimeException("Room out of bounds, y: " + y + ", height: " + height
+                    + ".");
         }
     }
 
@@ -84,21 +87,33 @@ public class Room {
     }
 
     /**
-     * Takes two Room objects as parameters, and returns true if the body of both objects overlaps on the x direction.
+     * Takes two Room objects as parameters, and returns true if the body of both objects overlaps
+     * on the x direction.
+     * @param r1 is one of the rooms to check for overlapping along the x direction.
+     * @param r2 is one of the rooms to check for overlapping along the x direction.
+     * @return true if both rooms have point with common coordinates along x.
      */
     static boolean overlapOnX(Room r1, Room r2) {
-        return (r1.x <= r2.x && r2.x <= (r1.x + r1.width - 1)) || (r2.x <= r1.x && r1.x <= (r2.x + r2.width - 1));
+        return (r1.x <= r2.x && r2.x <= (r1.x + r1.width - 1))
+                || (r2.x <= r1.x && r1.x <= (r2.x + r2.width - 1));
     }
 
     /**
-     * Takes two Room objects as parameters, and returns true if the body of both objects overlaps on the y direction.
+     * Takes two Room objects as parameters, and returns true if the body of both objects overlaps
+     * on the y direction.
+     * @param r1 is one of the rooms to check for overlapping along the y direction.
+     * @param r2 is one of the rooms to check for overlapping along the y direction.
+     * @return true if both rooms have point with common coordinates along y.
      */
     static boolean overlapOnY(Room r1, Room r2) {
-        return (r1.y <= r2.y && r2.y <= (r1.y + r1.height - 1)) || (r2.y <= r1.y && r1.y <= (r2.y + r2.height - 1));
+        return (r1.y <= r2.y && r2.y <= (r1.y + r1.height - 1))
+                || (r2.y <= r1.y && r1.y <= (r2.y + r2.height - 1));
     }
 
     /**
-     * Return the Room representation as a  List of Points, representing the set of coordinates occupied by the room.
+     * Return the Room representation as a  List of Points, representing the set of coordinates
+     * occupied by the room.
+     * @return the set of points that the room occupies.
      */
     public List<Point> getPoints() {
         List<Point> points = new ArrayList<>();

@@ -15,6 +15,7 @@ import byog.TileEngine.TETile;
  * Walls will only be created around a set of points of the floor type.
  * IMPORTANT: Lists are used internally instead o the more appropriate Set data structure because
  * Sets are no been yet seen in the program at the moment of project 2.
+ * @author Emanuel Aguirre
  */
 public class Walls {
 
@@ -31,44 +32,46 @@ public class Walls {
     private final TETile wall;
 
 
-    public Walls(Room[] rooms, Hallway[] hallways, TETile floor, TETile wall, TETile[][] world) {
-        this.rooms = Arrays.asList(rooms);
-        this.hallways = Arrays.asList(hallways);
-        this.floor = floor;
-        this.wall = wall;
-        this.world = world;
+    public Walls(Room[] roomsP, Hallway[] hallwaysP,
+                 TETile floorP, TETile wallP, TETile[][] worldP) {
+        this.rooms = Arrays.asList(roomsP);
+        this.hallways = Arrays.asList(hallwaysP);
+        this.floor = floorP;
+        this.wall = wallP;
+        this.world = worldP;
         this.points = new ArrayList<>();
         this.gPoints = new ArrayList<>();
         populateGeometryPoints();
         generateWalls();
     }
 
-    public Walls(List<Room> rooms, List<Hallway> hallways, TETile floor, TETile wall, TETile[][] world) {
-        this.rooms = rooms;
-        this.hallways = hallways;
-        this.floor = floor;
-        this.wall = wall;
-        this.world = world;
+    public Walls(List<Room> roomsP, List<Hallway> hallwaysP,
+                 TETile floorP, TETile wallP, TETile[][] worldP) {
+        this.rooms = roomsP;
+        this.hallways = hallwaysP;
+        this.floor = floorP;
+        this.wall = wallP;
+        this.world = worldP;
         this.points = new ArrayList<>();
         this.gPoints = new ArrayList<>();
         populateGeometryPoints();
         generateWalls();
     }
 
-    public Walls(List<Point> gPoints, TETile floor, TETile wall, TETile[][] world) {
+    public Walls(List<Point> geometryPoints, TETile floorP, TETile wallP, TETile[][] worldP) {
         this.rooms = null;
         this.hallways = null;
-        this.floor = floor;
-        this.wall = wall;
-        this.world = world;
+        this.floor = floorP;
+        this.wall = wallP;
+        this.world = worldP;
         this.points = new ArrayList<>();
-        this.gPoints = gPoints;
+        this.gPoints = geometryPoints;
         generateWalls();
     }
 
     /**
-     * Populates List<Point> gPoints, which contains all the points corresponding to rooms and walls that
-     * are in the world.
+     * Populates List<Point> gPoints, which contains all the points corresponding to rooms
+     * and walls that are in the world.
      */
     private void populateGeometryPoints() {
         for (Room room : rooms) {
@@ -91,12 +94,14 @@ public class Walls {
 
     /**
      * Generates all the walls for the world.
-     * First, sweep the world left-right and bottom-up, to add right and upper walls, and top-right corners.
-     * Second, sweep the world right-left and top-down, to add left and lower walls, and bottom-left corners.
+     * First, sweep the world left-right and bottom-up, to add right and upper walls,
+     * and top-right corners.
+     * Second, sweep the world right-left and top-down, to add left and lower walls,
+     * and bottom-left corners.
      * Third, sweep the world left-right and bottom-up, to add top-left and bottom-right corners.
      */
     private void generateWalls() {
-        // 1-sweep left-right and bottom-up, draw right and upper walls, and top-right corners
+        /* 1-sweep left-right and bottom-up, draw right and upper walls, and top-right corners */
         for (int x = 1; x < world.length; x++) {
             for (int y = 1; y < world[x].length; y++) {
                 Point current = new Point(x, y);
@@ -112,14 +117,15 @@ public class Walls {
                 if (gPoints.contains(below)) {
                     addWall(x, y);
                 }
-                if (points.contains(left) && points.contains(below) && gPoints.contains(belowLeft)) {
+                if (points.contains(left) && points.contains(below)
+                        && gPoints.contains(belowLeft)) {
                     addWall(x, y);
                 }
             }
         }
-        // 2-sweep right-left and top-down, draw left and lower walls, and bottom-left corners
-        for (int x = world.length - 2; x >= 0 ; x--) {
-            for (int y = world[x].length - 2; y >= 0 ; y--) {
+        /* 2-sweep right-left and top-down, draw left and lower walls, and bottom-left corners */
+        for (int x = world.length - 2; x >= 0; x--) {
+            for (int y = world[x].length - 2; y >= 0; y--) {
                 Point current = new Point(x, y);
                 Point above = new Point(x, y + 1);
                 Point right = new Point(x + 1, y);
@@ -133,12 +139,13 @@ public class Walls {
                 if (gPoints.contains(above)) {
                     addWall(x, y);
                 }
-                if (points.contains(right) && points.contains(above) && gPoints.contains(aboveRight)) {
+                if (points.contains(right) && points.contains(above)
+                        && gPoints.contains(aboveRight)) {
                     addWall(x, y);
                 }
             }
         }
-        // 3-sweep left-right and bottom-up, draw top-left and bottom-right corners
+        /* 3-sweep left-right and bottom-up, draw top-left and bottom-right corners */
         for (int x = 1; x < world.length; x++) {
             for (int y = 1; y < world[x].length; y++) {
                 Point current = new Point(x, y);
@@ -148,10 +155,12 @@ public class Walls {
                 if (!points.contains(current)) {
                     continue;
                 }
-                if (gPoints.contains(below) && !gPoints.contains(left) && points.contains(belowLeft)) {
+                if (gPoints.contains(below) && !gPoints.contains(left)
+                        && points.contains(belowLeft)) {
                     addWall(x - 1, y);
                 }
-                if (!gPoints.contains(below) && gPoints.contains(left) && points.contains(belowLeft)) {
+                if (!gPoints.contains(below) && gPoints.contains(left)
+                        && points.contains(belowLeft)) {
                     addWall(x, y - 1);
                 }
             }
@@ -160,6 +169,8 @@ public class Walls {
 
     /**
      * Adds a wall, on the world, at the coordinates passed as parameter.
+     * @param x is the x coordinate on which to add a single-tile wall.
+     * @param y is the y coordinate on which to add a single-tile wall.
      */
     private void addWall(int x, int y) {
         Point p = new Point(x, y);
@@ -168,6 +179,7 @@ public class Walls {
 
     /**
      * Adds a wall, on the world, at the point passed as parameter.
+     * @param p the point on which to add a single-tile wall.
      */
     private void addWall(Point p) {
         points.add(p);

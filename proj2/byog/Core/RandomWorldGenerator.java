@@ -13,14 +13,16 @@ import static byog.Core.Room.overlapOnY;
 
 /**
  * RandomWorldGenerator
- * Class to generate random world consisting of rooms, hallways, and walls (that set the boundaries).
+ * Class to generate random world consisting of rooms, hallways, and walls (that set boundaries).
  * Can generate: Rooms, Hallways (that connect Rooms), and Walls.
  * The order in which the objects must be generated is: Rooms, Hallways, Walls.
  * Usage:
- *      RandomWorldGenerator rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, new Random());
+ *      RandomWorldGenerator rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL,
+ *          new Random());
  *      Room[] rooms = rwg.generateRooms(5, 6, 1, 13);
  *      Hallway[] hallways = rwg.generateHallways(rooms);
  *      Walls walls = rwg.generateWalls(rooms, hallways);
+ * @author Emanuel Aguirre
  */
 public class RandomWorldGenerator {
 
@@ -36,11 +38,11 @@ public class RandomWorldGenerator {
     private Random random;
 
 
-    public RandomWorldGenerator(TETile[][] world, TETile floor, TETile wall, Random random) {
-        this.world = world;
-        this.floor = floor;
-        this.wall = wall;
-        this.random = random;
+    public RandomWorldGenerator(TETile[][] worldP, TETile floorP, TETile wallP, Random randomP) {
+        this.world = worldP;
+        this.floor = floorP;
+        this.wall = wallP;
+        this.random = randomP;
     }
 
     /**
@@ -50,9 +52,11 @@ public class RandomWorldGenerator {
      * @param sideMax is the maximum dimension for the width or height of a room.
      * @param deltaWH is the maximum allowable difference between the width and height of any room.
      * @param n the number of rooms to draw.
+     * @return a List of rooms that might overlap.
      */
     public List<Room> generateRooms(int sideMin, int sideMax, int deltaWH, int n) {
-        if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
+        if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length
+                || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
             throw new RuntimeException("Room size is too big for world size.");
         }
 
@@ -72,19 +76,22 @@ public class RandomWorldGenerator {
     }
 
     /**
-     * Generates random rooms in the world.
+     * Generates random rooms, that don't overlap, in the world.
      * Collision detection between rooms, which means that room floors won't overlap.
      * Every room will be tried to be added a fixed number of times, if fails, won't be added.
      * As some rooms may not be added, the total number of rooms might be lower than n.
      * @param sideMin is the minimum dimension for the width or height of a room.
      * @param sideMax is the maximum dimension for the width or height of a room.
      * @param deltaWH is the maximum allowable difference between the width and height of any room.
-     * @param n the maximum number of rooms to draw (the actual number may be lower due to collisions).
+     * @param n the maximum number of rooms to draw (actual number may be lower due to collisions).
      * @param numTries is the number of times that each room will be tried to be added.
+     * @return a List of rooms that don't overlap.
      */
+    public List<Room> generateRoomsNoOverlap(
+            int sideMin, int sideMax, int deltaWH, int n, int numTries) {
 
-    public List<Room> generateRoomsNoOverlap(int sideMin, int sideMax, int deltaWH, int n, int numTries) {
-        if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
+        if (sideMax + deltaWH + 2 * WALL_SIZE >= world.length
+                || sideMax + deltaWH + 2 * WALL_SIZE >= world[0].length) {
             throw new RuntimeException("Room size is too big for world size.");
         }
 
@@ -101,7 +108,7 @@ public class RandomWorldGenerator {
             for (int j = 0; j < numTries; j++) {
                 Room room = new Room(new Point(x, y), widths[i], heights[i], floor, wall, world);
                 List<Room> overlapping = rooms.stream().filter(
-                        (r)-> overlapOnX(r, room) && overlapOnY(r, room))
+                        (r) -> overlapOnX(r, room) && overlapOnY(r, room))
                         .collect(Collectors.toList());
                 if (overlapping.isEmpty()) {
                     rooms.add(room);
@@ -133,14 +140,11 @@ public class RandomWorldGenerator {
             Room randomRoom = rooms.get(i);
             if (overlapOnX(randomRoom, connected.get(i - 1))) {
                 hallways.add(connectAlongY(randomRoom, connected.get(i - 1)));
-            }
-            else if (overlapOnY(randomRoom, connected.get(i - 1))) {
+            } else if (overlapOnY(randomRoom, connected.get(i - 1))) {
                 hallways.add(connectAlongX(randomRoom, connected.get(i - 1)));
-            }
-            else if (RandomUtils.bernoulli(random)) {
+            } else if (RandomUtils.bernoulli(random)) {
                 hallways.add(connectRight(randomRoom, connected.get(i - 1)));
-            }
-            else {
+            } else {
                 hallways.add(connectLeft(randomRoom, connected.get(i - 1)));
             }
             connected.add(i, randomRoom);
@@ -150,6 +154,8 @@ public class RandomWorldGenerator {
 
     /**
      * Generates all the walls as the boundaries of the rooms and hallways passed as parameters.
+     * @param rooms are the rooms around which to place the walls.
+     * @param hallways ere the hallways around which to place the walls.
      * @return a Walls object to be drawn in the world.
      */
     public Walls generateWalls(List<Room> rooms, List<Hallway> hallways) {
@@ -166,7 +172,7 @@ public class RandomWorldGenerator {
     }
 
     /**
-     * Returns a List of all the coordinates occupied for the rooms and hallways passed as parameters.
+     * Returns a List of all the coordinates occupied by rooms and hallways passed as parameters.
      * This method is helpful to get all the points on which a player can move.
      * @param rooms a List of rooms.
      * @param hallways a List of hallways.
@@ -176,30 +182,35 @@ public class RandomWorldGenerator {
         List<Point> coordinates = new ArrayList<>();
         for (Room room : rooms) {
             room.getPoints().forEach(point -> {
-                if (!coordinates.contains(point)) { coordinates.add(point); }
+                if (!coordinates.contains(point)) {
+                    coordinates.add(point);
+                }
             });
         }
         for (Hallway hallway : hallways) {
             hallway.getPoints().forEach(point -> {
-                if (!coordinates.contains(point)) { coordinates.add(point); }
+                if (!coordinates.contains(point)) {
+                    coordinates.add(point);
+                }
             });
         }
         return coordinates;
     }
 
     /**
-     * Connects two rooms with a bent hallway, starting from the leftmost room to the rightmost room.
+     * Connects two rooms with a bent hallway, starting from the leftmost to the rightmost.
      * The hallway is generated randomly.
+     * @param room1 is one of the rooms to connect with a hallway.
+     * @param room2 is one of the rooms to connect with a hallway.
      * @return a hallway connecting both rooms passed as parameters.
      */
-    private Hallway connectLeft(Room room1, Room room2){
+    private Hallway connectLeft(Room room1, Room room2) {
         Room left;
         Room right;
         if (room1.x() < room2.x()) {
             left = room1;
             right = room2;
-        }
-        else {
+        } else {
             left = room2;
             right = room1;
         }
@@ -214,8 +225,10 @@ public class RandomWorldGenerator {
     }
 
     /**
-     * Connects two rooms with a bent hallway, starting from the rightmost room to the leftmost room.
+     * Connects two rooms with a bent hallway, starting from the rightmost to the leftmost.
      * The hallway is generated randomly.
+     * @param room1 is one of the rooms to connect with a hallway.
+     * @param room2 is one of the rooms to connect with a hallway.
      * @return a hallway connecting both rooms passed as parameters.
      */
     private Hallway connectRight(Room room1, Room room2) {
@@ -224,8 +237,7 @@ public class RandomWorldGenerator {
         if (room1.x() < room2.x()) {
             left = room1;
             right = room2;
-        }
-        else {
+        } else {
             left = room2;
             right = room1;
         }
@@ -240,7 +252,10 @@ public class RandomWorldGenerator {
     }
 
     /**
-     * Connects two rooms that overlap on the y axis. A horizontal hallway. The hallway is generated randomly.
+     * Connects two rooms that overlap on the y axis. A horizontal hallway.
+     * The hallway is generated randomly.
+     * @param room1 is one of the rooms to connect with a hallway.
+     * @param room2 is one of the rooms to connect with a hallway.
      * @return a hallway connecting both rooms passed as parameters.
      */
     private Hallway connectAlongX(Room room1, Room room2) {
@@ -251,26 +266,27 @@ public class RandomWorldGenerator {
         if (room1.y() < room2.y()) {
             high = room2;
             low = room1;
-        }
-        else {
+        } else {
             high = room1;
             low = room2;
         }
         if (room1.x() + room1.width() < room2.x()) {
             left = room1;
             right = room2;
-        }
-        else {
+        } else {
             left = room2;
             right = room1;
         }
         int y = RandomUtils.uniform(random, high.y(), low.y() + low.height());
-        return new StraightHallway(new Point(left.x() + left.width(), y), new Point(right.x() - 1, y),
-                world, floor, wall);
+        return new StraightHallway(new Point(left.x() + left.width(), y),
+                new Point(right.x() - 1, y), world, floor, wall);
     }
 
     /**
-     * Connects two rooms that overlap on the x axis. A vertical hallway. The hallway is generated randomly.
+     * Connects two rooms that overlap on the x axis. A vertical hallway.
+     * The hallway is generated randomly.
+     * @param room1 is one of the rooms to connect with a hallway.
+     * @param room2 is one of the rooms to connect with a hallway.
      * @return a hallway connecting both rooms passed as parameters.
      */
     private Hallway connectAlongY(Room room1, Room room2) {
@@ -281,22 +297,20 @@ public class RandomWorldGenerator {
         if (room1.y() + room1.height() < room2.y()) {
             high = room2;
             low = room1;
-        }
-        else {
+        } else {
             high = room1;
             low = room2;
         }
         if (room1.x() < room2.x()) {
             left = room1;
             right = room2;
-        }
-        else {
+        } else {
             left = room2;
             right = room1;
         }
         int x = RandomUtils.uniform(random, right.x(), left.x() + left.width());
-        return new StraightHallway(new Point(x, low.y() + low.height()), new Point(x, high.y() - 1),
-                world, floor, wall);
+        return new StraightHallway(new Point(x, low.y() + low.height()),
+                new Point(x, high.y() - 1), world, floor, wall);
     }
 
     /**

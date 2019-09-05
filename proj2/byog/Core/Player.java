@@ -8,6 +8,7 @@ import byog.TileEngine.TETile;
 /**
  * Player
  * Represents a player in the world of the game.
+ * @author Emanuel Aguirre
  */
 public class Player {
 
@@ -22,14 +23,20 @@ public class Player {
 
 
     /**
-     * Creates the Player object in the world, at the given position. Does not validate if the player
-     * has been placed on a valid position (that is, in any of the points in allowedCoordinates).
+     * Creates the Player object in the world, at the given position. Does not validate if the
+     * player has been placed on a valid position (that is, in any of the points in
+     * allowedCoordinatesP).
+     * @param initialPosition is the initial position of the player in the world.
+     * @param allowedCoordinatesP is the set of coordinates on which the player can move.
+     * @param playerTile is the type of tile used for drawing the player.
+     * @param worldP is the world on which the player is placed (the game rendereded)
      */
-    public Player(Point initialPosition, List<Point> allowedCoordinates, TETile playerTile, TETile[][] world) {
-        this.allowedCoordinates = allowedCoordinates;
+    public Player(Point initialPosition, List<Point> allowedCoordinatesP,
+                  TETile playerTile, TETile[][] worldP) {
+        this.allowedCoordinates = allowedCoordinatesP;
         this.position = initialPosition;
         this.pt = playerTile;
-        this.world = world;
+        this.world = worldP;
     }
 
     /**
@@ -98,8 +105,7 @@ public class Player {
     private boolean canMove(int dx, int dy) {
         if (position.x + dx >= world.length - 1 || position.y + dy >= world[0].length - 1) {
             return false;
-        }
-        else if (position.x + dx <= 0 || position.y + dy <= 0) {
+        } else if (position.x + dx <= 0 || position.y + dy <= 0) {
             return false;
         }
 

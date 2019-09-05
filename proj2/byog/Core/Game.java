@@ -11,7 +11,7 @@ import byog.TileEngine.Tileset;
 
 public class Game {
 
-    TERenderer ter = new TERenderer();
+    private TERenderer ter = new TERenderer();
     /* Feel free to change the width and height. */
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
@@ -25,23 +25,31 @@ public class Game {
     public static final char DOWN = 'S';
     public static final char LEFT = 'A';
     public static final char RIGHT = 'D';
+    /* Tiles to be used for the floor, walls, and player. */
+    private static final TETile FLOOR_TILE = Tileset.FLOOR;
+    private static final TETile WALL_TILE = Tileset.WALL;
+    private static final TETile PLAYER_TILE = Tileset.PLAYER;
+    /* Name of the file where the state of a saved game is to be stored. */
+    private static final String STATE_FILENAME = "./world.ser";
     /* Maximum and minimum room sides sizes, and difference between width and height for rooms. */
-    private static int MIN_SIDE = 4;
-    private static int MAX_SIDE = 4;
-    private static int DELTA_WIDTH_HEIGHT = 1;
+    private static final int MIN_SIDE = 4;
+    private static final int MAX_SIDE = 4;
+    private static final int DELTA_WIDTH_HEIGHT = 1;
     /* Maximum number of rooms to draw. */
-    private static int MAX_ROOMS = 30;
-    /* Maximum number of tries when adding a room at a random position that does not overlaps with others. */
-    private static int MAX_TRIES = 30;
+    private static final int MAX_ROOMS = 30;
+    /* Maximum number of tries when adding a random room that does not overlaps with others. */
+    private static final int MAX_TRIES = 30;
 
     /* Pseudo-random number generator for generating the world. */
     private Random random;
     /* Random world generator to generate a random world when a new game is started. */
-    RandomWorldGenerator rwg ;
+    private RandomWorldGenerator rwg;
+    /* Coordinates on which the player can move (these points represent rooms and hallways). */
+    private List<Point> allowedCoordinates = null;
     /* Player in the world. */
-    Player player;
+    private Player player;
     /* Game state, used mainly for saving the game state. */
-    //GameState gameState;
+    //private GameState gameState;
 
 
     /**
@@ -50,9 +58,9 @@ public class Game {
      */
     public void playWithKeyboard() {
 
-        //////////////////////////////////////////////////////////////////////////////////
-        // EXPERIMENTAL WORLD GENERATION GOES HERE TO ALLOW RENDERING WITHOUT INPUT STRING
-        //////////////////////////////////////////////////////////////////////////////////
+        /*
+        * EXPERIMENTAL WORLD GENERATION GOES HERE TO ALLOW RENDERING WITHOUT INPUT STRING
+        */
         play();
     }
 
@@ -79,13 +87,12 @@ public class Game {
         String commands = null;
         List<Room> rooms = null;
         List<Hallway> hallways = null;
-        List<Point> allowedCoordinates = null;
         Walls walls = null;
 
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         ter.initialize(WIDTH, HEIGHT);
         initializeWorldBackground(world, Tileset.NOTHING);
-        //gameState = new GameState();
+        //gameState = new GameState(world, PLAYER_TILE, FLOOR_TILE, WALL_TILE);
 
         char firstCommand = input.charAt(0);
         if (firstCommand == NEW_GAME) {
@@ -95,32 +102,28 @@ public class Game {
                 int seedStart = input.indexOf(parts[0]) + 1;
                 int seedEnd = input.indexOf(parts[1]);
                 seed = Long.parseLong(input.substring(seedStart, seedEnd));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new RuntimeException("Program arguments not valid.");
             }
             random = new Random(seed);
             commands = parts[1];
-            rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, random);
-            rooms = rwg.generateRoomsNoOverlap(MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
+            rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
+            rooms = rwg.generateRoomsNoOverlap(MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT,
+                    MAX_ROOMS, MAX_TRIES);
             hallways = rwg.generateHallways(rooms);
             allowedCoordinates = rwg.getCoordinates(rooms, hallways);
             walls = rwg.generateWalls(allowedCoordinates);
             player = new Player(
-                    allowedCoordinates.get(RandomUtils.uniform(random, 0, allowedCoordinates.size())),
-                    allowedCoordinates, Tileset.PLAYER, world);
-            //gameState = new GameState();
-            ////world = gameState.createWorld();
-            //player = gameState.createPlayer();
-        }
-        else if (firstCommand == LOAD_GAME) {
+                    allowedCoordinates.get(
+                            RandomUtils.uniform(random, 0, allowedCoordinates.size())),
+                    allowedCoordinates, PLAYER_TILE, world);
+        } else if (firstCommand == LOAD_GAME) {
             commands = input.substring(1);
-            //gameState = new GameState().load(GAME_STATE_FILE);
+            //gameState.load(STATE_FILENAME);
             //allowedCoordinates = gameState.getAllowedCoordinates();
-            //player = gameState.getPlayer(Tileset.PLAYER, world);
-            //walls = rwg.generateWalls(allowedCoordinates);
-        }
-        else {
+            //player = gameState.getPlayer();
+            walls = rwg.generateWalls(allowedCoordinates);
+        } else {
             return world;
         }
 
@@ -135,20 +138,29 @@ public class Game {
         return world;
     }
 
-    private void movePlayerWithString(String movements, TETile[][] world, Player player) {
+    /**
+     * Moves player around the world, using the commands (characters that correspond to keys)
+     * passed as parameter.
+     * @param movements are the set of direction commands to move the player around.
+     * @param world is the world in which the player moves.
+     * @param pl is the player.
+     */
+    private void movePlayerWithString(String movements, TETile[][] world, Player pl) {
         for (char c : movements.toCharArray()) {
-            switch(c) {
+            switch (c) {
                 case UP:
-                    player.moveUp();
+                    pl.moveUp();
                     break;
                 case DOWN:
-                    player.moveDown();
+                    pl.moveDown();
                     break;
                 case LEFT:
-                    player.moveLeft();
+                    pl.moveLeft();
                     break;
                 case RIGHT:
-                    player.moveRight();
+                    pl.moveRight();
+                    break;
+                default:
                     break;
             }
         }
@@ -162,10 +174,11 @@ public class Game {
         ter.initialize(WIDTH, HEIGHT);
         initializeWorldBackground(world, Tileset.NOTHING);
 
-        random = new Random(333);
-        RandomWorldGenerator rwg = new RandomWorldGenerator(world, Tileset.FLOOR, Tileset.WALL, random);
+        random = new Random();
+        rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
         //Room[] rooms = rwg.generateRooms(5, 6, 1, 13);
-        List<Room> rooms = rwg.generateRoomsNoOverlap(4, 4, 1, 30, 30);
+        List<Room> rooms = rwg.generateRoomsNoOverlap(
+                MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
         List<Hallway> hallways = rwg.generateHallways(rooms);
         Walls walls = rwg.generateWalls(rooms, hallways);
 
@@ -176,7 +189,7 @@ public class Game {
         for (Hallway hallway : hallways) {
             allowedCoordinates.addAll(hallway.getPoints());
         }
-        Player player =  new Player(allowedCoordinates.get(0), allowedCoordinates, Tileset.PLAYER, world);
+        player =  new Player(allowedCoordinates.get(0), allowedCoordinates, PLAYER_TILE, world);
 
         drawRooms(rooms);
         drawHallways(hallways);
