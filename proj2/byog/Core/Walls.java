@@ -190,7 +190,7 @@ public class Walls {
      */
     public void draw() {
         for (Point p : points) {
-            world[p.x][p.y] = wall;
+            world[p.x()][p.y()] = wall;
         }
     }
 

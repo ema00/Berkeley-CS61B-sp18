@@ -30,7 +30,7 @@ public class Room {
 
 
     public Room(Point p, int widthP, int heightP, TETile floorP, TETile wallP, TETile[][] worldP) {
-        this(p.x, p.y, widthP, heightP, floorP, wallP, worldP);
+        this(p.x(), p.y(), widthP, heightP, floorP, wallP, worldP);
     }
 
     public Room(int xp, int yp, int widthP, int heightP, TETile floorP, TETile wallP,

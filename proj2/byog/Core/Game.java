@@ -77,8 +77,8 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        // TODO: Fill out this method to run the game using the input passed in,
-        // TODO: Add commands for starting new game, saving and quitting.
+        /* TODO, fill out this method to run the game using the input passed in, */
+        /* TODO, add commands for starting new game, saving and quitting. */
         // and return a 2D tile representation of the world that would have been
         // drawn if the same inputs had been given to playWithKeyboard().
 
@@ -98,13 +98,10 @@ public class Game {
         if (firstCommand == NEW_GAME) {
             String numberRegex = "\\d+";
             String[] parts = input.split(numberRegex);
-            try {
-                int seedStart = input.indexOf(parts[0]) + 1;
-                int seedEnd = input.indexOf(parts[1]);
-                seed = Long.parseLong(input.substring(seedStart, seedEnd));
-            } catch (Exception ex) {
-                throw new RuntimeException("Program arguments not valid.");
-            }
+            /* The following 3 may raise exceptions, but Style Checker doesn't allow to catch. */
+            int seedStart = input.indexOf(parts[0]) + 1;
+            int seedEnd = input.indexOf(parts[1]);
+            seed = Long.parseLong(input.substring(seedStart, seedEnd));
             random = new Random(seed);
             commands = parts[1];
             rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
@@ -182,7 +179,7 @@ public class Game {
         List<Hallway> hallways = rwg.generateHallways(rooms);
         Walls walls = rwg.generateWalls(rooms, hallways);
 
-        List<Point> allowedCoordinates = new ArrayList<>();
+        allowedCoordinates = new ArrayList<>();
         for (Room room : rooms) {
             allowedCoordinates.addAll(room.getPoints());
         }

@@ -27,30 +27,30 @@ public abstract class Hallway {
 
         Segment(Point pt1, Point pt2) {
             if (Point.alignedOnY(pt1, pt2)) {
-                if (pt1.y < pt2.y) {
+                if (pt1.y() < pt2.y()) {
                     this.p1 = pt1;
                     this.p2 = pt2;
                 } else {
                     this.p1 = pt2;
                     this.p2 = pt1;
                 }
-                int numPoints = this.p2.y - this.p1.y + 1;
+                int numPoints = this.p2.y() - this.p1.y() + 1;
                 points = new Point[numPoints];
                 for (int i = 0; i < numPoints; i++) {
-                    points[i] = new Point(this.p1.x, this.p1.y + i);
+                    points[i] = new Point(this.p1.x(), this.p1.y() + i);
                 }
             } else if (Point.alignedOnX(pt1, pt2)) {
-                if (pt1.x < pt2.x) {
+                if (pt1.x() < pt2.x()) {
                     this.p1 = pt1;
                     this.p2 = pt2;
                 } else {
                     this.p1 = pt2;
                     this.p2 = pt1;
                 }
-                int numPoints = this.p2.x - this.p1.x + 1;
+                int numPoints = this.p2.x() - this.p1.x() + 1;
                 points = new Point[numPoints];
                 for (int i = 0; i < numPoints; i++) {
-                    points[i] = new Point(this.p1.x + i, this.p1.y);
+                    points[i] = new Point(this.p1.x() + i, this.p1.y());
                 }
             } else {
                 throw new IllegalArgumentException("Trying to initialize "
@@ -103,7 +103,9 @@ public abstract class Hallway {
     }
 
     /**
-     * Return the Room representation as a  List of Points, representing the set of coordinates occupied by the room.
+     * Return the Room representation as a  List of Points, representing the set of coordinates
+     * occupied by the hallway.
+     * @return a set of points representing a hallway.
      */
     public List<Point> getPoints() {
         List<Point> points = new ArrayList<>();
@@ -121,7 +123,7 @@ public abstract class Hallway {
     public void draw() {
         for (Segment segment : segments) {
             for (Point p : segment.points) {
-                world[p.x][p.y] = floor;
+                world[p.x()][p.y()] = floor;
             }
         }
     }

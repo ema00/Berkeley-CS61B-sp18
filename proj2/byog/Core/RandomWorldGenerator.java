@@ -108,8 +108,7 @@ public class RandomWorldGenerator {
             for (int j = 0; j < numTries; j++) {
                 Room room = new Room(new Point(x, y), widths[i], heights[i], floor, wall, world);
                 List<Room> overlapping = rooms.stream().filter(
-                        (r) -> overlapOnX(r, room) && overlapOnY(r, room))
-                        .collect(Collectors.toList());
+                   (r) -> overlapOnX(r, room) && overlapOnY(r, room)).collect(Collectors.toList());
                 if (overlapping.isEmpty()) {
                     rooms.add(room);
                     break;

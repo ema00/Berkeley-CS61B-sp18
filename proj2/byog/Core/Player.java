@@ -103,13 +103,13 @@ public class Player {
      * of destination is within the coordinates on which the player can be positioned.
      */
     private boolean canMove(int dx, int dy) {
-        if (position.x + dx >= world.length - 1 || position.y + dy >= world[0].length - 1) {
+        if (position.x() + dx >= world.length - 1 || position.y() + dy >= world[0].length - 1) {
             return false;
-        } else if (position.x + dx <= 0 || position.y + dy <= 0) {
+        } else if (position.x() + dx <= 0 || position.y() + dy <= 0) {
             return false;
         }
 
-        Point destination = new Point(position.x + dx, position.y + dy);
+        Point destination = new Point(position.x() + dx, position.y() + dy);
         return allowedCoordinates.contains(destination);
     }
 
@@ -120,14 +120,14 @@ public class Player {
      * @param dy is the number of tiles to move in the y direction, positive or negative.
      */
     private void move(int dx, int dy) {
-        position = new Point(position.x + dx, position.y + dy);
+        position = new Point(position.x() + dx, position.y() + dy);
     }
 
     /**
      * Draws the player in the world.
      */
     public void draw() {
-        world[position.x][position.y] = pt;
+        world[position.x()][position.y()] = pt;
     }
 
 }
