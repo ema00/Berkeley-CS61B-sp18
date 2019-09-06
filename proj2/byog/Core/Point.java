@@ -1,5 +1,9 @@
 package byog.Core;
 
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
+
+import java.io.Serializable;
+
 
 
 /**
@@ -7,14 +11,33 @@ package byog.Core;
  * The class is immutable.
  * @author Emanuel Aguirre
  */
-public class Point {
+public class Point implements Serializable {
 
-    public final int x;
-    public final int y;
+    private static final long serialVersionUID = 123123123123126L;
+
+    private final int x;
+    private final int y;
+
 
     Point(int xp, int yp) {
         this.x = xp;
         this.y = yp;
+    }
+
+    /**
+     * Returns the x coordinate of the point (x, y).
+     * @return the value of the x coordinate of the point (x, y).
+     */
+    public int x() {
+        return x;
+    }
+
+    /**
+     * Returns the y coordinate of the point (x, y).
+     * @return the value of the y coordinate of the point (x, y).
+     */
+    public int y() {
+        return y;
     }
 
     /**
@@ -52,6 +75,15 @@ public class Point {
     }
 
     /**
+     * Returns the calculated hash code for an object of type Point.
+     * @return the calculated hash code for an object of type Point.
+     */
+    @Override
+    public int hashCode() {
+        return x + y;
+    }
+
+    /**
      * Equality operator. Custom, not usable with java.util.Collections.
      * @param p1 one of the points to compare for equality.
      * @param p2 one of the points to compare for equality.
@@ -59,15 +91,6 @@ public class Point {
      */
     static boolean equals(Point p1, Point p2) {
         return p1.x == p2.x && p1.y == p2.y;
-    }
-
-    /**
-     * Equality operator. Custom, not usable with java.util.Collections.
-     * @param other is the object on which to compare this for equality.
-     * @return true if this point is equal to the one passed as parameter.
-     */
-    boolean equals(Point other) {
-        return this.x == other.x && this.y == other.y;
     }
 
 }
