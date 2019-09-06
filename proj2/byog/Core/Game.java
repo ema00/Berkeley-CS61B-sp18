@@ -100,10 +100,10 @@ public class Game {
             String[] parts = input.split(numberRegex);
             /* The following 3 may raise exceptions, but Style Checker doesn't allow to catch. */
             int seedStart = input.indexOf(parts[0]) + 1;
-            int seedEnd = input.indexOf(parts[1]);
+            int seedEnd = parts.length == 2 ? input.indexOf(parts[1]) : input.length();
+            commands = parts.length == 2 ? parts[1] : "";
             seed = Long.parseLong(input.substring(seedStart, seedEnd));
             random = new Random(seed);
-            commands = parts[1];
             rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
             rooms = rwg.generateRoomsNoOverlap(MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT,
                     MAX_ROOMS, MAX_TRIES);
