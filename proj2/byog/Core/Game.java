@@ -90,7 +90,6 @@ public class Game {
         Walls walls = null;
 
         TETile[][] world = new TETile[WIDTH][HEIGHT];
-        ter.initialize(WIDTH, HEIGHT);
         initializeWorldBackground(world, Tileset.NOTHING);
         //gameState = new GameState(world, PLAYER_TILE, FLOOR_TILE, WALL_TILE);
 
@@ -116,6 +115,7 @@ public class Game {
                     allowedCoordinates, PLAYER_TILE, world);
         } else if (firstCommand == LOAD_GAME) {
             commands = input.substring(1);
+            //TODO, implement save and load game
             //gameState.load(STATE_FILENAME);
             //allowedCoordinates = gameState.getAllowedCoordinates();
             //player = gameState.getPlayer();
@@ -130,7 +130,6 @@ public class Game {
         drawHallways(hallways);
         walls.draw();
         player.draw();
-        ter.renderFrame(world);
 
         return world;
     }
