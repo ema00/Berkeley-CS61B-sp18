@@ -19,7 +19,7 @@ import byog.TileEngine.TETile;
  */
 public class Walls {
 
-    /* points List represents where each wall is placed. */
+    /* points List represents where each piece of wall is placed. */
     private final List<Point> points;
     /* gPoints (geometry points) List represents where points for rooms and walls are placed. */
     private final List<Point> gPoints;
@@ -183,6 +183,14 @@ public class Walls {
      */
     private void addWall(Point p) {
         points.add(p);
+    }
+    /**
+     * Return the Walls representation as a  List of Points, representing the set of coordinates
+     * occupied by the all the walls in the world.
+     * @return the set of points that the walls occupy.
+     */
+    public List<Point> getPoints() {
+        return points;
     }
 
     /**
