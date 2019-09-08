@@ -46,6 +46,23 @@ public class RandomWorldGenerator {
     }
 
     /**
+     * Generates a random map consisting of non-overlapping rooms and hallways.
+     * @param minSide is the minimum dimension for the width or height of a room.
+     * @param maxSide is the maximum dimension for the width or height of a room.
+     * @param deltaWH is the maximum allowable difference between the width and height of any room.
+     * @param maxRooms is the maximum number of rooms to draw.
+     * @param numTries is the number of times that each room will be tried to be added.
+     * @return a random set of rooms and hallways connecting those rooms as a List<Point>.
+     */
+    public List<Point> generateAllowedCoordinates(
+            int minSide, int maxSide, int deltaWH, int maxRooms, int numTries) {
+        List<Room> rooms = generateRoomsNoOverlap(
+                minSide, maxSide, deltaWH, maxRooms, numTries);
+        List<Hallway> hallways = generateHallways(rooms);
+        return getCoordinates(rooms, hallways);
+    }
+
+    /**
      * Generates random rooms in the world.
      * No collision detection between rooms, which means that room floors can be overlapping.
      * @param sideMin is the minimum dimension for the width or height of a room.

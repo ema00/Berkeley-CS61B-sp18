@@ -1,6 +1,5 @@
 package byog.Core;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import byog.TileEngine.TERenderer;
@@ -45,7 +44,7 @@ public class Game {
     /* Random world generator to generate a random world when a new game is started. */
     private RandomWorldGenerator rwg;
     /* Coordinates on which the player can move (these points represent rooms and hallways). */
-    private List<Point> allowedCoordinates = null;
+    private List<Point> coordinates = null;
     /* The walls to be drawn around the traversable areas (floor of rooms and hallways). */
     private Walls walls = null;
     /* Player in the world. */
@@ -59,11 +58,6 @@ public class Game {
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
-
-        /*
-        * EXPERIMENTAL WORLD GENERATION GOES HERE TO ALLOW RENDERING WITHOUT INPUT STRING
-        */
-        play();
     }
 
     /**
@@ -75,20 +69,15 @@ public class Game {
      * world. However, the behavior is slightly different. After playing with "n123sss:q", the game
      * should save, and thus if we then called playWithInputString with the string "l", we'd expect
      * to get the exact same world back again, since this corresponds to loading the saved game.
+     * Example: running first "N333DDDDDDDDDDDDDDDDDDDD:Q", should move right and save and quit;
+     * then running "LWWWWWWW", should load the previous saved game and move up.
      * @param input the input string to feed to your program
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        /* TODO, fill out this method to run the game using the input passed in, */
-        /* TODO, add commands for starting new game, saving and quitting. */
-        // and return a 2D tile representation of the world that would have been
-        // drawn if the same inputs had been given to playWithKeyboard().
-
         input = input.toUpperCase();
         long seed = 0;
         String commands = null;
-        List<Room> rooms = null;
-        List<Hallway> hallways = null;
 
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
@@ -107,36 +96,31 @@ public class Game {
             seed = Long.parseLong(input.substring(seedStart, seedEnd));
             random = new Random(seed);
             rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
-            rooms = rwg.generateRoomsNoOverlap(MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT,
-                    MAX_ROOMS, MAX_TRIES);
-            hallways = rwg.generateHallways(rooms);
-            allowedCoordinates = rwg.getCoordinates(rooms, hallways);
-            walls = rwg.generateWalls(allowedCoordinates);
+            coordinates = rwg.generateAllowedCoordinates(MIN_SIDE, MAX_SIDE,
+                    DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
+            walls = rwg.generateWalls(coordinates);
             player = new Player(
-                    allowedCoordinates.get(
-                            RandomUtils.uniform(random, 0, allowedCoordinates.size())),
-                    allowedCoordinates, PLAYER_TILE, world);
+                    coordinates.get(RandomUtils.uniform(random, 0, coordinates.size())),
+                    coordinates, PLAYER_TILE, world);
         } else if (firstCommand == LOAD_GAME) {
             rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
             commands = input.substring(1);
             gameState = GameState.load(STATE_FILENAME);
             gameState.setWorld(world);
             gameState.setPlayerTile(PLAYER_TILE);
-            allowedCoordinates = gameState.getAllowedPoints();
+            coordinates = gameState.getAllowedPoints();
             player = gameState.getPlayer();
-            walls = rwg.generateWalls(allowedCoordinates);
+            walls = rwg.generateWalls(coordinates);
         } else {
             return world;
         }
 
         movePlayerWithString(commands, world, player);
-
-        drawAtCoordinates(allowedCoordinates, world, FLOOR_TILE);
+        drawAtCoordinates(coordinates, world, FLOOR_TILE);
         walls.draw();
         player.draw();
         // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
         //ter.renderFrame(world);
-
         return world;
     }
 
@@ -165,7 +149,7 @@ public class Game {
                 case PRE_QUIT_SAVE:
                     int i = movements.indexOf(c);
                     if (movements.charAt(i + 1) == QUIT_SAVE) {
-                        gameState.setAllowedPoints(allowedCoordinates);
+                        gameState.setAllowedPoints(coordinates);
                         gameState.setWallsPoints(walls.getPoints());
                         gameState.setPlayerPosition(player.position());
                         GameState.save(gameState, STATE_FILENAME);
@@ -176,41 +160,6 @@ public class Game {
                     break;
             }
         }
-    }
-
-    /**
-     * JUST A TEMPORARY METHOD TO TEST THE WORLD GENERATION, THAT IS: ROOMS AND HALLWAYS.
-     */
-    private void play() {
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        ter.initialize(WIDTH, HEIGHT);
-        initializeWorldBackground(world, Tileset.NOTHING);
-
-        random = new Random();
-        rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
-        //Room[] rooms = rwg.generateRooms(5, 6, 1, 13);
-        List<Room> rooms = rwg.generateRoomsNoOverlap(
-                MIN_SIDE, MAX_SIDE, DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
-        List<Hallway> hallways = rwg.generateHallways(rooms);
-        walls = rwg.generateWalls(rooms, hallways);
-
-        allowedCoordinates = new ArrayList<>();
-        for (Room room : rooms) {
-            allowedCoordinates.addAll(room.getPoints());
-        }
-        for (Hallway hallway : hallways) {
-            allowedCoordinates.addAll(hallway.getPoints());
-        }
-        player =  new Player(allowedCoordinates.get(0), allowedCoordinates, PLAYER_TILE, world);
-
-        drawRooms(rooms);
-        drawHallways(hallways);
-        walls.draw();
-        player.draw();
-
-        ter.renderFrame(world);
-
-        // Y SIGUE...
     }
 
     /**
@@ -227,16 +176,6 @@ public class Game {
     }
 
     /**
-     * Helper method that draws the generated rooms in the world.
-     * @param rooms a non null array of rooms to be drawn on the world.
-     */
-    private void drawRooms(List<Room> rooms) {
-        for (Room room : rooms) {
-            room.draw();
-        }
-    }
-
-    /**
      * Helper method that draws the tiles passed as parameters at the points passed as parameters.
      * @param points are the points at which to draw the tiles.
      * @param world is the world that has the coordinate points on which to draw.
@@ -245,18 +184,6 @@ public class Game {
     private void drawAtCoordinates(List<Point> points, TETile[][] world, TETile tile) {
         for (Point p : points) {
             world[p.x()][p.y()] = tile;
-        }
-    }
-
-    /**
-     * Helper method that draws the generated hallways in the world.
-     * @param hallways a non null array of hallways to be drawn on the world.
-     */
-    private void drawHallways(List<Hallway> hallways) {
-        for (Hallway hallway : hallways) {
-            if (hallway != null) {
-                hallway.draw();
-            }
         }
     }
 
