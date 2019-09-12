@@ -16,6 +16,10 @@ public class MemoryGame {
     private Random rand;
     private boolean gameOver;
     private boolean playerTurn;
+    /* Time, in milliseconds, to display each letter when flashing letters sequence. */
+    private static int CHAR_FLASH_TIME = 500;
+    /* Time, in milliseconds, between the display of each letter flashed. */
+    private static int BLANK_SCREEN_FLASH_TIME = 300;
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
                                                    "You got this!", "You're a star!", "Go Bears!",
@@ -58,17 +62,33 @@ public class MemoryGame {
         return new String(characters);
     }
 
+    /**
+     * Displays a String centered on the window, and the status menu of the game.
+     * @param s is the String to be displayed in the window.
+     */
     public void drawFrame(String s) {
-        //TODO: Take the string and display it in the center of the screen
-        //TODO: If game is not over, display relevant game information at the top of the screen
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setPenColor(Color.WHITE);
-        StdDraw.text(this.width / 2, this.height / 2, s);
-        StdDraw.show();
+
+        if (!gameOver) {
+            //TODO: If game is not over, display relevant game information at the top of the screen
+            displayStatus();
+            StdDraw.text(this.width / 2, this.height / 2, s);
+            StdDraw.show();
+        }
     }
 
+    /**
+     * Displays each character in the String, blanking the screen between characters.
+     * @param letters is the String whose characters are to be displayed.
+     */
     public void flashSequence(String letters) {
-        //TODO: Display each character in letters, making sure to blank the screen between letters
+        for (int i = 0; i < letters.length(); i++) {
+            drawFrame(letters.substring(i, i + 1));
+            StdDraw.pause(CHAR_FLASH_TIME);
+            drawFrame("");
+            StdDraw.pause(BLANK_SCREEN_FLASH_TIME);
+        }
     }
 
     public String solicitNCharsInput(int n) {
@@ -77,12 +97,19 @@ public class MemoryGame {
     }
 
     public void startGame() {
-        //TODO: Set any relevant variables before the game starts
 
+        // THIS IS JUST FOR TESTING THE METHODS AS THEY ARE WRITTEN
         String s = generateRandomString(6);
-        drawFrame(s);
+        flashSequence(s);
 
+        //TODO: Set any relevant variables before the game starts
         //TODO: Establish Game loop
+    }
+
+    /**
+     * Adds the status menu elements to display at any given moment of the game (when not over).
+     */
+    private void displayStatus() {
     }
 
 }
