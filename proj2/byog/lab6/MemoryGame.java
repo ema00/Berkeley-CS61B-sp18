@@ -92,7 +92,7 @@ public class MemoryGame {
     public void drawFrame(String s) {
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setPenColor(Color.WHITE);
-        displayStatus();
+        drawStatusBar();
         StdDraw.text(this.width / 2, this.height / 2, s);
         StdDraw.show();
     }
@@ -130,9 +130,9 @@ public class MemoryGame {
     }
 
     /**
-     * Adds the status menu elements to display at any given moment of the game (when not over).
+     * Draws the status menu elements to display at any given moment of the game.
      */
-    private void displayStatus() {
+    private void drawStatusBar() {
     }
 
     /**
