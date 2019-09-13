@@ -21,7 +21,7 @@ public class MemoryGame {
     /* Time, in milliseconds, between the display of each letter flashed. */
     private static final int BLANK_SCREEN_FLASH_TIME = 300;
     /* Time, in milliseconds, to wait between entered letters reading. */
-    private static final int LETTER_SCAN_TIME = 100;
+    private static final int LETTER_SCAN_TIME = 200;
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
                                                    "You got this!", "You're a star!", "Go Bears!",
@@ -56,6 +56,22 @@ public class MemoryGame {
     }
 
     /**
+     * Plays the memory game.
+     */
+    public void startGame() {
+        round = 0;
+        while (!gameOver) {
+            round += 1;
+            displayRound(round);
+            String string = generateRandomString(round);
+            flashSequence(string);
+            String answer = solicitNCharsInput(round);
+            gameOver = !string.equals(answer);
+        }
+        drawFrame("Game Over! You made it to round " + round + ".");
+    }
+
+    /**
      * Generates a random String of lowercase letters.
      * @param n is the length of the String to generate.
      * @return a String of random letters, that may be repeated, from the CHARACTERS String.
@@ -76,13 +92,9 @@ public class MemoryGame {
     public void drawFrame(String s) {
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setPenColor(Color.WHITE);
-
-        if (!gameOver) {
-            //TODO: If game is not over, display relevant game information at the top of the screen
-            displayStatus();
-            StdDraw.text(this.width / 2, this.height / 2, s);
-            StdDraw.show();
-        }
+        displayStatus();
+        StdDraw.text(this.width / 2, this.height / 2, s);
+        StdDraw.show();
     }
 
     /**
@@ -96,6 +108,7 @@ public class MemoryGame {
             drawFrame("");
             StdDraw.pause(BLANK_SCREEN_FLASH_TIME);
         }
+        StdDraw.pause(CHAR_FLASH_TIME);
     }
 
     /**
@@ -112,24 +125,25 @@ public class MemoryGame {
             letters[i] = StdDraw.nextKeyTyped();
             drawFrame((new String(letters)).toLowerCase());
         }
+        StdDraw.pause(2 * CHAR_FLASH_TIME);
         return (new String(letters)).toLowerCase();
-    }
-
-    public void startGame() {
-
-        // THIS IS JUST FOR TESTING THE METHODS AS THEY ARE WRITTEN
-        String s = generateRandomString(6);
-        flashSequence(s);
-        solicitNCharsInput(6);
-
-        //TODO: Set any relevant variables before the game starts
-        //TODO: Establish Game loop
     }
 
     /**
      * Adds the status menu elements to display at any given moment of the game (when not over).
      */
     private void displayStatus() {
+    }
+
+    /**
+     * Displays the roudn number, and makes a pause.
+     * @param round is the round number to be displayed to the player.
+     */
+    private void displayRound(int round) {
+        drawFrame("Round: " + round);
+        StdDraw.pause(2 * CHAR_FLASH_TIME);
+        drawFrame("");
+        StdDraw.pause(2 * CHAR_FLASH_TIME);
     }
 
 }
