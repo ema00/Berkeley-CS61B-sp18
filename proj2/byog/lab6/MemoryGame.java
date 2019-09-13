@@ -17,9 +17,11 @@ public class MemoryGame {
     private boolean gameOver;
     private boolean playerTurn;
     /* Time, in milliseconds, to display each letter when flashing letters sequence. */
-    private static int CHAR_FLASH_TIME = 500;
+    private static final int CHAR_FLASH_TIME = 500;
     /* Time, in milliseconds, between the display of each letter flashed. */
-    private static int BLANK_SCREEN_FLASH_TIME = 300;
+    private static final int BLANK_SCREEN_FLASH_TIME = 300;
+    /* Time, in milliseconds, to wait between entered letters reading. */
+    private static final int LETTER_SCAN_TIME = 100;
     private static final char[] CHARACTERS = "abcdefghijklmnopqrstuvwxyz".toCharArray();
     private static final String[] ENCOURAGEMENT = {"You can do this!", "I believe in you!",
                                                    "You got this!", "You're a star!", "Go Bears!",
@@ -53,6 +55,11 @@ public class MemoryGame {
         StdDraw.enableDoubleBuffering();
     }
 
+    /**
+     * Generates a random String of lowercase letters.
+     * @param n is the length of the String to generate.
+     * @return a String of random letters, that may be repeated, from the CHARACTERS String.
+     */
     public String generateRandomString(int n) {
         char[] characters = new char[n];
         int bound = CHARACTERS.length;
@@ -91,9 +98,21 @@ public class MemoryGame {
         }
     }
 
+    /**
+     * Reads n letters of player input, and displays the letters on the game window.
+     * @param n is the number of letters to read from the keyboard.
+     * @return the letters entered by the user as a lowercase String.
+     */
     public String solicitNCharsInput(int n) {
-        //TODO: Read n letters of player input
-        return null;
+        char[] letters = new char[n];
+        for (int i = 0; i < n; i++) {
+            while (!StdDraw.hasNextKeyTyped()) {
+                StdDraw.pause(LETTER_SCAN_TIME);
+            }
+            letters[i] = StdDraw.nextKeyTyped();
+            drawFrame((new String(letters)).toLowerCase());
+        }
+        return (new String(letters)).toLowerCase();
     }
 
     public void startGame() {
@@ -101,6 +120,7 @@ public class MemoryGame {
         // THIS IS JUST FOR TESTING THE METHODS AS THEY ARE WRITTEN
         String s = generateRandomString(6);
         flashSequence(s);
+        solicitNCharsInput(6);
 
         //TODO: Set any relevant variables before the game starts
         //TODO: Establish Game loop
