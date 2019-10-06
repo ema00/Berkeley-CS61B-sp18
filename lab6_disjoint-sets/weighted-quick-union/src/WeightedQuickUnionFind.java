@@ -21,7 +21,7 @@ This implementation given here was coded by the author (me).
 
 
 /**
- * WeightedQuickUnionFind
+ * WeightedQuickUnionFind implementation od Disjoint Sets (Union Find).
  * @author Emanuel Aguirre
  */
 public class WeightedQuickUnionFind {
@@ -45,6 +45,7 @@ public class WeightedQuickUnionFind {
 
     /**
      * Validate that v1 is a valid index.
+     * @throws IllegalArgumentException unless 0 <= p < n.
      */
     public void validate(int v1) {
         if (v1 < 0 || v1 >= n) {
