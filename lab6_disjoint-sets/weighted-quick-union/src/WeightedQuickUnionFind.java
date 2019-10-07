@@ -3,6 +3,9 @@ WeightedQuickUnionFind
 This is an implementation of Disjoint Sets data structure (Union Find), implemented internally
 as a Quick Union Find (as described in the book and courses below).
 
+The problem is stated here:
+https://sp19.datastructur.es/materials/lab/lab6/lab6
+
 This data structure should behave just like the implementation on which specification is based:
 https://algs4.cs.princeton.edu/15uf/
 https://algs4.cs.princeton.edu/15uf/WeightedQuickUnionUF.java.html
