@@ -14,16 +14,6 @@ public class Game {
     /* Feel free to change the width and height. */
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
-    /* Game control keys. */
-    public static final char NEW_GAME = 'N';
-    public static final char LOAD_GAME = 'L';
-    public static final char PRE_QUIT_SAVE = ':';
-    public static final char QUIT_SAVE = 'Q';
-    /* Character direction keys. */
-    public static final char UP = 'W';
-    public static final char DOWN = 'S';
-    public static final char LEFT = 'A';
-    public static final char RIGHT = 'D';
     /* Tiles to be used for the floor, walls, and player. */
     private static final TETile FLOOR_TILE = Tileset.FLOOR;
     private static final TETile WALL_TILE = Tileset.WALL;
@@ -86,7 +76,7 @@ public class Game {
         gameState = new GameState(world, PLAYER_TILE);
 
         char firstCommand = input.charAt(0);
-        if (firstCommand == NEW_GAME) {
+        if (firstCommand == Keys.NEW_GAME) {
             String numberRegex = "\\d+";
             String[] parts = input.split(numberRegex);
             /* The following 3 may raise exceptions, but Style Checker doesn't allow to catch. */
@@ -102,7 +92,7 @@ public class Game {
             player = new Player(
                     coordinates.get(RandomUtils.uniform(random, 0, coordinates.size())),
                     coordinates, PLAYER_TILE, world);
-        } else if (firstCommand == LOAD_GAME) {
+        } else if (firstCommand == Keys.LOAD_GAME) {
             rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
             commands = input.substring(1);
             gameState = GameState.load(STATE_FILENAME);
@@ -134,21 +124,21 @@ public class Game {
     private void movePlayerWithString(String movements, TETile[][] world, Player pl) {
         for (char c : movements.toCharArray()) {
             switch (c) {
-                case UP:
+                case Keys.UP:
                     pl.moveUp();
                     break;
-                case DOWN:
+                case Keys.DOWN:
                     pl.moveDown();
                     break;
-                case LEFT:
+                case Keys.LEFT:
                     pl.moveLeft();
                     break;
-                case RIGHT:
+                case Keys.RIGHT:
                     pl.moveRight();
                     break;
-                case PRE_QUIT_SAVE:
+                case Keys.PRE_QUIT_SAVE:
                     int i = movements.indexOf(c);
-                    if (movements.charAt(i + 1) == QUIT_SAVE) {
+                    if (movements.charAt(i + 1) == Keys.QUIT_SAVE) {
                         gameState.setAllowedPoints(coordinates);
                         gameState.setWallsPoints(walls.getPoints());
                         gameState.setPlayerPosition(player.position());
