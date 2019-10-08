@@ -141,7 +141,8 @@ public class ArrayDequeTest {
         boolean passed = checkEmpty(false, lld1.isEmpty());
 
         System.out.println("Testing get().");
-        passed = checkGet(null, lld1.get(4)) && passed;     // return null if index is beyond the length
+        // return null if index is beyond the length
+        passed = checkGet(null, lld1.get(4)) && passed;
         passed = checkGet(0, lld1.get(0)) && passed;
         passed = checkGet(10, lld1.get(1)) && passed;
         passed = checkGet(30, lld1.get(3)) && passed;
