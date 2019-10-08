@@ -7,14 +7,14 @@
  * - The implementation uses a circular array, with 2 pointers for marking start and end.
  * - start and end pointers are always pointing at the first and last items respectively.
  * - size contains the number of elements in the deque.
- * - If the underlying array is full, its size is increased by UPSIZE_FACTOR.
+ * - If the underlying array is full, its size is increased by GROWTH_FACTOR.
  * - If the number of items is less than DOWNSIZE_FACTOR times arr.length, arr is reduced.
  */
 
 public class ArrayDeque<T> {
 
     private static final int INITIAL_LENGTH = 4;
-    private static final int UPSIZE_FACTOR = 2;
+    private static final int GROWTH_FACTOR = 2;
     private static final int DOWNSIZE_FACTOR = 4;
 
 
@@ -37,7 +37,7 @@ public class ArrayDeque<T> {
      */
     public void addFirst(T item) {
         if (size == arr.length) {
-            changeCapacity(arr.length * UPSIZE_FACTOR);
+            changeCapacity(arr.length * GROWTH_FACTOR);
         }
         start = (start - 1 + arr.length) % arr.length;
         arr[start] = item;
@@ -50,7 +50,7 @@ public class ArrayDeque<T> {
      */
     public void addLast(T item) {
         if (size == arr.length) {
-            changeCapacity(arr.length * UPSIZE_FACTOR);
+            changeCapacity(arr.length * GROWTH_FACTOR);
         }
         end = (end + 1) % arr.length;
         arr[end] = item;
@@ -92,7 +92,7 @@ public class ArrayDeque<T> {
             return null;
         }
         if (size < arr.length / DOWNSIZE_FACTOR && size > INITIAL_LENGTH) {
-            changeCapacity(arr.length / UPSIZE_FACTOR);
+            changeCapacity(arr.length / GROWTH_FACTOR);
         }
         T item = arr[start];
         arr[start] = null;
@@ -110,7 +110,7 @@ public class ArrayDeque<T> {
             return null;
         }
         if (size < arr.length / DOWNSIZE_FACTOR && size > INITIAL_LENGTH) {
-            changeCapacity(arr.length / UPSIZE_FACTOR);
+            changeCapacity(arr.length / GROWTH_FACTOR);
         }
         T item = arr[end];
         arr[end] = null;
@@ -125,6 +125,9 @@ public class ArrayDeque<T> {
      * @return the item at the given index, or null if the index is beyond the length of the deque.
      */
     public T get(int index) {
+        if (index >= arr.length) {
+            return null;
+        }
         return arr[(start + index) % arr.length];
     }
 
