@@ -123,6 +123,10 @@ public class LinkedListDeque<T> {
      * length of the deque.
      */
     public T get(int index) {
+        if (index >= size) {
+            return null;
+        }
+
         int i = 0;
         Node<T> n = sentinel.next;
 

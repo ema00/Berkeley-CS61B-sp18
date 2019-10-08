@@ -20,7 +20,7 @@ public class LinkedListDequeTest {
     }
 
     /* Utility method for printing out get() checks. */
-    public static boolean checkGet(int expected, int actual) {
+    public static boolean checkGet(Integer expected, Integer actual) {
         if (expected != actual) {
             System.out.println("get() returned " + actual + ", but expected: " + expected);
             return false;
@@ -103,21 +103,22 @@ public class LinkedListDequeTest {
         lld1.addFirst(10);
         lld1.addFirst(0);
         lld1.addLast(20);
+        lld1.addLast(null);
         lld1.addLast(30);
         // should not be empty
         passed = checkEmpty(false, lld1.isEmpty()) && passed;
 
         lld1.removeFirst();
+        // should be size 4
+        passed = checkSize(4, lld1.size()) && passed;
+
+        lld1.removeLast();
         // should be size 3
         passed = checkSize(3, lld1.size()) && passed;
 
-        lld1.removeLast();
-        // should be size 2
-        passed = checkSize(2, lld1.size()) && passed;
-
         printTestStatus(passed);
 
-        System.out.println("Printing out deque (should print: 10 20):");
+        System.out.println("Printing out deque (should print: 10 20 null):");
         lld1.printDeque();
 
     }
@@ -139,6 +140,8 @@ public class LinkedListDequeTest {
         boolean passed = checkEmpty(false, lld1.isEmpty());
 
         System.out.println("Testing get().");
+        // return null if index is beyond the length
+        passed = checkGet(null, lld1.get(4)) && passed;
         passed = checkGet(0, lld1.get(0)) && passed;
         passed = checkGet(10, lld1.get(1)) && passed;
         passed = checkGet(30, lld1.get(3)) && passed;
