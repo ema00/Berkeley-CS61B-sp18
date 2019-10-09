@@ -2,6 +2,9 @@ package byog.Core;
 
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
@@ -31,6 +34,8 @@ public class Game {
 
     /* Pseudo-random number generator for generating the world. */
     private Random random = new Random();
+    /* The array of tiles on which the game world is to be drawn. */
+    private TETile[][] world;
     /* Random world generator to generate a random world when a new game is started. */
     private RandomWorldGenerator rwg;
     /* Coordinates on which the player can move (these points represent rooms and hallways). */
@@ -41,6 +46,16 @@ public class Game {
     private Player player;
     /* Game state, used mainly for saving the game state. */
     private GameState gameState;
+
+
+    public Game() {
+        world = new TETile[WIDTH][HEIGHT];
+        // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
+        //ter.initialize(WIDTH, HEIGHT);
+        initializeWorldBackground(world, Tileset.NOTHING);
+        rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
+        gameState = new GameState(world, PLAYER_TILE);
+    }
 
 
     /**
@@ -66,26 +81,12 @@ public class Game {
      */
     public TETile[][] playWithInputString(String input) {
         input = input.toUpperCase();
-        long seed = 0;
-        String commands = null;
+        char firstCommand = extractFirstCommand(input).charAt(0);
+        long seed = extractSeed(input);
+        String commands = extractCommands(input);
 
-        TETile[][] world = new TETile[WIDTH][HEIGHT];
-        // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
-        //ter.initialize(WIDTH, HEIGHT);
-        initializeWorldBackground(world, Tileset.NOTHING);
-        gameState = new GameState(world, PLAYER_TILE);
-
-        char firstCommand = input.charAt(0);
         if (firstCommand == Keys.NEW_GAME) {
-            String numberRegex = "\\d+";
-            String[] parts = input.split(numberRegex);
-            /* The following 3 may raise exceptions, but Style Checker doesn't allow to catch. */
-            int seedStart = input.indexOf(parts[0]) + 1;
-            int seedEnd = parts.length == 2 ? input.indexOf(parts[1]) : input.length();
-            commands = parts.length == 2 ? parts[1] : "";
-            seed = Long.parseLong(input.substring(seedStart, seedEnd));
             random = new Random(seed);
-            rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
             coordinates = rwg.generateAllowedCoordinates(MIN_SIDE, MAX_SIDE,
                     DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
             walls = rwg.generateWalls(coordinates);
@@ -93,8 +94,6 @@ public class Game {
                     coordinates.get(RandomUtils.uniform(random, 0, coordinates.size())),
                     coordinates, PLAYER_TILE, world);
         } else if (firstCommand == Keys.LOAD_GAME) {
-            rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
-            commands = input.substring(1);
             gameState = GameState.load(STATE_FILENAME);
             gameState.setWorld(world);
             gameState.setPlayerTile(PLAYER_TILE);
@@ -175,6 +174,36 @@ public class Game {
         for (Point p : points) {
             world[p.x()][p.y()] = tile;
         }
+    }
+
+    /**
+     * @return the first command for playing with input String.
+     */
+    private String extractFirstCommand(String input) {
+        return input.substring(0, 1);
+    }
+
+    /**
+     * @return the seed for playing with input String.
+     */
+    private long extractSeed(String input) {
+        input = input.substring(1);
+        Pattern pattern = Pattern.compile("[0-9]+");
+        Matcher matcher = pattern.matcher(input);
+        return (matcher.find()
+                ? Long.parseLong(input.substring(matcher.start(), matcher.end()))
+                : 0);
+    }
+
+    /**
+     * @return the keystrokes for playing with input String.
+     */
+    private String extractCommands(String input) {
+        input = input.substring(1);
+        Pattern pattern = Pattern.compile("[0-9]+");
+        Matcher matcher = pattern.matcher(input);
+        int start = matcher.find() ? matcher.end() : 0;
+        return input.substring(start);
     }
 
 }
