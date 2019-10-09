@@ -35,7 +35,7 @@ public class Game {
     /* Pseudo-random number generator for generating the world. */
     private Random random = new Random();
     /* The array of tiles on which the game world is to be drawn. */
-    private TETile[][] world;
+    private TETile[][] gameWorld;
     /* Random world generator to generate a random world when a new game is started. */
     private RandomWorldGenerator rwg;
     /* Coordinates on which the player can move (these points represent rooms and hallways). */
@@ -49,12 +49,12 @@ public class Game {
 
 
     public Game() {
-        world = new TETile[WIDTH][HEIGHT];
+        gameWorld = new TETile[WIDTH][HEIGHT];
         // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
         //ter.initialize(WIDTH, HEIGHT);
-        initializeWorldBackground(world, Tileset.NOTHING);
-        rwg = new RandomWorldGenerator(world, FLOOR_TILE, WALL_TILE, random);
-        gameState = new GameState(world, PLAYER_TILE);
+        initializeWorldBackground(gameWorld, Tileset.NOTHING);
+        rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
+        gameState = new GameState(gameWorld, PLAYER_TILE);
     }
 
 
@@ -92,25 +92,25 @@ public class Game {
             walls = rwg.generateWalls(coordinates);
             player = new Player(
                     coordinates.get(RandomUtils.uniform(random, 0, coordinates.size())),
-                    coordinates, PLAYER_TILE, world);
+                    coordinates, PLAYER_TILE, gameWorld);
         } else if (firstCommand == Keys.LOAD_GAME) {
             gameState = GameState.load(STATE_FILENAME);
-            gameState.setWorld(world);
+            gameState.setWorld(gameWorld);
             gameState.setPlayerTile(PLAYER_TILE);
             coordinates = gameState.getAllowedPoints();
             player = gameState.getPlayer();
             walls = rwg.generateWalls(coordinates);
         } else {
-            return world;
+            return gameWorld;
         }
 
-        movePlayerWithString(commands, world, player);
-        drawAtCoordinates(coordinates, world, FLOOR_TILE);
+        movePlayerWithString(commands, gameWorld, player);
+        drawAtCoordinates(coordinates, gameWorld, FLOOR_TILE);
         walls.draw();
         player.draw();
         // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
         //ter.renderFrame(world);
-        return world;
+        return gameWorld;
     }
 
     /**
