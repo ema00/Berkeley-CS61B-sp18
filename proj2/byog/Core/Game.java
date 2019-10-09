@@ -81,7 +81,8 @@ public class Game {
         String commands = extractCommands(input);
 
         Random random = new Random(seed);
-        RandomWorldGenerator rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
+        RandomWorldGenerator rwg =
+                new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
 
         if (firstCommand == Keys.NEW_GAME) {
             coordinates = rwg.generateAllowedCoordinates(MIN_SIDE, MAX_SIDE,
