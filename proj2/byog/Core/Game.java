@@ -32,12 +32,8 @@ public class Game {
     /* Maximum number of tries when adding a random room that does not overlaps with others. */
     private static final int MAX_TRIES = 30;
 
-    /* Pseudo-random number generator for generating the world. */
-    private Random random = new Random();
     /* The array of tiles on which the game world is to be drawn. */
     private TETile[][] gameWorld;
-    /* Random world generator to generate a random world when a new game is started. */
-    private RandomWorldGenerator rwg;
     /* Coordinates on which the player can move (these points represent rooms and hallways). */
     private List<Point> coordinates = null;
     /* The walls to be drawn around the traversable areas (floor of rooms and hallways). */
@@ -53,7 +49,6 @@ public class Game {
         // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
         //ter.initialize(WIDTH, HEIGHT);
         initializeWorldBackground(gameWorld, Tileset.NOTHING);
-        rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
         gameState = new GameState(gameWorld, PLAYER_TILE);
     }
 
@@ -85,8 +80,10 @@ public class Game {
         long seed = extractSeed(input);
         String commands = extractCommands(input);
 
+        Random random = new Random(seed);
+        RandomWorldGenerator rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
+
         if (firstCommand == Keys.NEW_GAME) {
-            random = new Random(seed);
             coordinates = rwg.generateAllowedCoordinates(MIN_SIDE, MAX_SIDE,
                     DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
             walls = rwg.generateWalls(coordinates);
