@@ -16,12 +16,10 @@ import byog.TileEngine.TETile;
 /**
  * GameState
  * This class is a helper to save and load, to disk, the state of a game.
- * Usage, saving a state:
- *      gameState.setAllowedPoints(allowedCoordinates);
- *      gameState.setWallsPoints(walls.getPoints());
- *      gameState.setPlayerPosition(player.position());
+ * Usage, SAVING a state:
+ *      gameState.setStateForSaving(allowedCoordinates, walls.getPoints(), player.position());
  *      GameState.save(gameState, STATE_FILENAME);
- * Usage, loading a state:
+ * Usage, LOADING a state:
  *      gameState = GameState.load(STATE_FILENAME);
  *      gameState.setWorld(world);
  *      gameState.setPlayerTile(PLAYER_TILE);
@@ -56,7 +54,7 @@ public class GameState implements Serializable {
         return allowedPoints;
     }
 
-    public void setAllowedPoints(List<Point> allowedPointsP) {
+    private void setAllowedPoints(List<Point> allowedPointsP) {
         this.allowedPoints = allowedPointsP;
     }
 
@@ -64,7 +62,7 @@ public class GameState implements Serializable {
         return wallsPoints;
     }
 
-    public void setWallsPoints(List<Point> wallsP) {
+    private void setWallsPoints(List<Point> wallsP) {
         this.wallsPoints = wallsP;
     }
 
@@ -72,7 +70,7 @@ public class GameState implements Serializable {
         return playerPosition;
     }
 
-    public void setPlayerPosition(Point playerPositionP) {
+    private void setPlayerPosition(Point playerPositionP) {
         this.playerPosition = playerPositionP;
     }
 
@@ -123,6 +121,22 @@ public class GameState implements Serializable {
         }
         /* In the case no GameState has been saved yet, return null. */
         return null;
+    }
+
+    /**
+     * Sets the Points for the world, the walls and the position of the player to save the state
+     * of the game.
+     * @param allowedPts are the Point coordinates that the player is allowed to traverse.
+     * @param wallsPts are the Point coordinates that correspond to the walls.
+     * @param playerPos is the current position of the player.
+     */
+    public void setState(List<Point> allowedPts, List<Point> wallsPts, Point playerPos) {
+        if (allowedPts == null || wallsPts == null || playerPos == null) {
+            throw new IllegalArgumentException("Points for saving game state can not be null.");
+        }
+        setAllowedPoints(allowedPts);
+        setWallsPoints(wallsPts);
+        setPlayerPosition(playerPos);
     }
 
     /**

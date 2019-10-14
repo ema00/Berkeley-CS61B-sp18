@@ -136,9 +136,7 @@ public class Game {
                 case Keys.PRE_QUIT_SAVE:
                     int i = movements.indexOf(c);
                     if (movements.charAt(i + 1) == Keys.QUIT_SAVE) {
-                        gameState.setAllowedPoints(coordinates);
-                        gameState.setWallsPoints(walls.getPoints());
-                        gameState.setPlayerPosition(player.position());
+                        gameState.setState(coordinates, walls.getPoints(), player.position());
                         GameState.save(gameState, STATE_FILENAME);
                         return;
                     }
