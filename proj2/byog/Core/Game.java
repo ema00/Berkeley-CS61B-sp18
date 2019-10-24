@@ -1,5 +1,6 @@
 package byog.Core;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -8,15 +9,20 @@ import java.util.regex.Pattern;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
-
+import edu.princeton.cs.introcs.StdDraw;
 
 
 public class Game {
 
     private TERenderer ter = new TERenderer();
-    /* Feel free to change the width and height. */
+    /* Feel free to change the width and height. These are for the world (tile array). */
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
+    /* Size available for the HUD (head-up display). */
+    private static final int HUD_HEIGHT = 2;
+    /* Inner width and height of the game window. */
+    private static final int WINDOW_WIDTH = WIDTH;
+    private static final int WINDOW_HEIGHT = HEIGHT + HUD_HEIGHT;
     /* Tiles to be used for the floor, walls, and player. */
     private static final TETile FLOOR_TILE = Tileset.FLOOR;
     private static final TETile WALL_TILE = Tileset.WALL;
@@ -31,6 +37,16 @@ public class Game {
     private static final int MAX_ROOMS = 30;
     /* Maximum number of tries when adding a random room that does not overlaps with others. */
     private static final int MAX_TRIES = 30;
+
+    /* Size of characters for each type of text displayed at the game window. */
+    private static final int TITLE_FONT_SIZE = 40;
+    private static final int INITIAL_COMMANDS_FONT_SIZE = 30;
+    private static final int HUD_FONT_SIZE = 10;
+    /* Messages to be displayed at the game window. */
+    private static final String TITLE = "CS61B: THE GAME";
+    private static final String INITIAL_COMMAND_NEW_GAME = "New Game (N)";
+    private static final String INITIAL_COMMAND_LOAD_GAME = "Load Game (L)";
+    private static final String INITIAL_COMMAND_QUIT = "Quit(Q)";
 
     /* The array of tiles on which the game world is to be drawn. */
     private TETile[][] gameWorld;
@@ -54,10 +70,51 @@ public class Game {
 
 
     /**
-     * TODO
      * Method used for playing a fresh game. The game should start from the main menu.
      */
     public void playWithKeyboard() {
+        ter.initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+        RandomWorldGenerator rwg = null;
+        String validFirstCommands = "" + Keys.NEW_GAME + Keys.LOAD_GAME + Keys.QUIT_SAVE;
+        char command = 0;
+        while (validFirstCommands.indexOf(command) == -1) {
+            displayInitialMenu();
+            //command = readKey();
+
+            // THIS IS JUST TO AVOID THE LOOP
+            break;
+        }
+
+        /*
+        if (command == Keys.NEW_GAME) {
+            long seed = -1;
+            while ((seed = readSeedFromKeyboard()) < 0) {
+                displayMessage("ENTER SEED");
+            }
+            Random random = new Random(seed);
+            rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
+            coordinates = rwg.generateAllowedCoordinates(MIN_SIDE, MAX_SIDE,
+                    DELTA_WIDTH_HEIGHT, MAX_ROOMS, MAX_TRIES);
+            walls = rwg.generateWalls(coordinates);
+            player = new Player(
+                    coordinates.get(RandomUtils.uniform(random, 0, coordinates.size())),
+                    coordinates, PLAYER_TILE, gameWorld);
+        } else if (command == Keys.LOAD_GAME) {
+            if ((gameState = GameState.load(STATE_FILENAME)) == null) {
+                displayMessage("THERE IS NO SAVED GAME");
+                return;
+            }
+            rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, new Random(0));
+            gameState.setWorld(gameWorld);
+            gameState.setPlayerTile(PLAYER_TILE);
+            coordinates = gameState.getAllowedPoints();
+            player = gameState.getPlayer();
+            walls = rwg.generateWalls(coordinates);
+        } else {
+            return;
+        }
+        play();
+         */
     }
 
     /**
@@ -200,6 +257,30 @@ public class Game {
         Matcher matcher = pattern.matcher(input);
         int start = matcher.find() ? matcher.end() : 0;
         return input.substring(start);
+    }
+
+    /**
+     * Displays the initial menu when playing with keyboard.
+     */
+    private void displayInitialMenu() {
+        final int VERTICAL_SEPARATION = 2;
+        Font currentFont = StdDraw.getFont();
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setPenColor(Color.WHITE);
+
+        StdDraw.setFont(currentFont.deriveFont(Font.BOLD, TITLE_FONT_SIZE));
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT * 9 / 10, TITLE);
+
+        StdDraw.setFont(currentFont.deriveFont(Font.BOLD, INITIAL_COMMANDS_FONT_SIZE));
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + VERTICAL_SEPARATION
+                , INITIAL_COMMAND_NEW_GAME);
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2
+                , INITIAL_COMMAND_LOAD_GAME);
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - VERTICAL_SEPARATION
+                , INITIAL_COMMAND_QUIT);
+
+        StdDraw.setFont(currentFont);
+        StdDraw.show();
     }
 
 }
