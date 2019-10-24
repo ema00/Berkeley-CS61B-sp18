@@ -79,10 +79,7 @@ public class Game {
         char command = 0;
         while (validFirstCommands.indexOf(command) == -1) {
             displayInitialMenu();
-            //command = readKey();
-
-            // THIS IS JUST TO AVOID THE LOOP
-            break;
+            command = readKey();
         }
 
         /*
@@ -281,6 +278,20 @@ public class Game {
 
         StdDraw.setFont(currentFont);
         StdDraw.show();
+    }
+
+    /**
+     * Reads a key entered by the user using the keyboard.
+     * @return a single character read from the keyboard.
+     */
+    private char readKey() {
+        /* Time, in milliseconds, to wait between entered letters reading. */
+        final int LETTER_SCAN_TIME = 250;
+
+        while (!StdDraw.hasNextKeyTyped()) {
+            StdDraw.pause(LETTER_SCAN_TIME);
+        }
+        return java.lang.Character.toUpperCase(StdDraw.nextKeyTyped());
     }
 
 }
