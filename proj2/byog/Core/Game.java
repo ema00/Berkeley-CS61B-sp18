@@ -189,9 +189,21 @@ public class Game {
                     pl.moveRight();
                     break;
                 case Keys.QUIT_SAVE:
-                    return;
+                    break;
                 default:
                     break;
+            }
+        }
+        displayMessage("SAVE GAME? (Y/N)");
+        while (true) {
+            c = readKey();
+            if (c == Keys.YES) {
+                gameState.setState(coordinates, walls.getPoints(), player.position());
+                GameState.save(gameState, STATE_FILENAME);
+                break;
+            }
+            else if (c == Keys.NO) {
+                break;
             }
         }
     }

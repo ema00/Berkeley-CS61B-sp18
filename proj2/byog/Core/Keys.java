@@ -18,6 +18,9 @@ public class Keys {
     public static final char DOWN =             'S';
     public static final char LEFT =             'A';
     public static final char RIGHT =            'D';
+    /* Decision keys. */
+    public static final char YES =              'Y';
+    public static final char NO =               'N';
 
 
     private Keys() {
