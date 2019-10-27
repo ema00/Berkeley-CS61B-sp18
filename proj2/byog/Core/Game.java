@@ -109,14 +109,8 @@ public class Game {
             quit("QUITTING...");
         }
 
-        // THIS JUST DRAWS THE WORLD PRIOR TO PLAYING
-        drawAtCoordinates(coordinates, gameWorld, FLOOR_TILE);
-        walls.draw();
-        player.draw();
-        ter.renderFrame(gameWorld);
-
-        // ONCE THE PREVIOUS IS WORKING, THIS MUST BE UNCOMMENTED TO PLAY
-        //play();
+        play(gameWorld, player);
+        quit("QUITTING...");
     }
 
     /**
@@ -168,6 +162,38 @@ public class Game {
         // THIS LINE IS ONLY REMOVED TO BE ABLE TO RUN WITH THE AUTOGRADER
         //ter.renderFrame(world);
         return gameWorld;
+    }
+
+    /**
+     * Plays the game using the keyboard.
+     */
+    private void play(TETile[][] world, Player pl) {
+        char c = 0;
+        while (c != Keys.QUIT_SAVE) {
+            drawAtCoordinates(coordinates, gameWorld, FLOOR_TILE);
+            walls.draw();
+            player.draw();
+            ter.renderFrame(gameWorld);
+            c = readKey();
+            switch (c) {
+                case Keys.UP:
+                    pl.moveUp();
+                    break;
+                case Keys.DOWN:
+                    pl.moveDown();
+                    break;
+                case Keys.LEFT:
+                    pl.moveLeft();
+                    break;
+                case Keys.RIGHT:
+                    pl.moveRight();
+                    break;
+                case Keys.QUIT_SAVE:
+                    return;
+                default:
+                    break;
+            }
+        }
     }
 
     /**
