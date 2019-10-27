@@ -38,6 +38,9 @@ public class Game {
     /* Maximum number of tries when adding a random room that does not overlaps with others. */
     private static final int MAX_TRIES = 30;
 
+    /* Pause in milliseconds for general purpose. */
+    private static int PAUSE_250_MILLISECONDS = 250;
+
     /* Size of characters for each type of text displayed at the game window. */
     private static final int TITLE_FONT_SIZE = 40;
     private static final int INITIAL_COMMANDS_FONT_SIZE = 30;
@@ -82,12 +85,8 @@ public class Game {
             command = readKey();
         }
 
-        /*
         if (command == Keys.NEW_GAME) {
-            long seed = -1;
-            while ((seed = readSeedFromKeyboard()) < 0) {
-                displayMessage("ENTER SEED");
-            }
+            Long seed = readSeed();
             Random random = new Random(seed);
             rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, random);
             coordinates = rwg.generateAllowedCoordinates(MIN_SIDE, MAX_SIDE,
@@ -98,20 +97,26 @@ public class Game {
                     coordinates, PLAYER_TILE, gameWorld);
         } else if (command == Keys.LOAD_GAME) {
             if ((gameState = GameState.load(STATE_FILENAME)) == null) {
-                displayMessage("THERE IS NO SAVED GAME");
-                return;
+                quit("THERE IS NO SAVED GAME, QUITTING...");
             }
             rwg = new RandomWorldGenerator(gameWorld, FLOOR_TILE, WALL_TILE, new Random(0));
             gameState.setWorld(gameWorld);
             gameState.setPlayerTile(PLAYER_TILE);
             coordinates = gameState.getAllowedPoints();
-            player = gameState.getPlayer();
             walls = rwg.generateWalls(coordinates);
+            player = gameState.getPlayer();
         } else {
-            return;
+            quit("QUITTING...");
         }
-        play();
-         */
+
+        // THIS JUST DRAWS THE WORLD PRIOR TO PLAYING
+        drawAtCoordinates(coordinates, gameWorld, FLOOR_TILE);
+        walls.draw();
+        player.draw();
+        ter.renderFrame(gameWorld);
+
+        // ONCE THE PREVIOUS IS WORKING, THIS MUST BE UNCOMMENTED TO PLAY
+        //play();
     }
 
     /**
@@ -281,15 +286,75 @@ public class Game {
     }
 
     /**
+     * Displays a message and exits.
+     * @param message to display when quitting.
+     */
+    private void quit(String message) {
+        displayMessage(message);
+        StdDraw.pause(4 * PAUSE_250_MILLISECONDS);
+        System.exit(0);
+    }
+
+    /**
+     * Displays a message to the player.
+     * @param message is the message to dos play at the game window.
+     */
+    private void displayMessage(String message) {
+        Font currentFont = StdDraw.getFont();
+        StdDraw.clear(StdDraw.BLACK);
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.setFont(currentFont.deriveFont(Font.BOLD, TITLE_FONT_SIZE));
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, message);
+        StdDraw.setFont(currentFont);
+        StdDraw.show();
+    }
+
+    /**
+     * Promts the user to enter a seed.
+     * @return the seed entered by the user
+     */
+    private Long readSeed() {
+        Long seed = null;
+        while (true) {
+            displayMessage("ENTER SEED");
+            seed = readSeedFromKeyboard();
+            if (seed != null) {
+                break;
+            }
+            else {
+                displayMessage("INVALID SEED");
+                StdDraw.pause(4 * PAUSE_250_MILLISECONDS);
+            }
+        }
+        return seed;
+    }
+
+    /**
+     * Reads the seed to start a new game played by keyboard.
+     * @return the seed entered by the user or -1 if the seed is not a valid integer.
+     */
+    private Long readSeedFromKeyboard() {
+        char key = 0;
+        String seed = "";
+        while ((key = readKey()) != '\n') {
+            seed = seed + key;
+            displayMessage("SEED: " + seed);
+        }
+        try {
+            return Long.parseLong(seed);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
      * Reads a key entered by the user using the keyboard.
      * @return a single character read from the keyboard.
      */
     private char readKey() {
-        /* Time, in milliseconds, to wait between entered letters reading. */
-        final int LETTER_SCAN_TIME = 250;
-
         while (!StdDraw.hasNextKeyTyped()) {
-            StdDraw.pause(LETTER_SCAN_TIME);
+            StdDraw.pause(PAUSE_250_MILLISECONDS);
         }
         return java.lang.Character.toUpperCase(StdDraw.nextKeyTyped());
     }
