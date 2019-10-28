@@ -44,7 +44,7 @@ public class Game {
     /* Size of characters for each type of text displayed at the game window. */
     private static final int TITLE_FONT_SIZE = 40;
     private static final int INITIAL_COMMANDS_FONT_SIZE = 30;
-    private static final int HUD_FONT_SIZE = 10;
+    private static final int HUD_FONT_SIZE = 16;
     /* Messages to be displayed at the game window. */
     private static final String TITLE = "CS61B: THE GAME";
     private static final String INITIAL_COMMAND_NEW_GAME = "New Game (N)";
@@ -61,6 +61,9 @@ public class Game {
     private Player player;
     /* Game state, used mainly for saving the game state. */
     private GameState gameState;
+    /* Current position of the mouse pointer in the game window. */
+    private double mouseX = 0;
+    private double mouseY = 0;
 
 
     public Game() {
@@ -171,6 +174,7 @@ public class Game {
         char c = 0;
         while (c != Keys.QUIT_SAVE) {
             renderGamePlay();
+            renderMousePositionInformation();
             c = readKey();
             switch (c) {
                 case Keys.UP:
@@ -403,10 +407,26 @@ public class Game {
      * @return a single character read from the keyboard, or 0 if no key was read.
      */
     private char readKey() {
-        StdDraw.pause(PAUSE_250_MILLISECONDS);
         return StdDraw.hasNextKeyTyped()
                 ? java.lang.Character.toUpperCase(StdDraw.nextKeyTyped())
                 : 0;
+    }
+
+    /**
+     * Reads the current position of the mouse on the game window and sets a value
+     *  indicating what type of tile is below the mouse pointer.
+     */
+    private void renderMousePositionInformation() {
+        mouseX = StdDraw.mouseX();
+        mouseY = StdDraw.mouseY();
+        String position = "(" + mouseX + "," + mouseY + ")";
+
+        Font currentFont = StdDraw.getFont();
+        StdDraw.setPenColor(Color.WHITE);
+        StdDraw.setFont(currentFont.deriveFont(Font.BOLD, HUD_FONT_SIZE));
+        StdDraw.textLeft(WINDOW_WIDTH / 50, HEIGHT + ((float) HUD_HEIGHT) / 10, position);
+        StdDraw.setFont(currentFont);
+        StdDraw.show();
     }
 
 }
