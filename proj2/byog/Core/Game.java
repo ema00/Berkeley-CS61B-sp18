@@ -1,6 +1,7 @@
 package byog.Core;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -199,8 +200,7 @@ public class Game {
                 gameState.setState(coordinates, walls.getPoints(), player.position());
                 GameState.save(gameState, STATE_FILENAME);
                 break;
-            }
-            else if (c == Keys.NO) {
+            } else if (c == Keys.NO) {
                 break;
             }
         }
@@ -311,7 +311,7 @@ public class Game {
      * Displays the initial menu when playing with keyboard.
      */
     private void displayInitialMenu() {
-        final int VERTICAL_SEPARATION = 2;
+        final int verticalSeparation = 2;
         Font currentFont = StdDraw.getFont();
         StdDraw.clear(StdDraw.BLACK);
         StdDraw.setPenColor(Color.WHITE);
@@ -320,12 +320,12 @@ public class Game {
         StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT * 9 / 10, TITLE);
 
         StdDraw.setFont(currentFont.deriveFont(Font.BOLD, INITIAL_COMMANDS_FONT_SIZE));
-        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + VERTICAL_SEPARATION
-                , INITIAL_COMMAND_NEW_GAME);
-        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2
-                , INITIAL_COMMAND_LOAD_GAME);
-        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - VERTICAL_SEPARATION
-                , INITIAL_COMMAND_QUIT);
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + verticalSeparation,
+                INITIAL_COMMAND_NEW_GAME);
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2,
+                INITIAL_COMMAND_LOAD_GAME);
+        StdDraw.text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - verticalSeparation,
+                INITIAL_COMMAND_QUIT);
 
         StdDraw.setFont(currentFont);
         StdDraw.show();
@@ -366,8 +366,7 @@ public class Game {
             seed = readSeedFromKeyboard();
             if (seed != null) {
                 break;
-            }
-            else {
+            } else {
                 displayMessage("INVALID SEED");
                 StdDraw.pause(4 * PAUSE_250_MILLISECONDS);
             }
@@ -393,8 +392,7 @@ public class Game {
         }
         try {
             return Long.parseLong(seed);
-        }
-        catch (Exception e) {
+        } catch (NumberFormatException e) {
             return null;
         }
     }
@@ -420,8 +418,7 @@ public class Game {
 
         if (x < 0 || y < 0 || WIDTH <= x || HEIGHT <= y) {
             message = "Nothing";
-        }
-        else if (x == player.position().x() && y == player.position().y()) {
+        } else if (x == player.position().x() && y == player.position().y()) {
             message = "Player";
         } else if (gameWorld[x][y] == FLOOR_TILE) {
             message = "Floor";
