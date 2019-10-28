@@ -170,10 +170,7 @@ public class Game {
     private void play(TETile[][] world, Player pl) {
         char c = 0;
         while (c != Keys.QUIT_SAVE) {
-            drawAtCoordinates(coordinates, gameWorld, FLOOR_TILE);
-            walls.draw();
-            player.draw();
-            ter.renderFrame(gameWorld);
+            renderGamePlay();
             c = readKey();
             switch (c) {
                 case Keys.UP:
@@ -206,6 +203,16 @@ public class Game {
                 break;
             }
         }
+    }
+
+    /**
+     * Renders a frame of the game at the current state and the HUD.
+     */
+    private void renderGamePlay() {
+        drawAtCoordinates(coordinates, gameWorld, FLOOR_TILE);
+        walls.draw();
+        player.draw();
+        ter.renderFrame(gameWorld);
     }
 
     /**
@@ -372,9 +379,14 @@ public class Game {
      * @return the seed entered by the user or -1 if the seed is not a valid integer.
      */
     private Long readSeedFromKeyboard() {
-        char key = 0;
         String seed = "";
-        while ((key = readKey()) != '\n') {
+        while (true) {
+            char key = readKey();
+            if (key == 0) {
+                continue;
+            } else if (key == '\n') {
+                break;
+            }
             seed = seed + key;
             displayMessage("SEED: " + seed);
         }
@@ -388,13 +400,13 @@ public class Game {
 
     /**
      * Reads a key entered by the user using the keyboard.
-     * @return a single character read from the keyboard.
+     * @return a single character read from the keyboard, or 0 if no key was read.
      */
     private char readKey() {
-        while (!StdDraw.hasNextKeyTyped()) {
-            StdDraw.pause(PAUSE_250_MILLISECONDS);
-        }
-        return java.lang.Character.toUpperCase(StdDraw.nextKeyTyped());
+        StdDraw.pause(PAUSE_250_MILLISECONDS);
+        return StdDraw.hasNextKeyTyped()
+                ? java.lang.Character.toUpperCase(StdDraw.nextKeyTyped())
+                : 0;
     }
 
 }
