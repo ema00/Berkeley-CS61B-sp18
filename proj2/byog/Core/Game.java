@@ -61,9 +61,6 @@ public class Game {
     private Player player;
     /* Game state, used mainly for saving the game state. */
     private GameState gameState;
-    /* Current position of the mouse pointer in the game window. */
-    private double mouseX = 0;
-    private double mouseY = 0;
 
 
     public Game() {
@@ -417,14 +414,26 @@ public class Game {
      *  indicating what type of tile is below the mouse pointer.
      */
     private void renderMousePositionInformation() {
-        mouseX = StdDraw.mouseX();
-        mouseY = StdDraw.mouseY();
-        String position = "(" + mouseX + "," + mouseY + ")";
+        int x = (int) StdDraw.mouseX();
+        int y = (int) StdDraw.mouseY();
+        String message = "Nothing";
+
+        if (x < 0 || y < 0 || WIDTH <= x || HEIGHT <= y) {
+            message = "Nothing";
+        }
+        else if (x == player.position().x() && y == player.position().y()) {
+            message = "Player";
+        } else if (gameWorld[x][y] == FLOOR_TILE) {
+            message = "Floor";
+        } else if (gameWorld[x][y] == WALL_TILE) {
+            message = "Wall";
+        }
 
         Font currentFont = StdDraw.getFont();
         StdDraw.setPenColor(Color.WHITE);
         StdDraw.setFont(currentFont.deriveFont(Font.BOLD, HUD_FONT_SIZE));
-        StdDraw.textLeft(WINDOW_WIDTH / 50, HEIGHT + ((float) HUD_HEIGHT) / 10, position);
+        StdDraw.textLeft(WINDOW_WIDTH / 60, HEIGHT + ((float) HUD_HEIGHT) / 2, message);
+        StdDraw.line(0, HEIGHT, WIDTH, HEIGHT);
         StdDraw.setFont(currentFont);
         StdDraw.show();
     }
