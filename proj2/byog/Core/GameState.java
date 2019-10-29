@@ -153,7 +153,7 @@ public class GameState implements Serializable {
             ObjectOutputStream os = new ObjectOutputStream(fs);
             os.writeObject(gameState);
             os.close();
-        }  catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("File not found: " + filename);
             System.exit(0);
         } catch (IOException e) {
