@@ -149,9 +149,6 @@ public class GameState implements Serializable {
         gameState.playerTile = null;
         File f = new File(filename);
         try {
-            if (!f.exists()) {
-                f.createNewFile();
-            }
             FileOutputStream fs = new FileOutputStream(f);
             ObjectOutputStream os = new ObjectOutputStream(fs);
             os.writeObject(gameState);
