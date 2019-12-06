@@ -14,6 +14,14 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 
+
+/**
+ * Percolation
+ * Model of a percolation system using an N-by-N grid of sites.
+ * Each site is either open or blocked. A full site is an open site that can be connected to an
+ * open site in the top row via a chain of neighboring (left, right, up, down) open sites.
+ * The system percolates if there is a full site in the bottom row.
+ */
 public class Percolation {
 
     private final int size;
