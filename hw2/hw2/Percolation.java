@@ -6,12 +6,12 @@
 
 package hw2;
 
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
 
@@ -46,10 +46,12 @@ public class Percolation {
      */
     public void open(int row, int col) {
         checkBounds(row, col);
-        Site site = sites[row][col];
-        site.open();
-        numberOpenSites += 1;
-        connectToOpenSites(site);
+        if (!isOpen(row, col)) {
+            Site site = sites[row][col];
+            site.open();
+            numberOpenSites += 1;
+            connectToOpenSites(site);
+        }
     }
 
     /**
