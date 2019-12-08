@@ -65,8 +65,7 @@ public class PercolationStats {
      * mu - (1.96 * sigma) / [T^(1/2)]
      */
     public double confidenceLow() {
-        double mean = mean();
-        return mean - 1.96 * stddev() / pow(T, 0.5d);
+        return mean() - 1.96 * stddev() / pow(T, 0.5d);
     }
 
     /**
@@ -74,8 +73,7 @@ public class PercolationStats {
      * mu + (1.96 * sigma) / [T^(1/2)]
      */
     public double confidenceHigh() {
-        double mean = mean();
-        return mean + 1.96 * stddev() / pow(T, 0.5d);
+        return mean() + 1.96 * stddev() / pow(T, 0.5d);
     }
 
     private void simulatePercolation() {
