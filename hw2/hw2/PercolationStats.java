@@ -66,8 +66,7 @@ public class PercolationStats {
      */
     public double confidenceLow() {
         double mean = mean();
-        double variance = pow(stddev(), 0.5f);
-        return mean - 1.96 * variance / pow(T, 0.5f);
+        return mean - 1.96 * stddev() / pow(T, 0.5d);
     }
 
     /**
@@ -76,8 +75,7 @@ public class PercolationStats {
      */
     public double confidenceHigh() {
         double mean = mean();
-        double variance = pow(stddev(), 0.5f);
-        return mean + 1.96 * variance / pow(T, 0.5f);
+        return mean + 1.96 * stddev() / pow(T, 0.5d);
     }
 
     private void simulatePercolation() {
@@ -97,9 +95,7 @@ public class PercolationStats {
         while (!p.percolates()) {
             int row = StdRandom.uniform(N);
             int col = StdRandom.uniform(N);
-            if (!p.isOpen(row, col)) {
-                p.open(row, col);
-            }
+            p.open(row, col);
         }
         return p.numberOfOpenSites();
     }
