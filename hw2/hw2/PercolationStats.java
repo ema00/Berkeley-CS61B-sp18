@@ -52,12 +52,13 @@ public class PercolationStats {
      * sigma^2 = [(x1 - mu)^2 + (x2 - mu)^2 + ... + (xT - mu)^2] / (T - 1)
      */
     public double stddev() {
-        double sumOfStandardDeviations = 0;
+        double sumOfVariances = 0;
         double mean = mean();
         for (int i = 0; i < T; i++) {
-            sumOfStandardDeviations += pow(thresholds[i] - mean, 2);
+            sumOfVariances += pow(thresholds[i] - mean, 2);
         }
-        return sumOfStandardDeviations / (T - 1);
+        double sampleVariance = sumOfVariances / (T - 1);
+        return pow(sampleVariance, 0.5d);
     }
 
     /**
