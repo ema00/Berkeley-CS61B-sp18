@@ -93,17 +93,4 @@ class Site implements Comparable<Site> {
         return this.id - other.id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o.getClass() != Site.class) {
-            throw new ClassCastException("Object to compare is not of type Site.");
-        }
-        return ((Site) o).id == this.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
-    }
-
 }
