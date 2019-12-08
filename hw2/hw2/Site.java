@@ -101,4 +101,9 @@ class Site implements Comparable<Site> {
         return ((Site) o).id == this.id;
     }
 
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
 }
