@@ -36,12 +36,14 @@ class Site implements Comparable<Site> {
 
     /**
      * Constructs and initializes a grid of N by N Sites.
+     * Id generation is compatible with Disjoint Sets (Union Find) implementation.
      */
     static Site[][] getGridOfSites(int size) {
         final Site[][] grid = new Site[size][size];
+        int idCounter = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                int siteId = row * size + col;
+                int siteId = idCounter++;
                 grid[row][col] = new Site(siteId);
             }
         }
