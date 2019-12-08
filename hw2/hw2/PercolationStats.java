@@ -30,7 +30,6 @@ public class PercolationStats {
         this.T = T;
         this.thresholds = new double[T];
         this.pf = pf;
-        StdRandom.setSeed(Instant.now().toEpochMilli());
         simulatePercolation();
     }
 
