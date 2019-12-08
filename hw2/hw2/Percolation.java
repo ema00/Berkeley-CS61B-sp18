@@ -130,8 +130,12 @@ public class Percolation {
         Set<Site> newOpenSite = new TreeSet<>();
         Set<Site> neighbors = site.getNeighbors();
 
+        newOpenSite.add(site);
+
         for (Site neighbor : neighbors) {
-            for (int osKey : openSites.keySet()) {
+            Integer[] osKeys = new Integer[openSites.size()];
+            openSites.keySet().toArray(osKeys);
+            for (int osKey : osKeys) {
                 Set<Site> openSite = openSites.get(osKey);
                 if (openSite.contains(neighbor)) {
                     newOpenSite.addAll(openSite);
