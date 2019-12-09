@@ -1,7 +1,6 @@
 package hw2;
 
 import static java.lang.Math.pow;
-import java.time.Instant;
 
 import edu.princeton.cs.algs4.StdRandom;
 
