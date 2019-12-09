@@ -15,12 +15,16 @@ import java.util.TreeSet;
 class Site implements Comparable<Site> {
 
     final int id;
+    final int row;
+    final int col;
     private boolean open;
     private Set<Site> neighbors;    // above, below, and on both sides
 
 
-    private Site(int id) {
+    private Site(int id, int row, int col) {
         this.id = id;
+        this.row = row;
+        this.col = col;
         this.open = false;
         neighbors = new TreeSet<>();
     }
@@ -44,7 +48,7 @@ class Site implements Comparable<Site> {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 int siteId = idCounter++;
-                grid[row][col] = new Site(siteId);
+                grid[row][col] = new Site(siteId, row, col);
             }
         }
         generateNeighbors(grid);
