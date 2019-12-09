@@ -6,9 +6,12 @@
 
 package hw2;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+//import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
 
@@ -19,25 +22,25 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  * open site in the top row via a chain of neighboring (left, right, up, down) open sites.
  * The system percolates if there is a full site in the bottom row.
  *
- * This implementation uses Disjoint Sets (Union Find). This implementation is faster than the
- * one that uses Trees and Maps.
+ * This implementation uses Sets and Maps. This implementation is slower than the one that uses
+ * Disjoint Sets (Union Find).
  */
-public class Percolation {
+public class PercolationNaive {
 
     private final int size;
     private int numberOpenSites = 0;
     private final Site[][] sites;
-    private final WeightedQuickUnionUF openSites;
+    private final Map<Integer, Set<Site>> openSites;
 
 
     // create N-by-N grid, with all sites initially blocked
-    public Percolation(int N) {
+    public PercolationNaive(int N) {
         if (N <= 0) {
             throw new IllegalArgumentException("Grid size must be a natural number.");
         }
         size = N;
         sites = Site.getGridOfSites(N);
-        openSites = new WeightedQuickUnionUF(N * N);
+        openSites = new TreeMap<Integer, Set<Site>>();
     }
 
 
@@ -65,17 +68,26 @@ public class Percolation {
 
     /**
      * Is the site (row, col) full?
-     * Check if the site is connected to any of the sites in the top row.
+     * First, find the set to which the Site belongs to.
+     * Then, find if any of the sites of the top row belongs to the same set.
      */
     public boolean isFull(int row, int col) {
         checkBounds(row, col);
         Site site = sites[row][col];
         Site[] topRowSites = sites[0];
-
-        for (int column = 0; column < size; column++) {
-            Site topRowSite = topRowSites[column];
-            if (topRowSite.isOpen() && areConnected(site, topRowSite)) {
-                return true;
+        Set<Site> openSiteSet = null;
+        for (int osKey : openSites.keySet()) {
+            Set<Site> openSite = openSites.get(osKey);
+            if (openSite.contains(site)) {
+                openSiteSet = openSite;
+                break;
+            }
+        }
+        if (openSiteSet != null) {
+            for (int column = 0; column < size; column++) {
+                if (openSiteSet.contains(topRowSites[column])) {
+                    return true;
+                }
             }
         }
         return false;
@@ -90,7 +102,6 @@ public class Percolation {
 
     /**
      * Does the system percolate?
-     * Checks if any of the bottom rows is full (connected to any top row).
      */
     public boolean percolates() {
         for (int column = 0; column < size; column++) {
@@ -112,22 +123,31 @@ public class Percolation {
 
     /**
      * Connects an open site to any neighboring open sites.
+     * First, creates a new full site comprised by the new node only.
+     * Second, merges full sites which are connected by the newly open site into the new full site.
+     * And deletes the previously unconnected sites, if any.
      * Precondition: the site must be open just before calling this method.
      */
     private void connectToOpenSites(Site site) {
+        int newOpenSiteKey = numberOfOpenSites();
+        Set<Site> newOpenSite = new TreeSet<>();
         Set<Site> neighbors = site.getNeighbors();
+
+        newOpenSite.add(site);
+
         for (Site neighbor : neighbors) {
-            if (neighbor.isOpen()) {
-                openSites.union(site.id, neighbor.id);
+            Integer[] osKeys = new Integer[openSites.size()];
+            openSites.keySet().toArray(osKeys);
+            for (int osKey : osKeys) {
+                Set<Site> openSite = openSites.get(osKey);
+                if (openSite.contains(neighbor)) {
+                    newOpenSite.addAll(openSite);
+                    openSites.remove(osKey);
+                }
             }
         }
-    }
 
-    /**
-     * Checks if two sites are connected by a chain of neighbor sites.
-     */
-    private boolean areConnected(Site s1, Site s2) {
-        return openSites.connected(s1.id, s2.id);
+        openSites.put(newOpenSiteKey, newOpenSite);
     }
 
 
