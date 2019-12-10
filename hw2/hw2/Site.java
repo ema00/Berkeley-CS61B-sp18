@@ -9,7 +9,7 @@ import java.util.TreeSet;
  * Site
  * Represents a site in a grid of sites, in the context of the percolation theory.
  * Provides methods to generate a grid of (NxN) sites, and to get the neighbors of a site.
- * Also implements methods for total ordering of the instances.
+ * Also implements methods for total ordering of the instances (Comparable interface).
  * This class serves to be used exclusively by the Percolation class.
  */
 class Site implements Comparable<Site> {
@@ -18,15 +18,16 @@ class Site implements Comparable<Site> {
     final int row;
     final int col;
     private boolean open;
-    private Set<Site> neighbors;    // above, below, and on both sides
+    /* Grid to which the site belongs to; necessary to access its neighbors. */
+    private final Site[][] grid;
 
 
-    private Site(int id, int row, int col) {
+    private Site(int id, Site[][] grid, int row, int col) {
         this.id = id;
+        this.grid = grid;
         this.row = row;
         this.col = col;
         this.open = false;
-        neighbors = new TreeSet<>();
     }
 
 
@@ -48,46 +49,28 @@ class Site implements Comparable<Site> {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 int siteId = idCounter++;
-                grid[row][col] = new Site(siteId, row, col);
+                grid[row][col] = new Site(siteId, grid, row, col);
             }
         }
-        generateNeighbors(grid);
         return grid;
     }
 
-    /**
-     * Generates the neighbors for each Site of a grid of Site instances.
-     * For this domain, neighbors are located above, below, and at both sides.
-     */
-    private static void generateNeighbors(Site[][] sites) {
-        int size = sites.length;
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
-                Site site = sites[row][col];
-                if (row - 1 >= 0) {
-                    site.addNeighbor(sites[row - 1][col]);
-                }
-                if (row + 1 < size) {
-                    site.addNeighbor(sites[row + 1][col]);
-                }
-                if (col - 1 >= 0) {
-                    site.addNeighbor(sites[row][col - 1]);
-                }
-                if (col + 1 < size) {
-                    site.addNeighbor(sites[row][col + 1]);
-                }
-            }
-        }
-    }
-
-    private void addNeighbor(Site neighbor) {
-        if (neighbors.size() > 3) {
-            throw new RuntimeException("Number of neighbors for Site can't be > 4.");
-        }
-        neighbors.add(neighbor);
-    }
-
     Set<Site> getNeighbors() {
+        Set<Site> neighbors = new TreeSet<>();  // above, below, and on both sides
+        int size = grid.length;
+
+        if (row - 1 >= 0) {
+            neighbors.add(grid[row - 1][col]);
+        }
+        if (row + 1 < size) {
+            neighbors.add(grid[row + 1][col]);
+        }
+        if (col - 1 >= 0) {
+            neighbors.add(grid[row][col - 1]);
+        }
+        if (col + 1 < size) {
+            neighbors.add(grid[row][col + 1]);
+        }
         return neighbors;
     }
 
