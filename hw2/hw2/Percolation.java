@@ -27,7 +27,13 @@ public class Percolation {
     private final int size;
     private int numberOpenSites = 0;
     private final Site[][] sites;
+    /* Union-Find allows to group open sites in disjoint sets, and to find if 2 sites
+    are connected in log N time. */
     private final WeightedQuickUnionUF openSites;
+    /* Sentinel identifier to which all open sites at the top row are connected. */
+    private final int topRowOpenSitesSentinel;
+    /* Sentinel identifier to which all open sites at the bottom row are connected. */
+    private final int bottomRowOpenSitesSentinel;
 
 
     // create N-by-N grid, with all sites initially blocked
@@ -37,7 +43,9 @@ public class Percolation {
         }
         size = N;
         sites = Site.getGridOfSites(N);
-        openSites = new WeightedQuickUnionUF(N * N);
+        openSites = new WeightedQuickUnionUF(N * N + 2);
+        topRowOpenSitesSentinel = (N * N - 1) + 1;
+        bottomRowOpenSitesSentinel = (N * N - 1) + 2;
     }
 
 
@@ -70,15 +78,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         checkBounds(row, col);
         Site site = sites[row][col];
-        Site[] topRowSites = sites[0];
-
-        for (int column = 0; column < size; column++) {
-            Site topRowSite = topRowSites[column];
-            if (topRowSite.isOpen() && areConnected(site, topRowSite)) {
-                return true;
-            }
-        }
-        return false;
+        return openSites.connected(site.id, topRowOpenSitesSentinel);
     }
 
     /**
@@ -93,12 +93,7 @@ public class Percolation {
      * Checks if any of the bottom rows is full (connected to any top row).
      */
     public boolean percolates() {
-        for (int column = 0; column < size; column++) {
-            if (isFull(size - 1, column)) {
-                return true;
-            }
-        }
-        return false;
+        return openSites.connected(bottomRowOpenSitesSentinel, topRowOpenSitesSentinel);
     }
 
     /**
@@ -112,6 +107,8 @@ public class Percolation {
 
     /**
      * Connects an open site to any neighboring open sites.
+     * If the site is in the top (bottom) row, connects the site to all the open sites in
+     * that same row.
      * Precondition: the site must be open just before calling this method.
      */
     private void connectToOpenSites(Site site) {
@@ -121,13 +118,12 @@ public class Percolation {
                 openSites.union(site.id, neighbor.id);
             }
         }
-    }
-
-    /**
-     * Checks if two sites are connected by a chain of neighbor sites.
-     */
-    private boolean areConnected(Site s1, Site s2) {
-        return openSites.connected(s1.id, s2.id);
+        // connect to sentinel of top (or bottom) row open sites, if corresponds
+        if (site.row == 0) {
+            openSites.union(site.id, topRowOpenSitesSentinel);
+        } else if (site.row == size - 1) {
+            openSites.union(site.id, bottomRowOpenSitesSentinel);
+        }
     }
 
 
