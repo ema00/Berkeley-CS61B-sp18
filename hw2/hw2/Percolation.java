@@ -6,8 +6,6 @@
 
 package hw2;
 
-import java.util.Set;
-
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 
@@ -112,7 +110,7 @@ public class Percolation {
      * Precondition: the site must be open just before calling this method.
      */
     private void connectToOpenSites(Site site) {
-        Set<Site> neighbors = site.getNeighbors();
+        Iterable<Site> neighbors = site.getNeighbors();
         for (Site neighbor : neighbors) {
             if (neighbor.isOpen()) {
                 openSites.union(site.id, neighbor.id);

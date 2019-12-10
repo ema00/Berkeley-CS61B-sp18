@@ -131,7 +131,7 @@ public class PercolationNaive {
     private void connectToOpenSites(Site site) {
         int newOpenSiteKey = numberOfOpenSites();
         Set<Site> newOpenSite = new TreeSet<>();
-        Set<Site> neighbors = site.getNeighbors();
+        Iterable<Site> neighbors = site.getNeighbors();
 
         newOpenSite.add(site);
 

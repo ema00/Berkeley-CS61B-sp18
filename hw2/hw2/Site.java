@@ -55,7 +55,7 @@ class Site implements Comparable<Site> {
         return grid;
     }
 
-    Set<Site> getNeighbors() {
+    Iterable<Site> getNeighbors() {
         Set<Site> neighbors = new TreeSet<>();  // above, below, and on both sides
         int size = grid.length;
 
