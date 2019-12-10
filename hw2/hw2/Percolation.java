@@ -121,7 +121,8 @@ public class Percolation {
         // connect to sentinel of top (or bottom) row open sites, if corresponds
         if (site.row == 0) {
             openSites.union(site.id, topRowOpenSitesSentinel);
-        } else if (site.row == size - 1) {
+        }
+        if (site.row == size - 1) {
             openSites.union(site.id, bottomRowOpenSitesSentinel);
         }
     }
