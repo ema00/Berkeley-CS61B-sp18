@@ -5,7 +5,10 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.awt.Color;
 import edu.princeton.cs.algs4.StdRandom;
 
+
+
 public class ComplexOomage implements Oomage {
+
     protected List<Integer> params;
     private static final double WIDTH = 0.05;
 
@@ -87,4 +90,5 @@ public class ComplexOomage implements Oomage {
         randomComplexOomage().draw(0.25, 0.75, 1.5);
         randomComplexOomage().draw(0.75, 0.25, 1.5);
     }
+    
 } 

@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.ArrayList;
 import edu.princeton.cs.algs4.StdRandom;
 
+
+
 public class TestJankyOomage {
+
     private static class JankyOomage implements Oomage {
         private int val;
 
@@ -42,4 +45,5 @@ public class TestJankyOomage {
 
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(oomages, 10));
     }
+
 }

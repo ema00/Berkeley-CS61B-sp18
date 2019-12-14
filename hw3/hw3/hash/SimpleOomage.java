@@ -4,7 +4,9 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdDraw;
 
 
+
 public class SimpleOomage implements Oomage {
+
     protected int red;
     protected int green;
     protected int blue;
@@ -67,4 +69,5 @@ public class SimpleOomage implements Oomage {
     public String toString() {
         return "R: " + red + ", G: " + green + ", B: " + blue;
     }
+
 } 
