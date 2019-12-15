@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -35,18 +36,66 @@ public class TestComplexOomage {
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(oomages, 10));
     }
 
-    /* TODO: Create a list of Complex Oomages called deadlyList
-     * that shows the flaw in the hashCode function.
-     */
-    /*
+
     @Test
     public void testWithDeadlyParams() {
+        /*
+        M is the number of buckets that are used to test the hash code (as if were in a HashSet).
+        N is the number of elements to (supposedly) add to the (hypothetical) HasSet.
+        According to OomageTestUtility, it fails if any bucket Bx has: Bx < N/50 or Bx > N/2.5.
+        So if N = 40, Bx >= 0 and Bx < 16.
+        If uniformly distributed (as random would do), each bucket can get 40/10 = 4.
+        So, with at least 16 non random elements in the deadly list, the Hash Code should fail,
+        because of Bx > N/2.5 (Bx > 40/2.5 => Bx > 16).
+        */
         List<Oomage> deadlyList = new ArrayList<>();
 
-        // Your code here.
+        /* Apart from the hint, another way to fail is to make all the hash codes fall in the same
+        bucket, in this case: 0. For that, every hash code has to be a multiple of 10. */
+        Integer[] paramArr00 = new Integer[]{10};
+        Integer[] paramArr01 = new Integer[]{10, 10};
+        Integer[] paramArr02 = new Integer[]{5, 10};
+        Integer[] paramArr03 = new Integer[]{10, 0};
+        Integer[] paramArr04 = new Integer[]{10, 0, 0};
+        Integer[] paramArr05 = new Integer[]{50, 0};
+        Integer[] paramArr06 = new Integer[]{10, 0, 10};
+        Integer[] paramArr07 = new Integer[]{10, 3, 2};
+        Integer[] paramArr08 = new Integer[]{5, 0};
+        Integer[] paramArr09 = new Integer[]{10, 4, 6};
+        Integer[] paramArr10 = new Integer[]{100, 0};
+        Integer[] paramArr11 = new Integer[]{150, 0};
+        Integer[] paramArr12 = new Integer[]{160, 0};
+        Integer[] paramArr13 = new Integer[]{170, 0};
+        Integer[] paramArr14 = new Integer[]{200, 0};
+        Integer[] paramArr15 = new Integer[]{7, 8};
+
+        List<List<Integer>> paramsList = new ArrayList<>();
+        paramsList.add(Arrays.asList(paramArr00));
+        paramsList.add(Arrays.asList(paramArr01));
+        paramsList.add(Arrays.asList(paramArr02));
+        paramsList.add(Arrays.asList(paramArr03));
+        paramsList.add(Arrays.asList(paramArr04));
+        paramsList.add(Arrays.asList(paramArr05));
+        paramsList.add(Arrays.asList(paramArr06));
+        paramsList.add(Arrays.asList(paramArr07));
+        paramsList.add(Arrays.asList(paramArr08));
+        paramsList.add(Arrays.asList(paramArr09));
+        paramsList.add(Arrays.asList(paramArr10));
+        paramsList.add(Arrays.asList(paramArr11));
+        paramsList.add(Arrays.asList(paramArr12));
+        paramsList.add(Arrays.asList(paramArr13));
+        paramsList.add(Arrays.asList(paramArr14));
+        paramsList.add(Arrays.asList(paramArr15));
+
+        for (List<Integer> params : paramsList) {
+            deadlyList.add(new ComplexOomage(params));
+        }
+        for (int i = 0; i < 23; i++) {
+            deadlyList.add(ComplexOomage.randomComplexOomage());
+        }
 
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(deadlyList, 10));
-    } */
+    }
 
     /** Calls tests for SimpleOomage. */
     public static void main(String[] args) {
