@@ -16,11 +16,22 @@ public class ComplexOomage implements Oomage {
     public int hashCode() {
         int total = 0;
         for (int x : params) {
+            total = total + x + 1000003;    /* first 7-digit prime  */
+            total = total * 10007;          /* first 5-digit prime */
+        }
+        return total;
+    }
+    /* Original, flawed, implementation */
+    /*
+    public int hashCode() {
+        int total = 0;
+        for (int x : params) {
             total = total * 256;
             total = total + x;
         }
         return total;
     }
+    */
 
     @Override
     public boolean equals(Object o) {
