@@ -52,22 +52,22 @@ public class TestComplexOomage {
 
         /* Apart from the hint, another way to fail is to make all the hash codes fall in the same
         bucket, in this case: 0. For that, every hash code has to be a multiple of 10. */
-        Integer[] paramArr00 = new Integer[]{10};
-        Integer[] paramArr01 = new Integer[]{10, 10};
-        Integer[] paramArr02 = new Integer[]{5, 10};
-        Integer[] paramArr03 = new Integer[]{10, 0};
-        Integer[] paramArr04 = new Integer[]{10, 0, 0};
-        Integer[] paramArr05 = new Integer[]{50, 0};
-        Integer[] paramArr06 = new Integer[]{10, 0, 10};
-        Integer[] paramArr07 = new Integer[]{10, 3, 2};
-        Integer[] paramArr08 = new Integer[]{5, 0};
-        Integer[] paramArr09 = new Integer[]{10, 4, 6};
-        Integer[] paramArr10 = new Integer[]{100, 0};
-        Integer[] paramArr11 = new Integer[]{150, 0};
-        Integer[] paramArr12 = new Integer[]{160, 0};
-        Integer[] paramArr13 = new Integer[]{170, 0};
-        Integer[] paramArr14 = new Integer[]{200, 0};
-        Integer[] paramArr15 = new Integer[]{7, 8};
+        Integer[] paramArr00 = new Integer[]{255, 255, 255, 255};
+        Integer[] paramArr01 = new Integer[]{10, 255, 255, 255, 255};
+        Integer[] paramArr02 = new Integer[]{5, 255, 255, 255, 255};
+        Integer[] paramArr03 = new Integer[]{0, 255, 255, 255, 255};
+        Integer[] paramArr04 = new Integer[]{1, 255, 255, 255, 255};
+        Integer[] paramArr05 = new Integer[]{50, 255, 255, 255, 255};
+        Integer[] paramArr06 = new Integer[]{10, 0, 255, 255, 255, 255};
+        Integer[] paramArr07 = new Integer[]{10, 3, 255, 255, 255, 255};
+        Integer[] paramArr08 = new Integer[]{7, 255, 255, 255, 255};
+        Integer[] paramArr09 = new Integer[]{10, 4, 255, 255, 255, 255};
+        Integer[] paramArr10 = new Integer[]{100, 255, 255, 255, 255};
+        Integer[] paramArr11 = new Integer[]{150, 255, 255, 255, 255};
+        Integer[] paramArr12 = new Integer[]{160, 255, 255, 255, 255};
+        Integer[] paramArr13 = new Integer[]{170, 255, 255, 255, 255};
+        Integer[] paramArr14 = new Integer[]{200, 255, 255, 255, 255};
+        Integer[] paramArr15 = new Integer[]{7, 255, 255, 255, 255};
 
         List<List<Integer>> paramsList = new ArrayList<>();
         paramsList.add(Arrays.asList(paramArr00));
@@ -92,6 +92,9 @@ public class TestComplexOomage {
         }
         for (int i = 0; i < 23; i++) {
             deadlyList.add(ComplexOomage.randomComplexOomage());
+        }
+        for (Oomage o : deadlyList) {
+            System.out.println(o.hashCode() % 10);
         }
 
         assertTrue(OomageTestUtility.haveNiceHashCodeSpread(deadlyList, 10));
