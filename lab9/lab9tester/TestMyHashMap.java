@@ -127,6 +127,85 @@ public class TestMyHashMap {
         assertEquals(studentIDs.get("evil alan"), studentIDs.get("alan"));
     }
 
+    //////////////// EVERYTHING BELOW ARE TESTS FOR THE OPTIONAL PART ////////////////
+
+    /*
+     * Test keySet() function of MyHashMap.
+     */
+    @Test
+    public void keySetTest() {
+        MyHashMap<String, Integer> hm = new MyHashMap<String, Integer>();
+        assertEquals(0, hm.size());
+        hm.put("a", 1);
+        hm.put("b", 2);
+        hm.put("c", 3);
+        assertEquals(3, hm.size());
+        assertTrue(hm.keySet().contains("a"));
+        assertTrue(hm.keySet().contains("b"));
+        assertTrue(hm.keySet().contains("c"));
+    }
+
+    /*
+     * Test remove(K key) function of MyHashMap.
+     */
+    @Test
+    public void removeTest() {
+        MyHashMap<String, Integer> hm = new MyHashMap<String, Integer>();
+        hm.put("a", 1);
+        hm.put("b", 2);
+        hm.put("c", 3);
+        assertTrue(hm.containsKey("a"));
+        assertTrue(hm.containsKey("b"));
+        assertTrue(hm.containsKey("c"));
+
+        /* Remove a */
+        assertEquals(new Integer(1), hm.remove("a"));
+        assertFalse(hm.containsKey("a"));
+
+        /* Rebuild same hashmap */
+        hm.remove("b");
+        hm.remove("c");
+        hm.put("a", 1);
+        hm.put("b", 2);
+        hm.put("c", 3);
+
+        /* Remove b */
+        assertEquals(new Integer(2), hm.remove("b"));
+        assertFalse(hm.containsKey("b"));
+
+        /* Rebuild same hashmap */
+        hm.remove("a");
+        hm.remove("c");
+        hm.put("a", 1);
+        hm.put("b", 2);
+        hm.put("c", 3);
+
+        /* Remove c */
+        assertEquals(new Integer(3), hm.remove("c"));
+        assertFalse(hm.containsKey("c"));
+
+        hm.remove("a");
+        hm.remove("b");
+        assertFalse(hm.containsKey("a") || hm.containsKey("b") || hm.containsKey("c"));
+    }
+
+    /*
+     * Test remove(K key) function of MyHashMap.
+     */
+    @Test
+    public void removeIfMappedTest() {
+        MyHashMap<String, Integer> hm = new MyHashMap<String, Integer>();
+        hm.put("a", 1);
+        hm.put("b", 2);
+
+        /* a should be removed, but b should not be removed because it is not mapped to 1. */
+        assertEquals(new Integer(1), hm.remove("a", 1));
+        assertNull(hm.remove("b", 1));
+
+        assertFalse(hm.containsKey("a"));
+        assertTrue(hm.containsKey("b"));
+    }
+
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests(TestMyHashMap.class);
     }
