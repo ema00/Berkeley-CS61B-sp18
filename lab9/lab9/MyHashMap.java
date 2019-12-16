@@ -19,13 +19,15 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     private ArrayMap<K, V>[] buckets;
     private int size;
 
-    private int loadFactor() {
-        return size / buckets.length;
-    }
 
     public MyHashMap() {
         buckets = new ArrayMap[DEFAULT_SIZE];
         this.clear();
+    }
+
+
+    private int loadFactor() {
+        return size / buckets.length;
     }
 
     /* Removes all of the mappings from this map. */
