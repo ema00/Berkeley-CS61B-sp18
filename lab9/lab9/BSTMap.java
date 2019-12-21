@@ -1,6 +1,5 @@
 package lab9;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -159,9 +158,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return null;
         }
 
-        Node removed = parent.right != null && parent.right.key.compareTo(key) == 0 ?
-                parent.right :
-                parent.left;
+        Node removed = parent.right != null && parent.right.key.compareTo(key) == 0
+                ? parent.right
+                : parent.left;
 
         if (removed == parent.left) {
             if (removed.isLeaf()) {
