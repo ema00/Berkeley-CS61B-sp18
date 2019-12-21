@@ -9,6 +9,7 @@ import java.util.Set;
 /**
  *  A hash table-backed Map implementation. Provides amortized constant time
  *  access to elements via get(), remove(), and put() in the best case.
+ *  Null values are not allowed as keys.
  *
  *  @author Emanuel Aguirre
  */
@@ -58,10 +59,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return buckets[hash].get(key);
     }
 
-    /**
-     * Associates the specified value with the specified key in this map.
-     * Null values are not allowed as keys.
-     */
+    /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
         int hash = hash(key);
@@ -139,7 +137,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        Set<K> keySet = keySet();
+        return keySet.iterator();
     }
 
 }
