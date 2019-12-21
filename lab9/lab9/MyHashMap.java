@@ -45,10 +45,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      *  To handle negative numbers properly, uses floorMod instead of %.
      */
     private int hash(K key) {
-        if (key == null) {
-            return 0;
-        }
-
         int numBuckets = buckets.length;
         return Math.floorMod(key.hashCode(), numBuckets);
     }
@@ -62,12 +58,19 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return buckets[hash].get(key);
     }
 
-    /* Associates the specified value with the specified key in this map. */
+    /**
+     * Associates the specified value with the specified key in this map.
+     * Null values are not allowed as keys.
+     */
     @Override
     public void put(K key, V value) {
         int hash = hash(key);
         size = buckets[hash].containsKey(key) ? size : size + 1;
         buckets[hash].put(key, value);
+
+        if (loadFactor() > MAX_LF) {
+            resize(buckets.length * 2);
+        }
     }
 
     /* Returns the number of key-value mappings in this map. */
@@ -94,7 +97,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public V remove(K key) {
         int hash = hash(key);
-        return buckets[hash].remove(key);
+        V value = buckets[hash].remove(key);
+
+        if (size < MAX_LF / 4) {
+            resize(buckets.length / 2);
+        }
+        return value;
     }
 
     /* Removes the entry for the specified key only if it is currently mapped to
@@ -106,6 +114,26 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             return remove(key);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Resizes the array of ArrayMap used to store (K,V) pairs. That is, changes number of buckets.
+     * @param length is the new number of buckets.
+     */
+    private void resize(int length) {
+        ArrayMap<K, V>[] oldBuckets = buckets;
+        Set<K> keys = keySet();
+
+        buckets = new ArrayMap[length];
+        clear();
+
+        for (K key : keys) {
+            int hash = hash(key);
+            int oldHash = Math.floorMod(key.hashCode(), oldBuckets.length);
+            V value = oldBuckets[oldHash].get(key);
+            buckets[hash].put(key, value);
+            size += 1;
         }
     }
 
