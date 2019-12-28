@@ -61,21 +61,21 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         size = 0;
     }
 
-    /** Returns the value mapped to by KEY in the subtree rooted in P.
+    /** Returns the value mapped to by KEY in the subtree rooted in node.
      *  or null if this map contains no mapping for the key.
      */
-    private V getHelper(K key, Node p) {
-        if (p == null) {
+    private V getHelper(K key, Node node) {
+        if (node == null) {
             return null;
         }
-        if (key.compareTo(p.key) == 0) {
-            return p.value;
+        if (key.compareTo(node.key) == 0) {
+            return node.value;
         }
 
-        if (key.compareTo(p.key) < 0) {
-            return getHelper(key, p.left);
+        if (key.compareTo(node.key) < 0) {
+            return getHelper(key, node.left);
         } else {
-            return getHelper(key, p.right);
+            return getHelper(key, node.right);
         }
     }
 
@@ -87,25 +87,25 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return size == 0 ? null : getHelper(key, root);
     }
 
-    /** Returns a BSTMap rooted in p with (KEY, VALUE) added as a key-value mapping.
+    /** Returns a BSTMap rooted in node with (KEY, VALUE) added as a key-value mapping.
      *  Or if p is null, it returns a one node BSTMap containing (KEY, VALUE).
      */
-    private Node putHelper(K key, V value, Node p) {
-        if (p == null) {
+    private Node putHelper(K key, V value, Node node) {
+        if (node == null) {
             size += 1;
             return new Node(key, value);
         }
-        if (key.compareTo(p.key) == 0) {
-            p.value = value;
-            return p;
+        if (key.compareTo(node.key) == 0) {
+            node.value = value;
+            return node;
         }
 
-        if (key.compareTo(p.key) < 0) {
-            p.left = putHelper(key, value, p.left);
-            return p;
+        if (key.compareTo(node.key) < 0) {
+            node.left = putHelper(key, value, node.left);
+            return node;
         } else {
-            p.right = putHelper(key, value, p.right);
-            return p;
+            node.right = putHelper(key, value, node.right);
+            return node;
         }
     }
 
@@ -178,10 +178,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             } else if (node.left == null) {
                 node = node.right;
             } else {
-                Node tree = node;
-                node = min(tree.right);
-                node.right = deleteMin(tree.right);
-                node.left = tree.left;
+                Node removed = node;
+                node = min(removed.right);
+                node.right = deleteMin(removed.right);
+                node.left = removed.left;
             }
             size -= 1;
         }
