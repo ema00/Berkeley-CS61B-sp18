@@ -1,6 +1,5 @@
 package lab9;
 
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -11,6 +10,7 @@ import java.util.Set;
  * Implementation of interface Map61B with BST as core data structure.
  *
  * @author Emanuel Aguirre
+ * @code uses code from this implementation https://algs4.cs.princeton.edu/32bst/BST.java.html
  */
 public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
 
@@ -144,122 +144,68 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return keySet;
     }
 
-    /** Removes KEY from the tree if present
-     *  returns VALUE removed,
-     *  null on failed removal.
+    /** Removes KEY from the tree if present.
+     *  @return VALUE removed or null on failed removal.
      */
     @Override
     public V remove(K key) {
-        Node sentinel = new Node(null, null);
-        sentinel.right = root;
-        Node parent = getParent(key, sentinel);
-
-        if (parent == null) {
+        V value = get(key);
+        if (value == null) {
             return null;
         }
+        root = delete(root, key);
+        return value;
+    }
 
-        Node removed = parent.right != null && parent.right.key.compareTo(key) == 0
-                ? parent.right
-                : parent.left;
+    /**
+     * Deletes the node whose key is key, and is in the tree rooted at node, if key exists.
+     * @return the resulting tree with the node, whose key is key, deleted; if the key is not in
+     * the tree, returns the same tree.
+     */
+    private Node delete(Node node, K key) {
+        if (node == null) return null;
 
-        if (removed == parent.left) {
-            if (removed.isLeaf()) {
-                parent.left = null;
-            } else if (removed.hasLeftChild() && !removed.hasRightChild()) {
-                parent.left = removed.left;
-            } else if (removed.hasRightChild() && !removed.hasLeftChild()) {
-                parent.left = removed.right;
-            } else {
-                if (!removed.left.hasRightChild()) {
-                    parent.left = removed.left;
-                } else {
-                    Node replacement = extractGreatest(removed.left);
-                    replacement.left = removed.left;
-                    replacement.right = removed.right;
-                    parent.left = replacement;
-                }
-            }
+        int compare = key.compareTo(node.key);
+        if (compare < 0) {
+            node.left = delete(node.left, key);
+        } else if (compare > 0) {
+            node.right = delete(node.right, key);
         } else {
-            if (removed.isLeaf()) {
-                parent.right = null;
-            } else if (removed.hasRightChild() && !removed.hasLeftChild()) {
-                parent.right = removed.right;
-            } else if (removed.hasLeftChild() && !removed.hasRightChild()) {
-                parent.right = removed.left;
+            if (node.right == null) {
+                node = node.left;
+            } else if (node.left == null) {
+                node = node.right;
             } else {
-                if (!removed.right.hasLeftChild()) {
-                    parent.right = removed.right;
-                } else {
-                    Node replacement = extractSmallest(removed.right);
-                    replacement.left = removed.left;
-                    replacement.right = removed.right;
-                    parent.right = replacement;
-                }
+                Node tree = node;
+                node = min(tree.right);
+                node.right = deleteMin(tree.right);
+                node.left = tree.left;
             }
         }
-
-        root = root == removed ? sentinel.right : root;
         size -= 1;
-        return removed.value;
+        return node;
     }
 
     /**
-     * Returns the parent of the node with the given key.
-     * It the key doesn't exist in the tree returns null.
+     * Finds the node whose key is the minimum, rooted at node.
+     * @return the node whose key is minimum.
      */
-    private Node getParent(K key, Node parent) {
-        if (parent == null || parent.isLeaf()) {
-            return null;
-        } else if (parent.hasLeftChild() && key.compareTo(parent.left.key) == 0) {
-            return parent;
-        } else if (parent.hasRightChild() && key.compareTo(parent.right.key) == 0) {
-            return parent;
-        }
-
-        // if parent is the sentinel node in remove(), then parent.key == null
-        if (parent.key == null || !(key.compareTo(parent.key) < 0)) {
-            return getParent(key, parent.right);
-        } else {
-            return getParent(key, parent.left);
-        }
+    private Node min(Node node) {
+        return node.left == null
+                ? node
+                : min(node.left);
     }
 
     /**
-     * Extracts the greatest child of a node.
-     * Preconditions: the node must not be null.
-     * @return the greatest node removed.
+     * Deletes the node whose key is the minimum, rooted at node.
+     * @return the resulting tree with the node whose key is minimum deleted.
      */
-    private Node extractGreatest(Node node) {
-        while (node.right.hasRightChild()) {
-            node = node.right;
+    private Node deleteMin(Node node) {
+        if (node.left == null) {
+            return node.right;
         }
-        Node removed = node.right;
-        if (node.right.hasLeftChild()) {
-            node.right = removed.left;
-            removed.left = null;
-        } else {
-            node.right = null;
-        }
-        return removed;
-    }
-
-    /**
-     * Extracts the smallest child of a node.
-     * Preconditions: the node must not be null.
-     * @return the smallest node removed.
-     */
-    private Node extractSmallest(Node node) {
-        while (node.left.hasLeftChild()) {
-            node = node.left;
-        }
-        Node removed = node.left;
-        if (node.left.hasRightChild()) {
-            node.left = removed.right;
-            removed.right = null;
-        } else {
-            node.left = null;
-        }
-        return removed;
+        node.left = deleteMin(node.left);
+        return node;
     }
 
     /** Removes the key-value entry for the specified key only if it is
