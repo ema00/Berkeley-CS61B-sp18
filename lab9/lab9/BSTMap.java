@@ -163,7 +163,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
      * the tree, returns the same tree.
      */
     private Node delete(Node node, K key) {
-        if (node == null) return null;
+        if (node == null) {
+            return null;
+        }
 
         int compare = key.compareTo(node.key);
         if (compare < 0) {
@@ -181,8 +183,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
                 node.right = deleteMin(tree.right);
                 node.left = tree.left;
             }
+            size -= 1;
         }
-        size -= 1;
         return node;
     }
 
