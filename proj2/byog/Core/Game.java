@@ -13,6 +13,10 @@ import byog.TileEngine.Tileset;
 import edu.princeton.cs.introcs.StdDraw;
 
 
+
+/**
+ * @author CS61B / Emanuel Aguirre
+ */
 public class Game {
 
     private TERenderer ter = new TERenderer();

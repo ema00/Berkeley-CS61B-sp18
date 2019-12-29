@@ -1,8 +1,11 @@
+
+
+
 /**
  * Planet
  * Representation of a planet, its position, velocity, and mass.
+ * @author Emanuel Aguirre
  */
-
 public class Planet {
 
     /* Gravitational constant G = 6.67x10^-11 [M * m^2 / kg^2] */

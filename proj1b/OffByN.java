@@ -1,8 +1,11 @@
+
+
+
 /**
  * OffByOne
  * Compares characters for a difference of exactly N.
+ * @author Emanuel Aguirre
  */
-
 public class OffByN implements CharacterComparator {
 
     private int N;

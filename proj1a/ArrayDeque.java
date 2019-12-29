@@ -1,8 +1,12 @@
+
+
+
 /**
  * ArrayDeque
  * Double Ended Queue (deque) data structure.
  * Implemented internally using an array.
  * @param <T> is the type of objects to be stored in the deque.
+ * @author Emanuel Aguirre
  *
  * - The implementation uses a circular array, with 2 pointers for marking start and end.
  * - start and end pointers are always pointing at the first and last items respectively.
@@ -10,7 +14,6 @@
  * - If the underlying array is full, its size is increased by GROWTH_FACTOR.
  * - If the number of items is less than DOWNSIZE_FACTOR times arr.length, arr is reduced.
  */
-
 public class ArrayDeque<T> {
 
     private static final int INITIAL_LENGTH = 4;

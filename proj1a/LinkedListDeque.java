@@ -1,3 +1,6 @@
+
+
+
 /**
  * LinkedListDeque
  * Double Ended Queue (deque) data structure.
@@ -5,8 +8,8 @@
  * The doubly linked list is a circular list with a single sentinel node. The
  * sentinel node is used to simplify the insertion and removal operations.
  * @param <T> is the type of objects to be stored in the deque.
+ * @author Emanuel Aguirre
  */
-
 public class LinkedListDeque<T> {
 
     /**

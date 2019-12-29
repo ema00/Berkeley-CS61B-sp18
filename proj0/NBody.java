@@ -1,11 +1,12 @@
 import java.io.File;
 
 
+
 /**
  * Nbody
  * Runs the simulation of mutual forces between planets.
+ * @author CS61B / Emanuel Aguirre
  */
-
 public class NBody {
 
     private static final String BACKGROUND = "starfield.jpg";

@@ -1,8 +1,11 @@
+
+
+
 /**
  * OffByOne
  * Compares characters for a difference of exactly one.
+ * @author Emanuel Aguirre
  */
-
 public class OffByOne implements CharacterComparator {
 
     /**

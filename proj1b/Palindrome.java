@@ -1,7 +1,10 @@
+
+
+
 /**
  * Palindrome
+ * @author Emanuel Aguirre
  */
-
 public class Palindrome {
 
     /**

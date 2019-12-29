@@ -5,6 +5,7 @@ package byog.Core;
 /**
  * Keys
  * These are the keys that are used to play the game.
+ * @author Emanuel Aguirre
  */
 public class Keys {
 
