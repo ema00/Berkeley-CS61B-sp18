@@ -6,7 +6,8 @@ import org.junit.Test;
 import lab9.BSTMap;
 
 /**
- * Tests by Brendan Hu, Spring 2015, revised for 2018 by Josh Hug
+ * Tests by Brendan Hu, Spring 2015, revised for 2018 by Josh Hug.
+ * @author Emanuel Aguirre (tests below keySetTest(), including)
  */
 public class TestBSTMap {
 
@@ -89,7 +90,7 @@ public class TestBSTMap {
     //////////////// EVERYTHING BELOW ARE TESTS FOR THE OPTIONAL PART ////////////////
 
     /*
-     * Test keySet() function of MyHashMap.
+     * Test keySet() function of BSTMap.
      */
     @Test
     public void keySetTest() {
@@ -105,7 +106,7 @@ public class TestBSTMap {
     }
 
     /*
-     * Test remove(K key) function of MyHashMap.
+     * Test remove(K key) function of BSTMap.
      */
     @Test
     public void removeTest() {
@@ -149,7 +150,7 @@ public class TestBSTMap {
     }
 
     /*
-     * Test remove(K key) function of MyHashMap.
+     * Test remove(K key) function of BSTMap.
      */
     @Test
     public void removeHeight3Test() {
@@ -188,7 +189,7 @@ public class TestBSTMap {
     }
 
     /*
-     * Test remove(K key) function of MyHashMap.
+     * Test remove(K key) function of BSTMap.
      */
     @Test
     public void removeHeight3FullTest() {
@@ -365,7 +366,7 @@ public class TestBSTMap {
     }
 
     /*
-     * Test remove(K key, V value) function of MyHashMap.
+     * Test remove(K key, V value) function of BSTMap.
      */
     @Test
     public void removeIfMappedTest() {
