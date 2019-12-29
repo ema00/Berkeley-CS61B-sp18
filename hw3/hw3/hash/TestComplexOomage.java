@@ -9,7 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 
 
-
+/**
+ * @author CS61B
+ * @author Emanuel Aguirre (testWithDeadlyParams() test method)
+ */
 public class TestComplexOomage {
 
     @Test

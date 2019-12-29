@@ -9,6 +9,7 @@ import edu.princeton.cs.algs4.StdRandom;
 /**
  * PercolationStats
  * Estimates the percolation threshold using the Montecarlo Method.
+ * @author CS61B / Emanuel Aguirre
  */
 public class PercolationStats {
 

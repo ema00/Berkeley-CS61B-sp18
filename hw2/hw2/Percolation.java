@@ -19,6 +19,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  *
  * This implementation uses Disjoint Sets (Union Find). This implementation is faster than the
  * one that uses Trees and Maps.
+ * @author CS61B / Emanuel Aguirre
  */
 public class Percolation {
 

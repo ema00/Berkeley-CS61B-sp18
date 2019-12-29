@@ -7,7 +7,10 @@ import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdDraw;
 
 
-
+/**
+ * @author CS61B
+ * @author Emanuel Aguirre (equals() and hashCode() methods)
+ */
 public class SimpleOomage implements Oomage {
 
     protected int red;

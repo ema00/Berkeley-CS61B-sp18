@@ -11,6 +11,7 @@ import java.util.TreeSet;
  * Provides methods to generate a grid of (NxN) sites, and to get the neighbors of a site.
  * Also implements methods for total ordering of the instances (Comparable interface).
  * This class serves to be used exclusively by the Percolation class.
+ * @author Emanuel Aguirre
  */
 class Site implements Comparable<Site> {
 

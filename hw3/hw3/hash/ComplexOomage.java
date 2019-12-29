@@ -7,6 +7,10 @@ import edu.princeton.cs.algs4.StdRandom;
 
 
 
+/**
+ * @author CS61B
+ * @author Emanuel Aguirre (hashCode() method)
+ */
 public class ComplexOomage implements Oomage {
 
     protected List<Integer> params;
