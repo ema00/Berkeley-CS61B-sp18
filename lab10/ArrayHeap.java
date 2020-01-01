@@ -1,15 +1,24 @@
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+
+
 /**
  * A Generic heap class. Unlike Java's priority queue, this heap doesn't just
  * store Comparable objects. Instead, it can store any type of object
  * (represented by type T), along with a priority value. Why do it this way? It
  * will be useful later on in the class...
+ *
+ * Description of implementation is at:
+ * https://sp18.datastructur.es/materials/lab/lab10/lab10
+ *
+ * @author CS61B / Emanuel Aguirre
  */
 public class ArrayHeap<T> implements ExtrinsicPQ<T> {
+
     private Node[] contents;
     private int size;
+
 
     public ArrayHeap() {
         contents = new ArrayHeap.Node[16];
@@ -23,28 +32,26 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         size = 0;
     }
 
+
     /**
      * Returns the index of the node to the left of the node at i.
      */
     private static int leftIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return 2 * i;
     }
 
     /**
      * Returns the index of the node to the right of the node at i.
      */
     private static int rightIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return 2 * i + 1;
     }
 
     /**
      * Returns the index of the node that is the parent of the node at i.
      */
     private static int parentIndex(int i) {
-        /* TODO: Your code here! */
-        return 0;
+        return i == 1 ? 1 : i / 2;
     }
 
     /**
@@ -104,11 +111,19 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Bubbles up the node currently at the given index.
      */
     private void swim(int index) {
-        // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
+        // Throws an exception if index is invalid.
         validateSinkSwimArg(index);
 
-        /** TODO: Your code here. */
-        return;
+        int parentIndex = ArrayHeap.parentIndex(index);
+
+        if (index == 1) {
+            return;
+        } else if (min(index, parentIndex) == parentIndex) {
+            return;
+        }
+
+        swap(index, parentIndex);
+        swim(parentIndex);
     }
 
     /**
@@ -118,8 +133,27 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         // Throws an exception if index is invalid. DON'T CHANGE THIS LINE.
         validateSinkSwimArg(index);
 
-        /** TODO: Your code here. */
-        return;
+        int leftChildIndex = ArrayHeap.leftIndex(index);
+        int rightChildIndex = ArrayHeap.rightIndex(index);
+        int childIndex;
+
+        if (contents[leftChildIndex] == null && contents[rightChildIndex] == null) {
+            return;
+        } else if (contents[leftChildIndex] == null) {
+            childIndex = rightChildIndex;
+        } else if (contents[rightChildIndex] == null) {
+            childIndex = leftChildIndex;
+        } else {
+            childIndex = min(rightChildIndex, leftChildIndex) == rightChildIndex
+                    ? rightChildIndex
+                    : leftChildIndex;
+        }
+        if (min(index, childIndex) == index) {
+            return;
+        }
+
+        swap(index, childIndex);
+        sink(childIndex);
     }
 
     /**
@@ -228,6 +262,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             throw new IllegalArgumentException("Cannot sink or swim a null node.");
         }
     }
+
 
     private class Node {
         private T myItem;
