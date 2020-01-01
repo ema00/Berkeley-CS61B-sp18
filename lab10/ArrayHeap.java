@@ -66,6 +66,19 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     }
 
     /**
+     * Gets the index of the item passed as parameter. Return -1 if item not
+     * in ArrayHeap.
+     */
+    private int getItemIdex(T item) {
+        for (int i = 1; i <= size; i++) {
+            if (contents[i].myItem.equals(item)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Returns true if the index corresponds to a valid item. For example, if
      * we have 5 items, then the valid indices are 1, 2, 3, 4, 5. Index 0 is
      * invalid because we leave the 0th entry blank.
@@ -231,8 +244,17 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public void changePriority(T item, double priority) {
-        /* TODO: Your code here! */
-        return;
+        if (getItemIdex(item) == -1) {
+            return;
+        }
+
+        int index = getItemIdex(item);
+        Node node = getNode(index);
+
+        node.myPriority = -Double.MAX_VALUE;
+        swim(index);
+        removeMin();
+        insert(item, priority);
     }
 
     /**
