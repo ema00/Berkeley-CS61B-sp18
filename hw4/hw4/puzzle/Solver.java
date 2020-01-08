@@ -8,6 +8,8 @@ import edu.princeton.cs.algs4.MinPQ;
 
 
 /**
+ * CS61B Homework 4: https://sp18.datastructur.es/materials/hw/hw4/hw4
+ *
  * Solver
  *
  * Solves a puzzle (that can be) expressed in terms of a graph by using the A*
@@ -38,17 +40,25 @@ public class Solver {
         pq.insert(start);
 
         while (!pq.isEmpty()) {
-            SearchNode current = pq.min();
+            SearchNode currentNode = pq.min();
             pq.delMin();
-            WorldState state = current.state();
+            WorldState state = currentNode.state();
             if (state.isGoal()) {
-                path = current;
+                path = currentNode;
                 break;
             }
 
             for (WorldState neighbor : state.neighbors()) {
-                SearchNode next = new SearchNode(neighbor, current);
-                pq.insert(next);
+                // Avoid enqueuing a previous neighbor that has already been enqueued.
+                WorldState previousState = currentNode.previousNode() != null
+                        ? currentNode.previousNode().state()
+                        : null;
+                if (neighbor.equals(previousState)) {
+                    continue;
+                }
+                // Add neighbor to the priority queue.
+                SearchNode nextNode = new SearchNode(neighbor, currentNode);
+                pq.insert(nextNode);
             }
         }
     }
