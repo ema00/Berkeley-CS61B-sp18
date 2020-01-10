@@ -148,12 +148,15 @@ public class Board implements WorldState {
         return N;
     }
 
+    /**
+     * @return the number of tiles in the wrong position, except for BLANK.
+     */
     public int hamming() {
         int result = 0;
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < N; j++) {
-                if (tiles[i][j] != BLANK && tiles[i][j] != 1 + i + j * N) {
-                    result +=1;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (tiles[i][j] != BLANK && tiles[i][j] != 1 + j + i * N) {
+                    result += 1;
                 }
             }
         }
