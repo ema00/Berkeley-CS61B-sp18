@@ -149,7 +149,15 @@ public class Board implements WorldState {
     }
 
     public int hamming() {
-        return 0;
+        int result = 0;
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                if (tiles[i][j] != BLANK && tiles[i][j] != 1 + i + j * N) {
+                    result +=1;
+                }
+            }
+        }
+        return result;
     }
 
     /**
