@@ -7,7 +7,13 @@ import edu.princeton.cs.algs4.Queue;
 
 
 /**
+ * CS61B Homework 4: https://sp18.datastructur.es/materials/hw/hw4/hw4
+ *
  * Board
+ *
+ * Implements an N-puzzle (in an NxN board) to be solved by the Solver class.
+ * This puzzle is an (N^2 - 1) version of the 8-puzzle, which is a puzzle invented
+ * by Noyes Palmer Chapman in the 1870s, etc., etc., as described in Homework 4.
  *
  * @author Emanuel Aguirre
  */
@@ -16,14 +22,12 @@ public class Board implements WorldState {
     private static final int BLANK = 0;
 
     private final int[][] tiles;
-    private final int[][] goal;
     private final int N;
 
 
     public Board(int[][] tiles) {
         N = tiles.length;
         this.tiles = cloneState(tiles);
-        goal = calculateSolution(N);
     }
 
 
@@ -60,13 +64,6 @@ public class Board implements WorldState {
                 }
             }
         }
-        if (goal != null) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    result += goal[i][j] * (i + j * N);
-                }
-            }
-        }
         return result;
     }
 
@@ -77,7 +74,7 @@ public class Board implements WorldState {
 
     @Override
     /**
-     * THIS IS THE IMPLEMENTATION OF CS61B, IT HAS TO BE CHANGED TO MY IMPLEMENTATION.
+     * THIS IS THE IMPLEMENTATION OF CS61B, IT HAS TO BE CHANGED BY MY IMPLEMENTATION.
      * @code Josh Hug (from Berkeley's CS61B @ http://joshh.ug/neighbors.html)
      */
     public Iterable<WorldState> neighbors() {
@@ -129,6 +126,9 @@ public class Board implements WorldState {
         return 0;
     }
 
+    /**
+     * @return the sum of the manhattan distances for all the tiles, except BLANK.
+     */
     public int manhattan() {
         int result = 0;
         for (int i = 0; i < N; i++) {
@@ -144,27 +144,27 @@ public class Board implements WorldState {
         return result;
     }
 
+    /**
+     * Manhattan distance between the position in which a tile currently is
+     * and the position in which the tile has to be in the solution.
+     * @return the manhattan distance for a single tile.
+     */
     private int manhattan(int row1, int col1, int row2, int col2) {
         return Math.abs(row2 - row1) + Math.abs(col2 - col1);
     }
 
+    /**
+     * @return the row in which a tile is in the solution.
+     */
     private int rowInGoal(int number) {
         return number == BLANK ? (N - 1) : (number - 1) / N;
     }
 
+    /**
+     * @return the column in which a tile is in the solution.
+     */
     private int colInGoal(int number) {
         return number == BLANK ? (N - 1) : (number - 1) % N;
-    }
-
-    private int[][] calculateSolution(int n) {
-        int[][] solution = new int[n][n];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                solution[i][j] = i + j * N + 1;
-            }
-        }
-        solution[n - 1][n - 1] = BLANK;
-        return solution;
     }
 
     /**
@@ -173,11 +173,11 @@ public class Board implements WorldState {
      * @return a clone of the tiles passed as parameter.
      */
     private int[][] cloneState(int[][] source) {
-        int[][] tiles = new int[N][];
+        int[][] clonedTiles = new int[N][];
         for (int i = 0; i < N; i++) {
-            tiles[i] = Arrays.copyOf(source[i], N);
+            clonedTiles[i] = Arrays.copyOf(source[i], N);
         }
-        return tiles;
+        return clonedTiles;
     }
 
     /** Returns the string representation of the board.
@@ -185,11 +185,11 @@ public class Board implements WorldState {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int N = size();
-        s.append(N + "\n");
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                s.append(String.format("%2d ", tileAt(i,j)));
+        int size = size();
+        s.append(size + "\n");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
         }
