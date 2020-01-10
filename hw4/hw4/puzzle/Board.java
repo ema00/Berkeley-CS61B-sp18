@@ -130,7 +130,7 @@ public class Board implements WorldState {
         return null;
     }
 
-    void setTileAt(int i, int j, int number) {
+    private void setTileAt(int i, int j, int number) {
         if (i < 0 || j < 0 || i >= N || j >= N) {
             throw new IndexOutOfBoundsException();
         }
