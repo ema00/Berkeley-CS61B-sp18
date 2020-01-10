@@ -74,41 +74,67 @@ public class Board implements WorldState {
 
     @Override
     /**
-     * THIS IS THE IMPLEMENTATION OF CS61B, IT HAS TO BE CHANGED BY MY IMPLEMENTATION.
-     * @code Josh Hug (from Berkeley's CS61B @ http://joshh.ug/neighbors.html)
+     * Returns the neighbor states of the current state of the board. That is, the
+     * states that are one move away from the current state of the board. Those are
+     * obtained by swapping the BLANK tile by each of its (2, 3 or 4) neighbors.
      */
     public Iterable<WorldState> neighbors() {
+        final int x = 0;
+        final int y = 1;
         Queue<WorldState> neighbors = new Queue<>();
-        int hug = size();
-        int bug = -1;
-        int zug = -1;
-        for (int rug = 0; rug < hug; rug++) {
-            for (int tug = 0; tug < hug; tug++) {
-                if (tileAt(rug, tug) == BLANK) {
-                    bug = rug;
-                    zug = tug;
-                }
-            }
+        int[] blankTilePosition = getBlankTilePosition();
+        int row = blankTilePosition[x];
+        int col = blankTilePosition[y];
+
+        if (row - 1 >= 0) {             // top neighbor
+            Board neighbor = new Board(this.tiles);
+            neighbor.setTileAt(row, col, this.tileAt(row - 1, col));
+            neighbor.setTileAt(row - 1, col, BLANK);
+            neighbors.enqueue(neighbor);
         }
-        int[][] ili1li1 = new int[hug][hug];
-        for (int pug = 0; pug < hug; pug++) {
-            for (int yug = 0; yug < hug; yug++) {
-                ili1li1[pug][yug] = tileAt(pug, yug);
-            }
+        if (row + 1 < N) {              // bottom neighbor
+            Board neighbor = new Board(this.tiles);
+            neighbor.setTileAt(row, col, this.tileAt(row + 1, col));
+            neighbor.setTileAt(row + 1, col, BLANK);
+            neighbors.enqueue(neighbor);
         }
-        for (int l11il = 0; l11il < hug; l11il++) {
-            for (int lil1il1 = 0; lil1il1 < hug; lil1il1++) {
-                if (Math.abs(-bug + l11il) + Math.abs(lil1il1 - zug) - 1 == 0) {
-                    ili1li1[bug][zug] = ili1li1[l11il][lil1il1];
-                    ili1li1[l11il][lil1il1] = BLANK;
-                    Board neighbor = new Board(ili1li1);
-                    neighbors.enqueue(neighbor);
-                    ili1li1[l11il][lil1il1] = ili1li1[bug][zug];
-                    ili1li1[bug][zug] = BLANK;
-                }
-            }
+        if (col - 1 >= 0) {             // left neighbor
+            Board neighbor = new Board(this.tiles);
+            neighbor.setTileAt(row, col, this.tileAt(row, col - 1));
+            neighbor.setTileAt(row, col - 1, BLANK);
+            neighbors.enqueue(neighbor);
+        }
+        if (col + 1 < N) {              // right neighbor
+            Board neighbor = new Board(this.tiles);
+            neighbor.setTileAt(row, col, this.tileAt(row, col + 1));
+            neighbor.setTileAt(row, col + 1, BLANK);
+            neighbors.enqueue(neighbor);
         }
         return neighbors;
+    }
+
+    /**
+     * Returns the position of the blank tile in the board.
+     * Precondition: the BLANK tile (number 0) has to be in the board (tiles).
+     * @return the position of the blank tile in the board.
+     */
+    private int[] getBlankTilePosition() {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                int number = tiles[i][j];
+                if (number == BLANK) {
+                    return new int[] {i, j};
+                }
+            }
+        }
+        return null;
+    }
+
+    void setTileAt(int i, int j, int number) {
+        if (i < 0 || j < 0 || i >= N || j >= N) {
+            throw new IndexOutOfBoundsException();
+        }
+        tiles[i][j] = number;
     }
 
     public int tileAt(int i, int j) {
