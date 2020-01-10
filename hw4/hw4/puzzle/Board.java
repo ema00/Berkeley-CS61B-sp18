@@ -134,9 +134,11 @@ public class Board implements WorldState {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int number = tiles[i][j];
-                int row = rowInGoal(number);
-                int col = colInGoal(number);
-                result += manhattan(i, j, row, col);
+                if (number != BLANK) {
+                    int row = rowInGoal(number);
+                    int col = colInGoal(number);
+                    result += manhattan(i, j, row, col);
+                }
             }
         }
         return result;
