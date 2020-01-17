@@ -50,7 +50,7 @@ public class MazeCycles extends MazeExplorer {
         Stack<Integer> stack = new Stack<>();
         edgeTo[source] = source;
         stack.push(source);
-        while(!stack.isEmpty()) {
+        while (!stack.isEmpty()) {
             int vertex = stack.pop();
             marked[vertex] = true;
             for (int neighbor : maze.adj(vertex)) {
