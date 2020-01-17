@@ -1,24 +1,93 @@
 package lab11.graphs;
 
+import java.util.List;
+import java.util.ArrayList;
+
+
+
 /**
- *  @author Josh Hug
+ * MazeCycles
+ * CS61B, Lab 11: https://sp18.datastructur.es/materials/lab/lab11/lab11
+ *
+ * @author Josh Hug (interface)
+ * @author Emanuel Aguirre (implementation)
  */
 public class MazeCycles extends MazeExplorer {
-    /* Inherits public fields:
-    public int[] distTo;
-    public int[] edgeTo;
-    public boolean[] marked;
-    */
+
+    /* Inherited public fields: */
+    /* Distance from source to each node. */
+    /*public int[] distTo;*/
+    /* Node previous in the search path. */
+    /*public int[] edgeTo;*/
+    /* Node has already been explored. */
+    /*public boolean[] marked;*/
+
+    private int start;
+    private Maze maze;
+    private boolean cycleFound;
+
 
     public MazeCycles(Maze m) {
         super(m);
+        maze = m;
+        start = maze.xyTo1D(1, 1);
+        cycleFound = false;
+        edgeTo[start] = start;
     }
+
 
     @Override
     public void solve() {
-        // TODO: Your code here!
+        findCycle(start);
+        announce();
     }
 
-    // Helper methods go here
-}
+    private void findCycle(int v) {
+        if (cycleFound) {
+            return;
+        }
+        marked[v] = true;
+        announce();
 
+        for (int w : maze.adj(v)) {
+            if (marked[w] && !cycleFound && existsCycle(v, w)) {
+                markCycle(w, v);
+                cycleFound = true;
+                return;
+            } else if (!marked[w]) {
+                edgeTo[w] = v;
+                announce();
+                findCycle(w);
+            }
+        }
+    }
+
+    /**
+     * Checks if a cycle is closed by two given vertices.
+     * For two adjacent vertices, there exists a cycle if for one of the vertices
+     * the second vertex is marked, and it is not the parent of the first vertex.
+     * Precondition: Both vertices have to be marked, in a DFS search, and the
+     * "first vertex" is the one currently being explored.
+     */
+    private boolean existsCycle(int first, int second) {
+        return marked[first] && marked[second] && !(edgeTo[first] == second);
+    }
+
+    /** Marks all the edges that make the cycle found. */
+    private void markCycle(int startVertex, int endVertex) {
+        List<Integer> cycleVertices = new ArrayList<>();
+        int vertex = endVertex;
+        edgeTo[startVertex] = endVertex;                // close cycle
+        cycleVertices.add(vertex);
+        while (vertex != startVertex) {
+            for (int neighbor : maze.adj(vertex)) {
+                vertex = edgeTo[vertex] == neighbor ? neighbor : vertex;
+            }
+            cycleVertices.add(vertex);
+        }
+        for (int v = 0; v < edgeTo.length; v++) {
+            edgeTo[v] = cycleVertices.contains(v) ? edgeTo[v] : Integer.MAX_VALUE;
+        }
+    }
+
+}
