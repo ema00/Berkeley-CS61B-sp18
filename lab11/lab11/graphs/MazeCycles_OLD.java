@@ -2,7 +2,6 @@ package lab11.graphs;
 
 import java.util.List;
 import java.util.ArrayList;
-import edu.princeton.cs.algs4.Stack;
 
 
 
@@ -11,12 +10,12 @@ import edu.princeton.cs.algs4.Stack;
  * CS61B, Lab 11: https://sp18.datastructur.es/materials/lab/lab11/lab11
  *
  * Explores the maze looking for cycles in the graph. Stops when finds one.
- * This implementation uses an explicit stack to perform DFS.
+ * This implementation uses the implicit stack in recursive calls to perform DFS.
  *
  * @author Josh Hug (interface)
  * @author Emanuel Aguirre (implementation)
  */
-public class MazeCycles extends MazeExplorer {
+public class MazeCycles_OLD extends MazeExplorer {
 
     /* Inherited public fields: */
     /* Distance from source to each node. */
@@ -26,42 +25,42 @@ public class MazeCycles extends MazeExplorer {
     /* Node has already been explored. */
     /*public boolean[] marked;*/
 
-    private int source;
+    private int start;
     private Maze maze;
     private boolean cycleFound;
 
 
-    public MazeCycles(Maze m) {
+    public MazeCycles_OLD(Maze m) {
         super(m);
         maze = m;
-        source = maze.xyTo1D(1, 1);
+        start = maze.xyTo1D(1, 1);
         cycleFound = false;
-        edgeTo[source] = source;
+        edgeTo[start] = start;
     }
 
 
     @Override
     public void solve() {
-        findCycle();
+        findCycle(start);
         announce();
     }
 
-    private void findCycle() {
-        Stack<Integer> stack = new Stack<>();
-        edgeTo[source] = source;
-        stack.push(source);
-        while(!stack.isEmpty()) {
-            int vertex = stack.pop();
-            marked[vertex] = true;
-            for (int neighbor : maze.adj(vertex)) {
-                if (!marked[neighbor]) {
-                    edgeTo[neighbor] = vertex;
-                    stack.push(neighbor);
-                    announce();
-                } else if (marked[neighbor] && existsCycle(vertex, neighbor)) {
-                    markCycle(neighbor, vertex);
-                    return;
-                }
+    private void findCycle(int v) {
+        if (cycleFound) {
+            return;
+        }
+        marked[v] = true;
+        announce();
+
+        for (int w : maze.adj(v)) {
+            if (marked[w] && !cycleFound && existsCycle(v, w)) {
+                markCycle(w, v);
+                cycleFound = true;
+                return;
+            } else if (!marked[w]) {
+                edgeTo[w] = v;
+                announce();
+                findCycle(w);
             }
         }
     }
