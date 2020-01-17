@@ -40,33 +40,34 @@ public class MazeBreadthFirstPaths extends MazeExplorer {
         maze = m;
         fringe = new ConcurrentLinkedQueue<>();
         source = maze.xyTo1D(sourceX, sourceY);
-        source = maze.xyTo1D(targetX, targetY);
-        distTo[source] = 0;
-        edgeTo[source] = source;
+        target = maze.xyTo1D(targetX, targetY);
     }
 
 
     /** Conducts a breadth first search of the maze starting at the source. */
     private void bfs() {
+        marked[source] = true;
+        distTo[source] = 0;
+        edgeTo[source] = source;
+        targetFound = (source == target);
         fringe.add(source);
-        while (!targetFound) {
+        while (!(targetFound || fringe.isEmpty())) {
             int vertex = fringe.remove();
-            marked[vertex] = true;
-            if (vertex == target) {
-                targetFound = true;
-            }
             for (int neighbor : maze.adj(vertex)) {
                 if (!marked[neighbor]) {
                     marked[neighbor] = true;
                     distTo[neighbor] = distTo[vertex] + 1;
                     edgeTo[neighbor] = vertex;
+                    targetFound = (neighbor == target);
                     fringe.add(neighbor);
+                }
+                if (targetFound) {
+                    break;
                 }
             }
             announce();
         }
     }
-
 
     @Override
     public void solve() {
