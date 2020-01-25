@@ -1,5 +1,16 @@
 import edu.princeton.cs.algs4.Queue;
 
+
+
+/**
+ * QuickSort
+ * CS61B, Lab 12: https://sp18.datastructur.es/materials/lab/lab12/lab12
+ *
+ * Implementation of the QuickSort algorithm on a generic queue.
+ *
+ * @author CS61B staff (interface)
+ * @author Emanuel Aguirre (implementation)
+ */
 public class QuickSort {
     /**
      * Returns a new queue that contains the given queues catenated together.
@@ -46,14 +57,43 @@ public class QuickSort {
      */
     private static <Item extends Comparable> void partition(
             Queue<Item> unsorted, Item pivot,
-            Queue<Item> less, Queue<Item> equal, Queue<Item> greater) {
+            Queue<Item> less, Queue<Item> equal, Queue<Item> greater
+    ) {
         // Your code here!
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> quickSort(
-            Queue<Item> items) {
+            Queue<Item> items
+    ) {
         // Your code here!
         return items;
     }
+
+
+    /**
+     * Main method used to test the implementation.
+     */
+    public static void main(String[] args) {
+        String a = "Antwan";
+        String e = "Edward";
+        String m = "Michelle";
+        String v = "Victor";
+        String z = "Zachary";
+
+        Queue<String> unsorted = new Queue<>();
+        unsorted.enqueue(m);
+        unsorted.enqueue(z);
+        unsorted.enqueue(a);
+        unsorted.enqueue(v);
+        unsorted.enqueue(e);
+
+        Queue<String> sorted = QuickSort.quickSort(unsorted);
+
+        System.out.println("Unsorted queue:");
+        System.out.println(unsorted.toString());
+        System.out.println("Sorted queue:");
+        System.out.println(sorted.toString());
+    }
+
 }
