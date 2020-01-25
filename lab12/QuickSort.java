@@ -16,8 +16,8 @@ public class QuickSort {
 
     /**
      * Returns a new queue that contains the given queues catenated together.
-     *
      * The items in q2 will be catenated after all of the items in q1.
+     * @author CS61B staff
      */
     private static <Item extends Comparable> Queue<Item> catenate(Queue<Item> q1, Queue<Item> q2) {
         Queue<Item> catenated = new Queue<Item>();
@@ -30,7 +30,10 @@ public class QuickSort {
         return catenated;
     }
 
-    /** Returns a random item from the given queue. */
+    /**
+     * Returns a random item from the given queue.
+     * @author CS61B staff
+     */
     private static <Item extends Comparable> Item getRandomItem(Queue<Item> items) {
         int pivotIndex = (int) (Math.random() * items.size());
         Item pivot = null;
@@ -56,6 +59,8 @@ public class QuickSort {
      *                  all of the items in unsorted that are equal to the given pivot.
      * @param greater   An empty Queue. When the function completes, this queue will contain
      *                  all of the items in unsorted that are greater than the given pivot.
+     * @author CS61B staff (interface)
+     * @author Emanuel Aguirre (implementation)
      */
     private static <Item extends Comparable> void partition(
             Queue<Item> unsorted, Item pivot,
@@ -78,6 +83,7 @@ public class QuickSort {
     /**
      * Returns a Queue that contains the given items sorted from least to greatest.
      * Sorts the Queue recursively using the Quicksort algorithm.
+     * @author CS61B staff (interface)
      * @author Emanuel Aguirre (implementation)
      */
     public static <Item extends Comparable> Queue<Item> quickSort(
@@ -100,6 +106,7 @@ public class QuickSort {
 
     /**
      * Main method used to test the implementation.
+     * @author Emanuel Aguirre
      */
     public static void main(String[] args) {
         String a = "Antwan";

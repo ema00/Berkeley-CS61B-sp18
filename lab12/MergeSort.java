@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.Queue;
  * Implementation of the MergeSort algorithm on a generic queue.
  *
  * @author CS61B staff (interface)
- * @author Emanuel Aguirre (implementation)
+ * @author Emanuel Aguirre (some implementation)
  */
 public class MergeSort {
 
@@ -22,6 +22,7 @@ public class MergeSort {
      * @param   q1  A Queue in sorted order from least to greatest.
      * @param   q2  A Queue in sorted order from least to greatest.
      * @return      The smallest item that is in q1 or q2.
+     * @author CS61B staff
      */
     private static <Item extends Comparable> Item getMin(Queue<Item> q1, Queue<Item> q2) {
         if (q1.isEmpty()) {
@@ -42,12 +43,15 @@ public class MergeSort {
         }
     }
 
-    /** Returns a queue of queues that each contain one item from items. */
+    /**
+     * Returns a queue of queues that each contain one item from items.
+     * @author Emanuel Aguirre
+     */
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items
     ) {
         Queue<Queue<Item>> queue = new Queue<>();
-        // This is to avoid exceptions when trying to sort an empty queue.
+        // An empty queue must return a queue containing an empty queue.
         if (queue.isEmpty()) {
             queue.enqueue(new Queue<>());
         }
@@ -70,6 +74,8 @@ public class MergeSort {
      * @param   q2  A Queue in sorted order from least to greatest.
      * @return      A Queue containing all of the q1 and q2 in sorted order, from least to
      *              greatest.
+     * @author CS61B staff (interface)
+     * @author Emanuel Aguirre (implementation)
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2
@@ -87,7 +93,11 @@ public class MergeSort {
         return result;
     }
 
-    /** Returns a Queue that contains the given items sorted from least to greatest. */
+    /**
+     * Returns a Queue that contains the given items sorted from least to greatest.
+     * @author CS61B staff (interface)
+     * @author Emanuel Aguirre (implementation)
+     */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items
     ) {
@@ -128,6 +138,7 @@ public class MergeSort {
 
     /**
      * Main method used to test the implementation.
+     * @author Emanuel Aguirre
      */
     public static void main(String[] args) {
         String a = "Alice";
