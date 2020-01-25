@@ -47,6 +47,10 @@ public class MergeSort {
             makeSingleItemQueues(Queue<Item> items
     ) {
         Queue<Queue<Item>> queue = new Queue<>();
+        // This is to avoid exceptions when trying to sort an empty queue.
+        if (queue.isEmpty()) {
+            queue.enqueue(new Queue<>());
+        }
         for (Item item : items) {
             Queue<Item> singleItemQueue = new Queue<>();
             singleItemQueue.enqueue(item);
