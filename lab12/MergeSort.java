@@ -46,8 +46,13 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items
     ) {
-        // Your code here!
-        return null;
+        Queue<Queue<Item>> queue = new Queue<>();
+        for (Item item : items) {
+            Queue<Item> singleItemQueue = new Queue<>();
+            singleItemQueue.enqueue(item);
+            queue.enqueue(singleItemQueue);
+        }
+        return queue;
     }
 
     /**
@@ -61,22 +66,61 @@ public class MergeSort {
      * @param   q2  A Queue in sorted order from least to greatest.
      * @return      A Queue containing all of the q1 and q2 in sorted order, from least to
      *              greatest.
-     *
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2
     ) {
-        // Your code here!
-        return null;
+        Queue<Item> result = new Queue<>();
+        while (!(q1.isEmpty() && q2.isEmpty())) {
+            if (q1.isEmpty()) {
+                result.enqueue(q2.dequeue());
+            } else if (q2.isEmpty()) {
+                result.enqueue(q1.dequeue());
+            } else {
+                result.enqueue(getMin(q1, q2));
+            }
+        }
+        return result;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items
     ) {
-        // Your code here!
-        return items;
+        Queue<Queue<Item>> siq = makeSingleItemQueues(items);
+        Queue<Queue<Item>> miq = mergeSortMultipleItemQueues(siq);
+        return miq.dequeue();
     }
+
+    /**
+     * Recursively sorts a queue of queues of sorted items, using Merge Sort.
+     * Works by dequeuing the sorted queues in pairs, merging them, and adding them to a new
+     * queue of sorted queues, and then recursively calling this method on that queue.
+     * A multiple item queue is considered sorted if its size is 0 or 1. Recursion base case.
+     * Precondition: The queues in "miq" must be sorted.
+     * Example: mergeSortMultipleItemQueues((8, 9), (1, 3)) returns ((1, 3, 8, 9))
+     * @param miq is a queue of queues of sorted items.
+     * @param <Item> is the type of item to be sorted; must implement Comparable interface.
+     * @return a queue containing queues of sorted items.
+     * @author Emanuel Aguirre
+     */
+    private static <Item extends Comparable> Queue<Queue<Item>> mergeSortMultipleItemQueues(
+            Queue<Queue<Item>> miq
+    ) {
+        if (miq.size() <= 1) {
+            return miq;
+        }
+
+        Queue<Queue<Item>> msMiq = new Queue<>();
+        while (!miq.isEmpty()) {
+            Queue<Item> q1 = !miq.isEmpty() ? miq.dequeue() : new Queue<>();
+            Queue<Item> q2 = !miq.isEmpty() ? miq.dequeue() : new Queue<>();
+            Queue<Item> msq = mergeSortedQueues(q1, q2);
+            msMiq.enqueue(msq);
+        }
+        return mergeSortMultipleItemQueues(msMiq);
+    }
+
 
     /**
      * Main method used to test the implementation.
@@ -84,10 +128,12 @@ public class MergeSort {
     public static void main(String[] args) {
         String a = "Alice";
         String e = "Ethan";
+        String m = "Michael";
         String v = "Vanessa";
         String z = "Zoey";
 
         Queue<String> unsorted = new Queue<>();
+        unsorted.enqueue(m);
         unsorted.enqueue(z);
         unsorted.enqueue(a);
         unsorted.enqueue(v);
