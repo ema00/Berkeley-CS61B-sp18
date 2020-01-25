@@ -1,6 +1,18 @@
 import edu.princeton.cs.algs4.Queue;
 
+
+
+/**
+ * MergeSort
+ * CS61B, Lab 12: https://sp18.datastructur.es/materials/lab/lab12/lab12
+ *
+ * Implementation of the MergeSort algorithm on a generic queue.
+ *
+ * @author CS61B staff (interface)
+ * @author Emanuel Aguirre (implementation)
+ */
 public class MergeSort {
+
     /**
      * Removes and returns the smallest item that is in q1 or q2.
      *
@@ -11,8 +23,7 @@ public class MergeSort {
      * @param   q2  A Queue in sorted order from least to greatest.
      * @return      The smallest item that is in q1 or q2.
      */
-    private static <Item extends Comparable> Item getMin(
-            Queue<Item> q1, Queue<Item> q2) {
+    private static <Item extends Comparable> Item getMin(Queue<Item> q1, Queue<Item> q2) {
         if (q1.isEmpty()) {
             return q2.dequeue();
         } else if (q2.isEmpty()) {
@@ -33,7 +44,8 @@ public class MergeSort {
 
     /** Returns a queue of queues that each contain one item from items. */
     private static <Item extends Comparable> Queue<Queue<Item>>
-            makeSingleItemQueues(Queue<Item> items) {
+            makeSingleItemQueues(Queue<Item> items
+    ) {
         // Your code here!
         return null;
     }
@@ -52,15 +64,41 @@ public class MergeSort {
      *
      */
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
-            Queue<Item> q1, Queue<Item> q2) {
+            Queue<Item> q1, Queue<Item> q2
+    ) {
         // Your code here!
         return null;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
-            Queue<Item> items) {
+            Queue<Item> items
+    ) {
         // Your code here!
         return items;
     }
+
+    /**
+     * Main method used to test the implementation.
+     */
+    public static void main(String[] args) {
+        String a = "Alice";
+        String e = "Ethan";
+        String v = "Vanessa";
+        String z = "Zoey";
+
+        Queue<String> unsorted = new Queue<>();
+        unsorted.enqueue(z);
+        unsorted.enqueue(a);
+        unsorted.enqueue(v);
+        unsorted.enqueue(e);
+
+        Queue<String> sorted = MergeSort.mergeSort(unsorted);
+
+        System.out.println("Unsorted queue:");
+        System.out.println(unsorted.toString());
+        System.out.println("Sorted queue:");
+        System.out.println(sorted.toString());
+    }
+
 }
