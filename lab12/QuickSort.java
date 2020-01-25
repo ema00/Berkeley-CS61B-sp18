@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.Queue;
 
+import java.util.Iterator;
 
 
 /**
@@ -9,9 +10,10 @@ import edu.princeton.cs.algs4.Queue;
  * Implementation of the QuickSort algorithm on a generic queue.
  *
  * @author CS61B staff (interface)
- * @author Emanuel Aguirre (implementation)
+ * @author Emanuel Aguirre (some implementation)
  */
 public class QuickSort {
+
     /**
      * Returns a new queue that contains the given queues catenated together.
      *
@@ -59,15 +61,40 @@ public class QuickSort {
             Queue<Item> unsorted, Item pivot,
             Queue<Item> less, Queue<Item> equal, Queue<Item> greater
     ) {
-        // Your code here!
+        Iterator<Item> iterator = unsorted.iterator();
+        while (iterator.hasNext()) {
+            Item item = iterator.next();
+            int cmp = item.compareTo(pivot);
+            if (cmp < 0) {
+                less.enqueue(item);
+            } else if (cmp > 0) {
+                greater.enqueue(item);
+            } else {
+                equal.enqueue(item);
+            }
+        }
     }
 
-    /** Returns a Queue that contains the given items sorted from least to greatest. */
+    /**
+     * Returns a Queue that contains the given items sorted from least to greatest.
+     * Sorts the Queue recursively using the Quicksort algorithm.
+     * @author Emanuel Aguirre (implementation)
+     */
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items
     ) {
-        // Your code here!
-        return items;
+        if (items.size() <= 1) {
+            return items;
+        }
+
+        Queue<Item> less = new Queue<>();
+        Queue<Item> equal = new Queue<>();
+        Queue<Item> greater = new Queue<>();
+        Item item = getRandomItem(items);
+        partition(items, item, less, equal, greater);
+        less = quickSort(less);
+        greater = quickSort(greater);
+        return catenate(less, catenate(equal, greater));
     }
 
 
@@ -78,6 +105,7 @@ public class QuickSort {
         String a = "Antwan";
         String e = "Edward";
         String m = "Michelle";
+        String m2 = "Michelle";
         String v = "Victor";
         String z = "Zachary";
 
@@ -86,6 +114,7 @@ public class QuickSort {
         unsorted.enqueue(z);
         unsorted.enqueue(a);
         unsorted.enqueue(v);
+        unsorted.enqueue(m2);
         unsorted.enqueue(e);
 
         Queue<String> sorted = QuickSort.quickSort(unsorted);
@@ -94,6 +123,16 @@ public class QuickSort {
         System.out.println(unsorted.toString());
         System.out.println("Sorted queue:");
         System.out.println(sorted.toString());
+
+
+        Queue<String> unsortedEmpty = new Queue<>();
+
+        Queue<String> sortedEmpty = QuickSort.quickSort(unsortedEmpty);
+
+        System.out.println("Unsorted empty queue:");
+        System.out.println(unsortedEmpty.toString());
+        System.out.println("Sorted empty queue:");
+        System.out.println(sortedEmpty.toString());
     }
 
 }

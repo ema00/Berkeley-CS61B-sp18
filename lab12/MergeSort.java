@@ -133,6 +133,7 @@ public class MergeSort {
         String a = "Alice";
         String e = "Ethan";
         String m = "Michael";
+        String m2 = "Michael";
         String v = "Vanessa";
         String z = "Zoey";
 
@@ -142,6 +143,7 @@ public class MergeSort {
         unsorted.enqueue(a);
         unsorted.enqueue(v);
         unsorted.enqueue(e);
+        unsorted.enqueue(m2);
 
         Queue<String> sorted = MergeSort.mergeSort(unsorted);
 
@@ -149,6 +151,16 @@ public class MergeSort {
         System.out.println(unsorted.toString());
         System.out.println("Sorted queue:");
         System.out.println(sorted.toString());
+
+
+        Queue<String> unsortedEmpty = new Queue<>();
+
+        Queue<String> sortedEmpty = MergeSort.mergeSort(unsortedEmpty);
+
+        System.out.println("Unsorted empty queue:");
+        System.out.println(unsortedEmpty.toString());
+        System.out.println("Sorted empty queue:");
+        System.out.println(sortedEmpty.toString());
     }
 
 }
