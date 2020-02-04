@@ -1,6 +1,8 @@
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Math.pow;
+
 
 
 /**
@@ -11,6 +13,7 @@ import java.util.Map;
  * a query result. The getMapRaster method must return a Map containing all
  * seven of the required fields, otherwise the front end code will probably
  * not draw the output correctly.
+ * NOTE: (image) depth and zoom level are considered synonyms.
  *
  * @author: CS61B staff (interface of getMapRaster)
  * @author: Emanuel Aguirre (implementation)
@@ -23,27 +26,44 @@ public class Rasterer {
 
     /* Longitude Distance per Pixel (LonDPP) for each image depth (resolution) available. */
     private static final double[] LON_DPP_AT_ZOOM = {
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 0)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 1)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 2)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 3)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 4)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 5)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 6)),
-        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * Math.pow(2, 7))
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 0)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 1)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 2)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 3)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 4)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 5)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 6)),
+        (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 7))
     };
 
     /* Number of tiles per axis (lon and lat) that comprise the bounding box at each zoom level. */
     private static final int[] TILES_AT_ZOOM_LEVEL = {
-        (int) Math.pow(2, 0),
-        (int) Math.pow(2, 1),
-        (int) Math.pow(2, 2),
-        (int) Math.pow(2, 3),
-        (int) Math.pow(2, 4),
-        (int) Math.pow(2, 5),
-        (int) Math.pow(2, 6),
-        (int) Math.pow(2, 7),
+        (int) pow(2, 0),
+        (int) pow(2, 1),
+        (int) pow(2, 2),
+        (int) pow(2, 3),
+        (int) pow(2, 4),
+        (int) pow(2, 5),
+        (int) pow(2, 6),
+        (int) pow(2, 7),
     };
+
+    /* Names of the query parameters. */
+    private static final String QUERY_PARAM_ULLON = "ullon";
+    private static final String QUERY_PARAM_ULLAT = "ullat";
+    private static final String QUERY_PARAM_LRLON = "lrlon";
+    private static final String QUERY_PARAM_LRLAT = "lrlat";
+    private static final String QUERY_PARAM_WIDTH = "w";
+    private static final String QUERY_PARAM_HEIGHT = "h";
+
+    /* Names of the result parameters. */
+    private static final String RESULT_RENDER_GRID = "render_grid";
+    private static final String RESULT_ULLON = "raster_ul_lon";
+    private static final String RESULT_ULLAT = "raster_ul_lat";
+    private static final String RESULT_LRLON = "raster_lr_lon";
+    private static final String RESULT_LRLAT = "raster_lr_lat";
+    private static final String RESULT_DEPTH = "depth";
+    private static final String RESULT_QUERY_SUCCESS = "query_success";
 
 
     public Rasterer() {
@@ -120,7 +140,6 @@ public class Rasterer {
         return Math.abs(lon2 - lon1) / imageWidth;
     }
 
-
     /**
      * Selects the LonDPP of the images to return.
      * The criteria for selecting LonDPP is: the greatest LonDPP that is less than or equal to
@@ -133,10 +152,7 @@ public class Rasterer {
      * @return one of the fixed values for lonDPP, given by the image resolutions available.
      */
     double selectLonDPP(double lonDPP) {
-        int zoomLevel = MAX_ZOOM_LEVEL;
-        for (int zl = MAX_ZOOM_LEVEL; zl >= MIN_ZOOM_LEVEL; zl--) {
-            zoomLevel = LON_DPP_AT_ZOOM[zl] <= lonDPP ? zl : zoomLevel;
-        }
+        int zoomLevel = selectZoomLevel(lonDPP);
         return LON_DPP_AT_ZOOM[zoomLevel];
     }
 
