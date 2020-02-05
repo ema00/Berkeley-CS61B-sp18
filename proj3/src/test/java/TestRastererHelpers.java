@@ -3,8 +3,7 @@ import org.junit.Test;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.abs;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 
 
@@ -25,6 +24,9 @@ public class TestRastererHelpers {
         rasterer = new Rasterer();
     }
 
+
+    /* Tests for: rasterer.lonDPP */
+
     @Test
     public void testLonDPP() {
         double lon1 = -100.0;
@@ -39,6 +41,9 @@ public class TestRastererHelpers {
                 rasterer.lonDPP(lon1, lon2, w),
                 DELTA_FOR_DOUBLE_COMPARISONS);
     }
+
+
+    /* Tests for: rasterer.selectLonDPP */
 
     @Test
     // A LonDPP above the greatest LonDPP should return the greatest LonDPP.
@@ -105,6 +110,119 @@ public class TestRastererHelpers {
                 1.71661376953125E-4,
                 rasterer.selectLonDPP(lonDPPD),
                 DELTA_FOR_DOUBLE_COMPARISONS);
+    }
+
+
+    /* Tests for: rasterer.areValidCoordinates */
+
+    // All coordinates are within bounds, and upper left and lower right are in good relative pos.
+    @Test
+    public void testAreValidCoordinatesAllInBounds() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // All coordinates are within bounds, but right coordinate is smaller than left.
+    @Test
+    public void testAreValidCoordinatesAllInBoundsRightSmallerThanLeft() {
+        double ulLon = MapServer.ROOT_LRLON - 0.02;         // x
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_ULLON + 0.02;         // x
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertFalse(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // All coordinates are within bounds, but upper coordinate is smaller than lower.
+    @Test
+    public void testAreValidCoordinatesAllInBoundsUpperSmallerThanLower() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_LRLAT + 0.02;         // x
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_ULLAT - 0.02;         // x
+        assertFalse(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Only Upper Left coordinates are within bounds.
+    @Test
+    public void testAreValidCoordinatesUpperLeftInBounds() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_LRLON + 1.00;         // x
+        double lrLat = MapServer.ROOT_LRLAT - 1.00;         // x
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Only Lower Left coordinates are within bounds.
+    @Test
+    public void testAreValidCoordinatesLowerLeftInBounds() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_ULLAT + 1.00;         // x
+        double lrLon = MapServer.ROOT_LRLON + 1.00;         // x
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Only Upper Right coordinates are within bounds.
+    @Test
+    public void testAreValidCoordinatesUpperRightInBounds() {
+        double ulLon = MapServer.ROOT_ULLON - 1.00;         // x
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_LRLAT - 1.00;         // x
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Only Lower Right coordinates are within bounds.
+    @Test
+    public void testAreValidCoordinatesLowerRightInBounds() {
+        double ulLon = MapServer.ROOT_ULLON - 1.00;         // x
+        double ulLat = MapServer.ROOT_ULLAT + 1.00;         // x
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Out of bounds to the right.
+    @Test
+    public void testAreValidCoordinatesRightOutOfBounds() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_LRLON + 1.00;         // x
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Out of bounds to the left.
+    @Test
+    public void testAreValidCoordinatesLeftOutOfBounds() {
+        double ulLon = MapServer.ROOT_ULLON - 1.00;         // x
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Out of bounds above.
+    @Test
+    public void testAreValidCoordinatesAboveOutOfBounds() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_ULLAT + 1.00;         // x
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_LRLAT + 0.02;
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
+    }
+
+    // Out of bounds below.
+    @Test
+    public void testAreValidCoordinatesBelowOutOfBounds() {
+        double ulLon = MapServer.ROOT_ULLON + 0.02;
+        double ulLat = MapServer.ROOT_ULLAT - 0.02;
+        double lrLon = MapServer.ROOT_LRLON - 0.02;
+        double lrLat = MapServer.ROOT_LRLAT - 1.00;         // x
+        assertTrue(rasterer.areValidCoordinates(ulLon, ulLat, lrLon, lrLat));
     }
 
 }

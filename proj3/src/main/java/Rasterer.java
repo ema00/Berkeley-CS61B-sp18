@@ -25,7 +25,7 @@ public class Rasterer {
     private static final int MAX_ZOOM_LEVEL = 7;
 
     /* Longitude Distance per Pixel (LonDPP) for each image depth (resolution) available. */
-    private static final double[] LON_DPP_AT_ZOOM = {
+    private static final double[] LONDPP_AT_DEPTH = {
         (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 0)),
         (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 1)),
         (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / (MapServer.TILE_SIZE * pow(2, 2)),
@@ -100,30 +100,23 @@ public class Rasterer {
      *                    forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
-        // This is for console testing, delete once implemented
-        System.out.println("Parameters:");
-        System.out.println(params);
-
-        double queryBoxLonDPP =
-                lonDPP(params.get("ullon"), params.get("lrlon"), params.get("w").intValue());
-        System.out.println("Query Box LonDPP:");
-        System.out.println(queryBoxLonDPP);
-        System.out.println("LonDPP for every image resolution available:");
-        System.out.println(LON_DPP_AT_ZOOM[0]);
-        System.out.println(LON_DPP_AT_ZOOM[1]);
-        System.out.println(LON_DPP_AT_ZOOM[2]);
-        System.out.println(LON_DPP_AT_ZOOM[3]);
-        System.out.println(LON_DPP_AT_ZOOM[4]);
-        System.out.println(LON_DPP_AT_ZOOM[5]);
-        System.out.println(LON_DPP_AT_ZOOM[6]);
-        System.out.println(LON_DPP_AT_ZOOM[7]);
-        System.out.println("LonDPP that should be applied to the response of the query box:");
-        System.out.println(selectLonDPP(queryBoxLonDPP));
-
         Map<String, Object> results = new HashMap<>();
-        System.out.println("Since you haven't implemented getMapRaster, nothing is displayed in "
-                           + "your browser.");
+
         return results;
+    }
+
+    /**
+     * Returns true if the coordinate parameters overlap with the the box that contains image data.
+     * @param ulLon longitude of the upper-left coordinate.
+     * @param ulLat latitude of the upper-left coordinate.
+     * @param lrLon longitude of the lower-right coordinate.
+     * @param lrLat latitude of the lower-right coordinate.
+     * @return true if the query box overlaps over the bounding box.
+     */
+    public boolean areValidCoordinates(double ulLon, double ulLat, double lrLon, double lrLat) {
+        return (ulLon < lrLon && lrLat < ulLat)
+                && (ulLon < MapServer.ROOT_LRLON || MapServer.ROOT_ULLON < lrLon)
+                && (MapServer.ROOT_LRLAT < ulLat || lrLat < MapServer.ROOT_ULLAT);
     }
 
     /**
@@ -153,7 +146,7 @@ public class Rasterer {
      */
     double selectLonDPP(double lonDPP) {
         int zoomLevel = selectZoomLevel(lonDPP);
-        return LON_DPP_AT_ZOOM[zoomLevel];
+        return LONDPP_AT_DEPTH[zoomLevel];
     }
 
     /**
@@ -164,7 +157,7 @@ public class Rasterer {
     private int selectZoomLevel(double lonDPP) {
         int zoomLevel = MAX_ZOOM_LEVEL;
         for (int zl = MAX_ZOOM_LEVEL; zl >= MIN_ZOOM_LEVEL; zl--) {
-            zoomLevel = LON_DPP_AT_ZOOM[zl] <= lonDPP ? zl : zoomLevel;
+            zoomLevel = LONDPP_AT_DEPTH[zl] <= lonDPP ? zl : zoomLevel;
         }
         return zoomLevel;
     }
