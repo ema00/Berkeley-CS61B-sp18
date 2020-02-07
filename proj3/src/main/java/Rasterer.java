@@ -128,16 +128,10 @@ public class Rasterer {
             String[][] renderGrid = selectRenderGrid(ulLon, ulLat, lrLon, lrLat, depth);
             results.put(RESULT_QUERY_SUCCESS, success);
             results.put(RESULT_RENDER_GRID, renderGrid);
-            results.put(RESULT_ULLON, ROOT_ULLON
-                    + xIndexLeft(ulLon, depth) * tileLonLength(depth));
-            results.put(RESULT_ULLAT, ROOT_LRLAT
-                    + (numTilesAtDepth(depth) - yIndexUpper(ulLat, depth))
-                    * tileLatLength(depth));
-            results.put(RESULT_LRLON, ROOT_ULLON
-                    + (xIndexRight(lrLon, depth) + 1) * tileLonLength(depth));
-            results.put(RESULT_LRLAT, ROOT_LRLAT
-                    + (numTilesAtDepth(depth) - (yIndexLower(lrLat, depth) + 1))
-                    * tileLatLength(depth));
+            results.put(RESULT_ULLON, boundUpperLeftLon(ulLon, depth));
+            results.put(RESULT_ULLAT, boundUpperLeftLat(ulLat, depth));
+            results.put(RESULT_LRLON, boundLowerRightLon(lrLon, depth));
+            results.put(RESULT_LRLAT, boundLowerRightLat(lrLat, depth));
             results.put(RESULT_DEPTH, depth);
         }
         return results;
@@ -157,6 +151,15 @@ public class Rasterer {
                 && (ROOT_LRLAT < ulLat || lrLat < ROOT_ULLAT);
     }
 
+    /**
+     * Selects the grid of image tiles to return in order to display the area covered by the
+     * bounding box that corresponds to the query box. The query box is given by the upper-left
+     * and the lower-right longitude and latitude coordinates passed as parameter.
+     * If the coordinates aren't fully contained within the root bounding box, only the tiles
+     * that correspond to the area that overlaps with the root bounding box is returned.
+     * The tiles to be returned are at the image depth passed as parameter.
+     * @return the filenames of a grid of image tiles of the area to render.
+     */
     private String[][] selectRenderGrid(
             double ulLon, double ulLat, double lrLon, double lrLat, int depth
     ) {
@@ -176,6 +179,36 @@ public class Rasterer {
             }
         }
         return grid;
+    }
+
+    /**
+     * Calculates the bounding upper left longitude of the rastered image.
+     */
+    private double boundUpperLeftLon(double ulLon, int depth) {
+        return ROOT_ULLON + xIndexLeft(ulLon, depth) * tileLonLength(depth);
+    }
+
+    /**
+     * Calculates  the bounding upper left latitude of the rastered image.
+     */
+    private double boundUpperLeftLat(double ulLat, int depth) {
+        return ROOT_LRLAT
+                + (numTilesAtDepth(depth) - yIndexUpper(ulLat, depth)) * tileLatLength(depth);
+    }
+
+    /**
+     * Calculates  the bounding lower right longitude of the rastered image.
+     */
+    private double boundLowerRightLon(double lrLon, int depth) {
+        return ROOT_ULLON + (xIndexRight(lrLon, depth) + 1) * tileLonLength(depth);
+    }
+
+    /**
+     * Calculates  the bounding lower right latitude of the rastered image.
+     */
+    private double boundLowerRightLat(double lrLat, int depth) {
+        return ROOT_LRLAT
+                + (numTilesAtDepth(depth) - yIndexLower(lrLat, depth) - 1) * tileLatLength(depth);
     }
 
     /**
