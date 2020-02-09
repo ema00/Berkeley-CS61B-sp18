@@ -23,14 +23,13 @@ public class Rasterer {
 
     /*
      * The root upper left/lower right longitudes and latitudes represent the bounding box of
-     * the root tile, as the images in the img/ folder are scraped.
+     * the root tile (tat is the tile at depth 0 (zoom level 0) that contains the whole map).
      * Longitude == x-axis; latitude == y-axis.
-     * (Can't make static import because MapServer is in default package).
      */
-    private static final double ROOT_ULLON = MapServer.ROOT_ULLON;
-    private static final double ROOT_LRLON = MapServer.ROOT_LRLON;
-    private static final double ROOT_ULLAT = MapServer.ROOT_ULLAT;
-    private static final double ROOT_LRLAT = MapServer.ROOT_LRLAT;
+    private static final Coordinate ROOT_UL =
+            new Coordinate(MapServer.ROOT_ULLON, MapServer.ROOT_ULLAT);
+    private static final Coordinate ROOT_LR =
+            new Coordinate(MapServer.ROOT_LRLON, MapServer.ROOT_LRLAT);
 
     /* Size of image tiles (can't make static import because MapServer is in default package). */
     private static final int TILE_SIZE = MapServer.TILE_SIZE;
@@ -41,14 +40,14 @@ public class Rasterer {
 
     /* Longitude Distance per Pixel (LonDPP) for each image depth (resolution) available. */
     private static final double[] LONDPP_AT_DEPTH = {
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 0)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 1)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 2)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 3)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 4)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 5)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 6)),
-        (ROOT_LRLON - ROOT_ULLON) / (TILE_SIZE * pow(2, 7))
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(0)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(1)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(2)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(3)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(4)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(5)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(6)),
+        (ROOT_LR.lon - ROOT_UL.lon) / (TILE_SIZE * numTilesAtDepth(7))
     };
 
     /* Names of the query parameters. */
@@ -125,30 +124,32 @@ public class Rasterer {
             results.put(RESULT_LRLAT, 0);
             results.put(RESULT_DEPTH, depth);
         } else {
-            String[][] renderGrid = selectRenderGrid(ulLon, ulLat, lrLon, lrLat, depth);
+            Coordinate ul = new Coordinate(ulLon, ulLat);
+            Coordinate lr = new Coordinate(lrLon, lrLat);
+            String[][] renderGrid = selectRenderGrid(ul.lon, ul.lat, lr.lon, lr.lat, depth);
             results.put(RESULT_QUERY_SUCCESS, success);
             results.put(RESULT_RENDER_GRID, renderGrid);
-            results.put(RESULT_ULLON, boundUpperLeftLon(ulLon, depth));
-            results.put(RESULT_ULLAT, boundUpperLeftLat(ulLat, depth));
-            results.put(RESULT_LRLON, boundLowerRightLon(lrLon, depth));
-            results.put(RESULT_LRLAT, boundLowerRightLat(lrLat, depth));
+            results.put(RESULT_ULLON, boundUpperLeftLon(ul.lon, depth));
+            results.put(RESULT_ULLAT, boundUpperLeftLat(ul.lat, depth));
+            results.put(RESULT_LRLON, boundLowerRightLon(lr.lon, depth));
+            results.put(RESULT_LRLAT, boundLowerRightLat(lr.lat, depth));
             results.put(RESULT_DEPTH, depth);
         }
         return results;
     }
 
     /**
-     * Returns true if the coordinate parameters overlap with the the box that contains image data.
+     * Returns true if the coordinate parameters overlap with the bounding box of the root tile.
      * @param ulLon longitude of the upper-left coordinate.
      * @param ulLat latitude of the upper-left coordinate.
      * @param lrLon longitude of the lower-right coordinate.
      * @param lrLat latitude of the lower-right coordinate.
      * @return true if the query box overlaps over the bounding box.
      */
-    public boolean areValidCoordinates(double ulLon, double ulLat, double lrLon, double lrLat) {
+    boolean areValidCoordinates(double ulLon, double ulLat, double lrLon, double lrLat) {
         return (ulLon < lrLon && lrLat < ulLat)
-                && (ulLon < ROOT_LRLON || ROOT_ULLON < lrLon)
-                && (ROOT_LRLAT < ulLat || lrLat < ROOT_ULLAT);
+                && (ulLon < ROOT_LR.lon || ROOT_UL.lon < lrLon)
+                && (ROOT_LR.lat < ulLat || lrLat < ROOT_UL.lat);
     }
 
     /**
@@ -185,14 +186,14 @@ public class Rasterer {
      * Calculates the bounding upper left longitude of the rastered image.
      */
     private double boundUpperLeftLon(double ulLon, int depth) {
-        return ROOT_ULLON + xIndexLeft(ulLon, depth) * tileLonLength(depth);
+        return ROOT_UL.lon + xIndexLeft(ulLon, depth) * tileLonLength(depth);
     }
 
     /**
      * Calculates  the bounding upper left latitude of the rastered image.
      */
     private double boundUpperLeftLat(double ulLat, int depth) {
-        return ROOT_LRLAT
+        return ROOT_LR.lat
                 + (numTilesAtDepth(depth) - yIndexUpper(ulLat, depth)) * tileLatLength(depth);
     }
 
@@ -200,14 +201,14 @@ public class Rasterer {
      * Calculates  the bounding lower right longitude of the rastered image.
      */
     private double boundLowerRightLon(double lrLon, int depth) {
-        return ROOT_ULLON + (xIndexRight(lrLon, depth) + 1) * tileLonLength(depth);
+        return ROOT_UL.lon + (xIndexRight(lrLon, depth) + 1) * tileLonLength(depth);
     }
 
     /**
      * Calculates  the bounding lower right latitude of the rastered image.
      */
     private double boundLowerRightLat(double lrLat, int depth) {
-        return ROOT_LRLAT
+        return ROOT_LR.lat
                 + (numTilesAtDepth(depth) - yIndexLower(lrLat, depth) - 1) * tileLatLength(depth);
     }
 
@@ -221,8 +222,8 @@ public class Rasterer {
      */
     private int xIndexLeft(double ulLon, int depth) {
         double tileLongitudeLength = tileLonLength(depth);
-        return (ulLon - ROOT_ULLON) / tileLongitudeLength >= 0
-                ? (int) ((ulLon - ROOT_ULLON) / tileLongitudeLength)
+        return (ulLon - ROOT_UL.lon) / tileLongitudeLength >= 0
+                ? (int) ((ulLon - ROOT_UL.lon) / tileLongitudeLength)
                 : 0;
     }
 
@@ -236,8 +237,8 @@ public class Rasterer {
      */
     private int xIndexRight(double lrLon, int depth) {
         double tileLongitudeLength = tileLonLength(depth);
-        return (lrLon - ROOT_ULLON) / tileLongitudeLength < numTilesAtDepth(depth)
-                ? (int) ((lrLon - ROOT_ULLON) / tileLongitudeLength)
+        return (lrLon - ROOT_UL.lon) / tileLongitudeLength < numTilesAtDepth(depth)
+                ? (int) ((lrLon - ROOT_UL.lon) / tileLongitudeLength)
                 : numTilesAtDepth(depth) - 1;
     }
 
@@ -251,8 +252,8 @@ public class Rasterer {
      */
     private int yIndexUpper(double ulLat, int depth) {
         double tileLatitudeLength = tileLatLength(depth);
-        return (ROOT_ULLAT - ulLat) / tileLatitudeLength >= 0
-                ? (int) ((ROOT_ULLAT - ulLat) / tileLatitudeLength)
+        return (ROOT_UL.lat - ulLat) / tileLatitudeLength >= 0
+                ? (int) ((ROOT_UL.lat - ulLat) / tileLatitudeLength)
                 : 0;
     }
 
@@ -266,8 +267,8 @@ public class Rasterer {
      */
     private int yIndexLower(double lrLat, int depth) {
         double tileLatitudeLength = tileLatLength(depth);
-        return (ROOT_ULLAT - lrLat) / tileLatitudeLength < numTilesAtDepth(depth)
-                ? (int) ((ROOT_ULLAT - lrLat) / tileLatitudeLength)
+        return (ROOT_UL.lat - lrLat) / tileLatitudeLength < numTilesAtDepth(depth)
+                ? (int) ((ROOT_UL.lat - lrLat) / tileLatitudeLength)
                 : numTilesAtDepth(depth) - 1;
     }
 
@@ -327,7 +328,7 @@ public class Rasterer {
      * @return the length in longitude units of a tile at the given depth.
      */
     private double tileLonLength(int depth) {
-        return (ROOT_LRLON - ROOT_ULLON) / numTilesAtDepth(depth);
+        return (ROOT_LR.lon - ROOT_UL.lon) / numTilesAtDepth(depth);
     }
 
     /**
@@ -336,7 +337,7 @@ public class Rasterer {
      * @return the length in latitude units of a tile at the given depth.
      */
     private double tileLatLength(int depth) {
-        return (ROOT_ULLAT - ROOT_LRLAT) / numTilesAtDepth(depth);
+        return (ROOT_UL.lat - ROOT_LR.lat) / numTilesAtDepth(depth);
     }
 
     /**
@@ -345,7 +346,7 @@ public class Rasterer {
      * Every image depth (zoom level) has double tiles per side as the immediate lower depth.
      * @return the number of tiles covered by the total bounding box at the given depth
      */
-    private int numTilesAtDepth(int depth) {
+    private static int numTilesAtDepth(int depth) {
         return (int) pow(2, depth);
     }
 
