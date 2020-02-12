@@ -1,7 +1,6 @@
+import java.util.Iterator;
 import java.util.Objects;
-import java.util.Map;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.HashSet;
 
 
@@ -9,30 +8,27 @@ import java.util.HashSet;
 /**
  * Node
  *
- * Represents a Node element as defined in Open Street Map.
- * It is composed of a coordinate (latitude and longitude) and an unique Id.
+ * Represents a Node element almost as defined in Open Street Map.
+ * More specifically, represents a node that has no attributes other than id, lon and lat.
+ * It is composed of a coordinate (latitude and longitude) and a unique Id.
  * It is connected to its neighbor nodes.
  * Has attributes that are taken from those described in OSM, and mapped from String to String.
- * Node equality (and hash code) are based on latitude, longitude and Id. But neighbors and
- * attributes are ignored.
+ * Equality (and hash code) is based on Id. But neighbors are ignored.
  * 
  * @author Emanuel Aguirre
  */
 class Node extends Coordinate {
 
     /* Node Id. */
-    final long id;
+    final Long id;
     /* Neighbor nodes. Lazily initialized to avoid unnecessary use of memory. */
     private Set<Node> neighbors;
-    /* Node attributes, according to OSM. Lazily initialized to avoid unnecessary use of memory. */
-    private Map<String, String> attributes;
 
 
-    Node(double lon, double lat, long id) {
+    Node(Long id, double lon, double lat) {
         super(lon, lat);
         this.id = id;
         this.neighbors = null;
-        this.attributes = null;
     }
 
 
@@ -45,16 +41,16 @@ class Node extends Coordinate {
             return false;
         }
         Node other = (Node) o;
-        return super.equals(other) && this.id == other.id;
+        return this.id == other.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lon, lat, id);
+        return Objects.hash(id);
     }
 
     /**
-     * Checks if coordinates of this Node are equal to th ones of other node.
+     * Checks if coordinates of this Node are equal to the ones of other node.
      * @param other is other Node instance on which to check coordinate equality.
      * @return true if longitude and latitude coordinates of both nodes are equal.
      */
@@ -98,70 +94,24 @@ class Node extends Coordinate {
     }
 
     /**
-     * Returns true if this node has attributes; that is if it is not just a coordinate in the map.
-     * @return true if this node has at least one attribute.
+     * Removes a neighbor Node from this Node. Does not remove this Node as neighbor of the other.
+     * @param neighbor is the neighbor Node to remove as a neighbor of this Node.
+     * @return true if the removal succeeded.
      */
-    boolean hasAttributes() {
-        return attributes != null && !attributes.isEmpty();
+    boolean removeNeighbor(Node neighbor) {
+        return neighbors.remove(neighbor);
     }
 
-    /**
-     * Checks if a this node has an attribute whose name is passed as parameter.
-     * @param key is the name of the attribute to check if the node has.
-     * @return true if this node contains an attribute with the given value.
-     */
-    boolean containsAttributeKey(String key) {
-        return attributes != null && attributes.containsKey(key);
-    }
-
-    /**
-     * Gets the corresponding value for the attribute passed as parameter.
-     * @param key is the name of the attribute that is to be checked for belonging to the node.
-     * @return the value mapped to the attribute, or null if the node does not have the attribute.
-     */
-    String getAttributeValue(String key) {
-        if (attributes == null) {
-            return null;
-        } else {
-            return attributes.get(key);
+    void removeNeighbors() {
+        if (!hasNeighbors()) {
+            return;
         }
-    }
-
-    /**
-     * Returns an Iterable of the names of the attributes that this node has.
-     * @return an Iterable of the names of the attributes that this node has.
-     */
-    Iterable<String> attributeKeys() {
-        if (attributes == null) {
-            return new HashMap<String, String>().keySet();
-        } else {
-            return attributes.keySet();
+        Iterator<Node> iterator = this.neighbors().iterator();
+        while (iterator.hasNext()) {
+            Node neighbor = iterator.next();
+            neighbor.removeNeighbor(this);
+            iterator.remove();
         }
-    }
-
-    /**
-     * Returns an Iterable of the values of the attributes that this node has.
-     * @return an Iterable of the values of the attributes that this node has.
-     */
-    Iterable<String> attributeValues() {
-        if (attributes == null) {
-            return new HashMap<String, String>().values();
-        } else {
-            return attributes.values();
-        }
-    }
-
-    /**
-     * Adds an attribute and its corresponding value to this node.
-     * @param key is the name of the attribute to be added.
-     * @param value is the value of the attribute to be added.
-     * @return the previous value associated with the attribute name.
-     */
-    String addAttribute(String key, String value) {
-        if (attributes == null) {
-            attributes = new HashMap<String, String>();
-        }
-        return attributes.put(key, value);
     }
 
 }
