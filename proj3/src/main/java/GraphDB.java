@@ -6,9 +6,18 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+
 
 /**
+ * GraphDB
+ * CS61B, Project 3: https://sp18.datastructur.es/materials/proj/proj3/proj3
+ *
  * Graph for storing all of the intersection (vertex) and road (edge) information.
  * Uses your GraphBuildingHandler to convert the XML files into a graph. Your
  * code must include the vertices, adjacent, distance, closest, lat, and lon
@@ -16,10 +25,19 @@ import java.util.ArrayList;
  * modifying the graph (e.g. addNode and addEdge).
  *
  * @author Alan Yao, Josh Hug
+ * @author Emanuel Aguirre (some code in implementation)
  */
 public class GraphDB {
+
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
+    /* All the nodes (vertices) found when parsing the OSM XML. */
+    private Map<Long, Node> nodes;
+    /* All the locations (nodes that have attributes in OSM) found when parsing the OSM XML. */
+    private HashMap<Long, Location> locations;
+    /* All the valid highways found when parsing the OSM XML. */
+    private HashMap<Long, Highway> highways;
+
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -27,6 +45,9 @@ public class GraphDB {
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
+        nodes = new HashMap<>();
+        locations = new HashMap<>();
+        highways = new HashMap<>();
         try {
             File inputFile = new File(dbPath);
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -41,6 +62,7 @@ public class GraphDB {
         }
         clean();
     }
+
 
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
@@ -57,7 +79,8 @@ public class GraphDB {
      *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
+        Iterator<Long> iterator = nodes.keySet().iterator();
+        nodes.values().removeIf(n -> !n.hasNeighbors());
     }
 
     /**
@@ -65,8 +88,7 @@ public class GraphDB {
      * @return An iterable of id's of all vertices in the graph.
      */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
     /**
@@ -75,7 +97,11 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        List<Long> neighborIds = new ArrayList<>();
+        for (Node node : nodes.get(v).neighbors()) {
+            neighborIds.add(node.id);
+        }
+        return neighborIds;
     }
 
     /**
@@ -136,7 +162,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        Iterator<Node> iterator = nodes.values().iterator();
+        Node closest = iterator.next();
+        while (iterator.hasNext()) {
+            Node node = iterator.next();
+            if (distance(lon, lat, node.lon, node.lat)
+                    < distance(lon, lat, closest.lon, closest.lat)) {
+                closest = node;
+            }
+        }
+        return closest.id;
     }
 
     /**
@@ -145,7 +180,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return nodes.get(v).lon;
     }
 
     /**
@@ -154,6 +189,38 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return nodes.get(v).lat;
     }
+
+
+    /* Helper methods. */
+
+    Node putNode(Node node) {
+        return nodes.put(node.id, node);
+    }
+
+    Node getNode(Long id) {
+        return nodes.get(id);
+    }
+
+    Node removeNode(Long id) {
+        return nodes.remove(id);
+    }
+
+    Location putLocation(Location location) {
+        return locations.put(location.id, location);
+    }
+
+    Location getLocation(Long id) {
+        return locations.get(id);
+    }
+
+    Highway putHighway(Highway highway) {
+        return highways.put(highway.id, highway);
+    }
+
+    Highway getHighway(Long id) {
+        return highways.get(id);
+    }
+
 }
