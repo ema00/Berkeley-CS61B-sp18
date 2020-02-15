@@ -3,13 +3,21 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+
 
 /**
+ * GraphBuildingHandler
+ * CS61B, Project 3: https://sp18.datastructur.es/materials/proj/proj3/proj3
+ *
  *  Parses OSM XML files using an XML SAX parser. Used to construct the graph of roads for
  *  pathfinding, under some constraints.
  *  See OSM documentation on
+ *  <a href="https://wiki.openstreetmap.org/wiki/OSM_XML">OSM XML file format</a>,
  *  <a href="http://wiki.openstreetmap.org/wiki/Key:highway">the highway tag</a>,
  *  <a href="http://wiki.openstreetmap.org/wiki/Way">the way XML element</a>,
  *  <a href="http://wiki.openstreetmap.org/wiki/Node">the node XML element</a>,
@@ -24,8 +32,10 @@ import java.util.Set;
  *  It is similar to the Visitor pattern we discussed for graphs.
  *
  *  @author Alan Yao, Maurice Lee
+ *  @author Emanuel Aguirre (some code in implementation)
  */
 public class GraphBuildingHandler extends DefaultHandler {
+
     /**
      * Only allow for non-service roads; this prevents going on pedestrian streets as much as
      * possible. Note that in Berkeley, many of the campus roads are tagged as motor vehicle
@@ -39,6 +49,21 @@ public class GraphBuildingHandler extends DefaultHandler {
     private String activeState = "";
     private final GraphDB g;
 
+    /* Variables used for parsing sub-elements of an element. */
+    /* Current node. When parsing, ti can be a Node (no attributes) or a Location. */
+    private Node currentNode = null;
+    /* Id of the Way being parsed. */
+    private Long wayId;
+    /* Nodes that are parsed when parsing a way. Are discarded if way is not a highway. */
+    private List<Node> nodesOfWay = new ArrayList<>();
+    /* Name of the Way being parsed. */
+    private String wayName;
+    /* Speed of a way being parsed, in miles per hour. */
+    private int waySpeedMph;
+    /* Type of Highway being parsed. */
+    private String highwayType;
+
+
     /**
      * Create a new GraphBuildingHandler.
      * @param g The graph to populate with the XML data.
@@ -46,6 +71,7 @@ public class GraphBuildingHandler extends DefaultHandler {
     public GraphBuildingHandler(GraphDB g) {
         this.g = g;
     }
+
 
     /**
      * Called at the beginning of an element. Typically, you will want to handle each element in
@@ -62,57 +88,46 @@ public class GraphBuildingHandler extends DefaultHandler {
      * @see Attributes
      */
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+    public void startElement(
+            String uri, String localName, String qName, Attributes attributes
+    ) throws SAXException {
         /* Some example code on how you might begin to parse XML files. */
         if (qName.equals("node")) {
             /* We encountered a new <node...> tag. */
             activeState = "node";
-//            System.out.println("Node id: " + attributes.getValue("id"));
-//            System.out.println("Node lon: " + attributes.getValue("lon"));
-//            System.out.println("Node lat: " + attributes.getValue("lat"));
-
-            /* TODO Use the above information to save a "node" to somewhere. */
-            /* Hint: A graph-like structure would be nice. */
-
+            Long id = Long.parseLong(attributes.getValue("id"));
+            double lon = Double.parseDouble(attributes.getValue("lon"));
+            double lat = Double.parseDouble(attributes.getValue("lat"));
+            Node node = new Node(id, lon, lat);
+            currentNode = node;
+            g.putNode(node);
         } else if (qName.equals("way")) {
             /* We encountered a new <way...> tag. */
             activeState = "way";
-//            System.out.println("Beginning a way...");
+            /* Get the Id of thw Way. */
+            wayId = Long.parseLong(attributes.getValue("id"));
         } else if (activeState.equals("way") && qName.equals("nd")) {
             /* While looking at a way, we found a <nd...> tag. */
-            //System.out.println("Id of a node in this way: " + attributes.getValue("ref"));
-
-            /* TODO Use the above id to make "possible" connections between the nodes in this way */
-            /* Hint1: It would be useful to remember what was the last node in this way. */
-            /* Hint2: Not all ways are valid. So, directly connecting the nodes here would be
-            cumbersome since you might have to remove the connections if you later see a tag that
-            makes this way invalid. Instead, think of keeping a list of possible connections and
-            remember whether this way is valid or not. */
-
+            Long nodeId = Long.parseLong(attributes.getValue("ref"));
+            Node nodeOfWay = g.getNode(nodeId);
+            nodesOfWay.add(nodeOfWay);
         } else if (activeState.equals("way") && qName.equals("tag")) {
             /* While looking at a way, we found a <tag...> tag. */
             String k = attributes.getValue("k");
             String v = attributes.getValue("v");
             if (k.equals("maxspeed")) {
-                //System.out.println("Max Speed: " + v);
-                /* TODO set the max speed of the "current way" here. */
+                waySpeedMph = parseSpeed(v);
             } else if (k.equals("highway")) {
-                //System.out.println("Highway type: " + v);
-                /* TODO Figure out whether this way and its connections are valid. */
-                /* Hint: Setting a "flag" is good enough! */
+                highwayType = attributes.getValue("v");
             } else if (k.equals("name")) {
-                //System.out.println("Way Name: " + v);
+                wayName = attributes.getValue("v");
             }
-//            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
-            /* TODO Create a location. */
-            /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
-            node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
-            last node that you looked at (check the first if-case). */
-//            System.out.println("Node's name: " + attributes.getValue("v"));
+            Location location = new Location(currentNode);
+            location.setAttribute("name", attributes.getValue("v"));
+            g.putLocation(location);
         }
     }
 
@@ -131,10 +146,35 @@ public class GraphBuildingHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equals("way")) {
             /* We are done looking at a way. (We finished looking at the nodes, speeds, etc...)*/
-            /* Hint1: If you have stored the possible connections for this way, here's your
-            chance to actually connect the nodes together if the way is valid. */
-//            System.out.println("Finishing a way...");
+            /* Connect the nodes together if the way is valid. */
+            if (ALLOWED_HIGHWAY_TYPES.contains(highwayType)) {
+                Highway highway = new Highway(wayId, wayName, highwayType, waySpeedMph);
+                for (Node node : nodesOfWay) {
+                    highway.addNode(node);
+                }
+                g.putHighway(highway);
+            }
+            nodesOfWay.clear();
+            highwayType = "";
         }
+    }
+
+    /**
+     * Parses the speed of a node, and converts it to mph. Since it can be in km/h, mph, or knots.
+     * @param v is a String that contains the maximum allowed speed.
+     * @return an int with the value of the maximum speed, in miles per hour.
+     */
+    private int parseSpeed(String v) {
+        int speedMph;
+        String[] speedTokens = v.split(" ");
+        if (speedTokens.length == 1) {
+            speedMph = (int) (Integer.parseInt(speedTokens[0]) * 0.621371);  // km/h
+        } else {
+            speedMph = speedTokens[1].equals("mph")
+                    ? Integer.parseInt(speedTokens[0])                          // mph
+                    : (int) (Integer.parseInt(speedTokens[0]) * 1.15078);       // knots
+        }
+        return speedMph;
     }
 
 }
