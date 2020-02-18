@@ -20,12 +20,12 @@ import java.util.HashSet;
 class Node extends Coordinate {
 
     /* Node Id. */
-    final Long id;
+    final long id;
     /* Neighbor nodes. Lazily initialized to avoid unnecessary use of memory. */
     private Set<Node> neighbors;
 
 
-    Node(Long id, double lon, double lat) {
+    Node(long id, double lon, double lat) {
         super(lon, lat);
         this.id = id;
         this.neighbors = null;
