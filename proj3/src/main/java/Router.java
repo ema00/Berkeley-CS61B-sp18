@@ -48,10 +48,10 @@ public class Router {
         Map<Long, SearchNode> visited = new HashMap<>();
         // Fringe (the PQ used to explore).
         PriorityQueue<SearchNode> fringe = new PriorityQueue<>();
-        // A*: determine the lowest value of f(n) for all the nodes from start to dest.
+        // Determine the lowest value of f(n) for all the nodes from start to dest.
         SearchNode current = new SearchNode(start, null, dest);
         fringe.add(current);
-        while (visited.size() != g.numNodes()) {
+        while (!fringe.isEmpty() && visited.size() < g.numNodes()) {
             current = fringe.remove();
             Node node = current.node;
             visited.put(node.id, current);
@@ -60,7 +60,7 @@ public class Router {
             }
             for (Node neighbor : node.neighbors()) {
                 SearchNode next = new SearchNode(neighbor, current, dest);
-                if (visited.containsValue(next)) {
+                if (visited.containsKey(next.node.id)) {
                     continue;
                 }
                 if (fringe.contains(next)) {
