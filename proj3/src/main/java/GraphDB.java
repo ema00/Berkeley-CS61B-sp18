@@ -195,6 +195,10 @@ public class GraphDB {
 
     /* Helper methods. */
 
+    Iterable<Node> nodes() {
+        return nodes.values();
+    }
+
     Node putNode(Node node) {
         return nodes.put(node.id, node);
     }
@@ -205,6 +209,10 @@ public class GraphDB {
 
     Node removeNode(Long id) {
         return nodes.remove(id);
+    }
+
+    int numNodes() {
+        return nodes.size();
     }
 
     Location putLocation(Location location) {

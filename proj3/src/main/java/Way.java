@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class Way {
 
     /* Way Id. */
-    final Long id;
+    final long id;
     /* Name of the way. */
     final String name;
     /* Maximum speed allowed in this way, in miles per hour (mph). */
@@ -25,7 +25,7 @@ public class Way {
     private List<Node> nodes;
 
 
-    Way(Long id, String name, int maxSpeed) {
+    Way(long id, String name, int maxSpeed) {
         this.id = id;
         this.name = name;
         this.maxSpeed = maxSpeed;

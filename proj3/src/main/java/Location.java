@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class Location {
 
     /* Location Id. */
-    final Long id;
+    final long id;
     /* Node. */
     final Node node;
     /* Location (node) attributes, according to OSM. */
