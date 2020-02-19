@@ -1,21 +1,36 @@
-import java.util.List;
 import java.util.Objects;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
 /**
+ * Router
+ * CS61B, Project 3: https://sp18.datastructur.es/materials/proj/proj3/proj3
+ *
  * This class provides a shortestPath method for finding routes between two points
  * on the map. Start by using Dijkstra's, and if your code isn't fast enough for your
  * satisfaction (or the autograder), upgrade your implementation by switching it to A*.
  * Your code will probably not be fast enough to pass the autograder unless you use A*.
  * The difference between A* and Dijkstra's is only a couple of lines of code, and boils
  * down to the priority you use to order your vertices.
+ *
+ * @author CS61B staff (interface and comments)
+ * @author Emanuel Aguirre (implementation of SearchNode and shortestPath)
  */
 public class Router {
     /**
      * Return a List of longs representing the shortest path from the node
      * closest to a start location and the node closest to the destination
      * location.
+     * NOTE: Since the implementation of the Priority Queue provided by Java does not allow to
+     * alter the priorities of its nodes, the updating has to be done by removal and insertion.
+     * Precondition: All nodes in graph g must be connected.
      * @param g The graph to use.
      * @param stlon The longitude of the start location.
      * @param stlat The latitude of the start location.
@@ -23,9 +38,46 @@ public class Router {
      * @param destlat The latitude of the destination location.
      * @return A list of node id's in the order visited on the shortest path.
      */
-    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
-                                          double destlon, double destlat) {
-        return null; // FIXME
+    public static List<Long> shortestPath(
+            GraphDB g, double stlon, double stlat, double destlon, double destlat
+    ) {
+        // Start and destination Nodes.
+        Node start = g.getNode(g.closest(stlon, stlat));
+        Node dest = g.getNode(g.closest(destlon, destlat));
+        // Nodes for which the lowest value for f(n) has been determined.
+        Map<Long, SearchNode> visited = new HashMap<>();
+        // Fringe (the PQ used to explore).
+        PriorityQueue<SearchNode> fringe = new PriorityQueue<>();
+        // A*: determine the lowest value of f(n) for all the nodes from start to dest.
+        SearchNode current = new SearchNode(start, null, dest);
+        fringe.add(current);
+        while (visited.size() != g.numNodes()) {
+            current = fringe.remove();
+            Node node = current.node;
+            visited.put(node.id, current);
+            if (node.equals(dest)) {
+                break;
+            }
+            for (Node neighbor : node.neighbors()) {
+                SearchNode next = new SearchNode(neighbor, current, dest);
+                if (visited.containsValue(next)) {
+                    continue;
+                }
+                if (fringe.contains(next)) {
+                    fringe.removeIf(sn -> next.equals(sn) && sn.fn() > next.fn());
+                }
+                if (!fringe.contains(next)) {
+                    fringe.add(next);
+                }
+            }
+        }
+        // Start from dest, follow back the chain of search nodes until start, save each in path.
+        List<Long> path = new ArrayList<>();
+        while (current != null) {
+            path.add(0, current.node.id);
+            current = current.previous;
+        }
+        return path;
     }
 
     /**
@@ -33,7 +85,7 @@ public class Router {
      * @param g The graph to use.
      * @param route The route to translate into directions. Each element
      *              corresponds to a node from the graph in the route.
-     * @return A list of NavigatiionDirection objects corresponding to the input
+     * @return A list of NavigationDirection objects corresponding to the input
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
@@ -159,5 +211,90 @@ public class Router {
         public int hashCode() {
             return Objects.hash(direction, way, distance);
         }
+
     }
+
+
+    /* ******** Classes below are used to implement shortest path using A* algorithm. ******** */
+
+    /**
+     * SearchNode
+     *
+     * This class is used to perform A* search on a graph.
+     * Since the Node class offered by GraphDB just represents nodes and its connections, this
+     * class is needed to add the ability to perform A* search.
+     * This class holds values for f(n), g(n) and h(n) as defined in A*.
+     * g(n) is calculated as the distance between the Node contained in an instance and the Node
+     * contained in the instance referenced by the "previous" instance member.
+     * h(n) is calculated as the distance between the instance and the "target" Node.
+     * Implements Comparable<T> on the value of f(n), since this is the value used as the priority
+     * in the Priority Queue used as the fringe in A*.
+     */
+    private static class SearchNode implements Comparable<SearchNode> {
+
+        private final Node node;
+        private SearchNode previous;
+        private double gn;
+        private final double hn;
+
+        SearchNode(Node n, SearchNode prev, Node target) {
+            this.node = n;
+            this.previous = prev;
+            this.gn = prev != null
+                    ? prev.gn + GraphDB.distance(prev.node.lon, prev.node.lat, node.lon, node.lat)
+                    : 0;
+            this.hn = GraphDB.distance(node.lon, node.lat, target.lon, target.lat);
+        }
+
+        /**
+         * Compares 2 search nodes based on th f(n) = g(n) + h(n) function of A* algorithm.
+         * @param other the other object on which to perform comparison.
+         * @return -1 if the other node has a smaller f(n), +1 if this one's is smaller, or else 0.
+         */
+        @Override
+        public int compareTo(SearchNode other) {
+            if (other == null) {
+                throw new NullPointerException("SearchNode instance to compare to cannot be null.");
+            }
+            double fnt = this.fn();
+            double fno = other.fn();
+            return Double.compare(fnt, fno);
+        }
+
+        /**
+         * Returns true if the Node object that this class wraps is the same in both instances.
+         * @param o the other object on which to compare for equality.
+         * @return true is the id of the wrapped node is the same.
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) {
+                return false;
+            }
+            if (this.getClass() != o.getClass()) {
+                return false;
+            }
+            SearchNode other = (SearchNode) o;
+            return this.node.equals(other.node);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.node.hashCode();
+        }
+
+        double gn() {
+            return gn;
+        }
+
+        double hn() {
+            return hn;
+        }
+
+        double fn() {
+            return gn + hn;
+        }
+
+    }
+
 }

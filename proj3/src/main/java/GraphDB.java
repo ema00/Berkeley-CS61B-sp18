@@ -211,6 +211,10 @@ public class GraphDB {
         return nodes.remove(id);
     }
 
+    int numNodes() {
+        return nodes.size();
+    }
+
     Location putLocation(Location location) {
         return locations.put(location.id, location);
     }
