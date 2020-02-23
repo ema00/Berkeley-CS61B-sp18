@@ -148,8 +148,8 @@ public class Rasterer {
      */
     boolean areValidCoordinates(double ulLon, double ulLat, double lrLon, double lrLat) {
         return (ulLon < lrLon && lrLat < ulLat)
-                && (ulLon < ROOT_LR.lon || ROOT_UL.lon < lrLon)
-                && (ROOT_LR.lat < ulLat || lrLat < ROOT_UL.lat);
+                && (ulLon < ROOT_LR.lon && ROOT_UL.lon < lrLon)
+                && (ROOT_LR.lat < ulLat && lrLat < ROOT_UL.lat);
     }
 
     /**
