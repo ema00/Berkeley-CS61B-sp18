@@ -30,7 +30,7 @@ public class Router {
      * location.
      * NOTE: Since the implementation of the Priority Queue provided by Java does not allow to
      * alter the priorities of its nodes, the updating has to be done by removal and insertion.
-     * Precondition: All nodes in graph g must be connected.
+     * Precondition: node closest to start and node closest to destination must be connected.
      * @param g The graph to use.
      * @param stlon The longitude of the start location.
      * @param stlat The latitude of the start location.
@@ -51,7 +51,7 @@ public class Router {
         // Determine the lowest value of f(n) for all the nodes from start to dest.
         SearchNode current = new SearchNode(start, null, dest);
         fringe.add(current);
-        while (!fringe.isEmpty() && visited.size() < g.numNodes()) {
+        while (!fringe.isEmpty()) {
             current = fringe.remove();
             Node node = current.node;
             visited.put(node.id, current);
