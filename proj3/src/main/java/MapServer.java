@@ -2,10 +2,8 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
@@ -287,9 +285,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        List<Location> locations = graph.getLocationsByPrefix(prefix);
-        return locations.stream().map(loc -> loc.getAttributeValue("name"))
-                .collect(Collectors.toList());
+        return graph.getLocationsByPrefix(prefix);
     }
 
     /**
@@ -305,18 +301,7 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        List<Map<String, Object>> result = new ArrayList<>();
-        String cleanName = GraphDB.cleanString(locationName);
-        List<Location> locationsByCleanName = graph.getLocationsByCleanName(cleanName);
-        for (Location location : locationsByCleanName) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("id", location.id);
-            data.put("lon", location.node.lon);
-            data.put("lat", location.node.lat);
-            data.put("name", location.getAttributeValue("name"));
-            result.add(data);
-        }
-        return result;
+        return graph.getLocations(locationName);
     }
 
     /**

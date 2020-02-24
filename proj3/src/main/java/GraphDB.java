@@ -3,6 +3,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -222,32 +223,51 @@ public class GraphDB {
     }
 
     /**
-     * In linear time, collect all the OSM locations that prefix-match the query string.
+     * In linear time, collect all the names of OSM locations that prefix-match the query string.
      * @param prefix Prefix string to be searched for. Could be any case, with our without
      *               punctuation.
      * @return A List of the full names of locations whose cleaned name matches the
      * cleaned prefix.
      */
-    List<Location> getLocationsByPrefix(String prefix) {
+    List<String> getLocationsByPrefix(String prefix) {
         prefix = prefix.toLowerCase();
         List<String> cleanNames = cleanLocationNames.wordsByPrefix(prefix);
-        List<Location> result = new ArrayList<>();
+        List<String> locationNames = new ArrayList<>();
         for (String cleanName : cleanNames) {
-            List<Location> partial = locationsByCleanName.get(cleanName);
-            result.addAll(partial);
+            List<Location> locs = locationsByCleanName.get(cleanName);
+            List<String> locNames = locs.stream().map(
+                loc -> loc.getAttributeValue("name")).collect(Collectors.toList());
+            locationNames.addAll(locNames);
         }
-        return result;
+        return locationNames;
     }
 
     /**
      * Collect all locations that match a cleaned locationName, and return information about
      * each node that matches.
-     * @param locationName A full clean name of a location searched for.
-     * @return A list of locations whose cleaned name matches the cleaned locationName.
+     * @param locationName A full name of a location searched for.
+     * @return A list of locations whose cleaned name matches the
+     * cleaned locationName, and each location is a map of parameters for the Json response
+     * as specified:
+     * "lat" : Number, The latitude of the node.
+     * "lon" : Number, The longitude of the node.
+     * "name" : String, The actual name of the node.
+     * "id" : Number, The id of the node.
      * NOTE: A particular location may span many Location instances. I.e.: may occupy many nodes.
      */
-    List<Location> getLocationsByCleanName(String locationName) {
-        return locationsByCleanName.getOrDefault(locationName, new ArrayList<>());
+    List<Map<String, Object>> getLocations(String locationName) {
+        locationName = cleanString(locationName);
+        List<Map<String, Object>> result = new ArrayList<>();
+        List<Location> locsByCleanName = locationsByCleanName.get(locationName);
+        for (Location location : locsByCleanName) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", location.id);
+            data.put("lon", location.node.lon);
+            data.put("lat", location.node.lat);
+            data.put("name", location.getAttributeValue("name"));
+            result.add(data);
+        }
+        return result;
     }
 
 
