@@ -1,16 +1,16 @@
-import org.xml.sax.SAXException;
-
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+
+import org.xml.sax.SAXException;
 
 
 
@@ -25,7 +25,7 @@ import java.util.Iterator;
  * modifying the graph (e.g. addNode and addEdge).
  *
  * @author Alan Yao, Josh Hug
- * @author Emanuel Aguirre (some code in implementation)
+ * @author Emanuel Aguirre (nodes, locations, highways, autocomplete and some implementation)
  */
 public class GraphDB {
 
@@ -37,6 +37,10 @@ public class GraphDB {
     private HashMap<Long, Location> locations;
     /* All the valid highways found when parsing the OSM XML. */
     private HashMap<Long, Highway> highways;
+    /* Trie data structure, contains the cleaned location names, Used for autocomplete feature. */
+    private Trie cleanLocationNames;
+    /* Maps the cleaned location names to locations themselves. Used for autocomplete feature. */
+    private Map<String, List<Location>> locationsByCleanName;
 
 
     /**
@@ -57,6 +61,7 @@ public class GraphDB {
             SAXParser saxParser = factory.newSAXParser();
             GraphBuildingHandler gbh = new GraphBuildingHandler(this);
             saxParser.parse(inputStream, gbh);
+            initializeGetLocationByPrefix();
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
@@ -190,6 +195,59 @@ public class GraphDB {
      */
     double lat(long v) {
         return nodes.get(v).lat;
+    }
+
+
+    /* Methods for implementing Autocomplete and Search. */
+
+    /**
+     * Initializes the Trie cleanLocationNames, and the Map locationsByCleanName, that
+     * are used by methods getLocationsByPrefix and getLocations.
+     */
+    private void initializeGetLocationByPrefix() {
+        cleanLocationNames = new Trie();
+        locationsByCleanName = new HashMap<>();
+        for (Location location : locations.values()) {
+            if (location.containsAttributeKey("name")) {
+                String locationName = location.getAttributeValue("name");
+                String cleanLocationName = cleanString(locationName);
+                cleanLocationNames.addWord(cleanLocationName);
+                if (!locationsByCleanName.containsKey(cleanLocationName)) {
+                    locationsByCleanName.put(cleanLocationName, new ArrayList<>());
+                }
+                List<Location> locsByCleanName = locationsByCleanName.get(cleanLocationName);
+                locsByCleanName.add(location);
+            }
+        }
+    }
+
+    /**
+     * In linear time, collect all the OSM locations that prefix-match the query string.
+     * @param prefix Prefix string to be searched for. Could be any case, with our without
+     *               punctuation.
+     * @return A List of the full names of locations whose cleaned name matches the
+     * cleaned prefix.
+     */
+    List<Location> getLocationsByPrefix(String prefix) {
+        prefix = prefix.toLowerCase();
+        List<String> cleanNames = cleanLocationNames.wordsByPrefix(prefix);
+        List<Location> result = new ArrayList<>();
+        for (String cleanName : cleanNames) {
+            List<Location> partial = locationsByCleanName.get(cleanName);
+            result.addAll(partial);
+        }
+        return result;
+    }
+
+    /**
+     * Collect all locations that match a cleaned locationName, and return information about
+     * each node that matches.
+     * @param locationName A full clean name of a location searched for.
+     * @return A list of locations whose cleaned name matches the cleaned locationName.
+     * NOTE: A particular location may span many Location instances. I.e.: may occupy many nodes.
+     */
+    List<Location> getLocationsByCleanName(String locationName) {
+        return locationsByCleanName.getOrDefault(locationName, new ArrayList<>());
     }
 
 
