@@ -1,8 +1,10 @@
 import java.util.Objects;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +23,7 @@ import java.util.regex.Pattern;
  * down to the priority you use to order your vertices.
  *
  * @author CS61B staff (interface and comments)
- * @author Emanuel Aguirre (implementation of SearchNode and shortestPath)
+ * @author Emanuel Aguirre (implementation of SearchNode, shortestPath, and routeDirections)
  */
 public class Router {
     /**
@@ -89,7 +91,32 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        List<NavigationDirection> result = new ArrayList<>();
+        if (route.size() <= 1) {
+            return result;
+        }
+        NavigationDirection nd = new NavigationDirection();
+        nd.direction = NavigationDirection.START;
+        nd.distance = 0.0;
+        nd.way = NavigationDirection.getHighway(g, route.get(0), route.get(1)).name;
+        for (int i = 1; i < route.size(); i++) {
+            Long prev = route.get(i - 1);
+            Long curr = route.get(i);
+            nd.distance += g.distance(prev, curr);
+            if (i == route.size() - 1) {
+                result.add(nd);
+                break;
+            }
+            Long next = route.get(i + 1);
+            if (!nd.way.equals(NavigationDirection.getHighway(g, curr, next).name)) {
+                result.add(nd);
+                nd = new NavigationDirection();
+                nd.direction = NavigationDirection.getDirection(g, prev, curr, next);
+                nd.distance = 0.0;
+                nd.way = NavigationDirection.getHighway(g, curr, next).name;
+            }
+        }
+        return result;
     }
 
 
@@ -146,6 +173,32 @@ public class Router {
             this.distance = 0.0;
         }
 
+        /**
+         * Returns the change in direction between 2 highway segments determined by 3 nodes,
+         * given an instance of GraphDB and the Node ids of 3 nodes. The change in direction
+         * is calculated based on the bearing angle of each highway segment.
+         */
+        public static int getDirection(GraphDB g, Long v1, Long v2, Long v3) {
+            double angle = g.bearing(v3, v2) - g.bearing(v2, v1);
+            int direction = START;
+            if (-15 < angle && angle < 15) {
+                direction = STRAIGHT;
+            } else if (-30 < angle && angle <= -15) {
+                direction = SLIGHT_LEFT;
+            } else if (15 <= angle && angle < 30) {
+                direction = SLIGHT_RIGHT;
+            } else if (-100 < angle && angle <= -30) {
+                direction = LEFT;
+            } else if (30 <= angle && angle < 100) {
+                direction = RIGHT;
+            } else if (angle <= -100) {
+                direction = g.bearing(v3, v1) < 0 ? SHARP_LEFT : SHARP_RIGHT;
+            } else if (100 <= angle) {
+                direction = g.bearing(v3, v1) > 0 ? SHARP_LEFT : SHARP_RIGHT;
+            }
+            return direction;
+        }
+
         public String toString() {
             return String.format("%s on %s and continue for %.3f miles.",
                     DIRECTIONS[direction], way, distance);
@@ -195,6 +248,40 @@ public class Router {
                 // not a valid nd
                 return null;
             }
+        }
+
+        /**
+         * Obtains the Highway that passes by 2 nodes.
+         * The calculation is based on the fact that, for this model, exactly 1 highway can
+         * pass by 2 given points.
+         * @param g is the graph (GraphDB) to use.
+         * @param v1 is the Node id of one of the nodes that the highway contains.
+         * @param v2 is the Node id of one of the nodes that the highway contains.
+         * @return the Highway that passes by the 2 nodes passed as parameter.
+         */
+        static Highway getHighway(GraphDB g, Long v1, Long v2) {
+            Iterable<Highway> highways = g.highways();
+            Set<Highway> highwaysForV1 = new HashSet<>();
+            Set<Highway> highwaysForV2 = new HashSet<>();
+            for (Highway highway : highways) {
+                Node n1 = g.getNode(v1);
+                if (highway.contains(n1)) {
+                    highwaysForV1.add(highway);
+                }
+            }
+            for (Highway highway : highways) {
+                Node n2 = g.getNode(v2);
+                if (highway.contains(n2)) {
+                    highwaysForV2.add(highway);
+                }
+            }
+            Set<Highway> intersection = new HashSet<>();
+            for (Highway highway : highwaysForV1) {
+                if (highwaysForV2.contains(highway)) {
+                    intersection.add(highway);
+                }
+            }
+            return intersection.iterator().next();
         }
 
         @Override
