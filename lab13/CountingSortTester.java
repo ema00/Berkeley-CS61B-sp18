@@ -14,6 +14,16 @@ public class CountingSortTester {
      **/
     private static int[] nonNegative = {9, 5, 2, 1, 5, 3, 0, 3, 1, 1};
 
+    /**
+     * Arrays that CountingSort.betterCountingSort should handle.
+     **/
+    private static int[] allNegative = {-4, -5, -2, -1, -2, -9, -3};
+    private static int[] allPositive = {9, 5, 2, 1, 5, 3, 3, 1, 1};
+    private static int[] lengthOnePositive = {9};
+    private static int[] lengthOneNegative = {-9};
+    private static int[] lengthZero = {};
+
+
     public static void assertIsSorted(int[] a) {
         int previous = Integer.MIN_VALUE;
         for (int x : a) {
@@ -51,6 +61,32 @@ public class CountingSortTester {
     public void testBetterWithSomeNegative() {
         int[] sortedSomeNegative = CountingSort.betterCountingSort(someNegative);
         assertIsSorted(sortedSomeNegative);
+    }
+
+    @Test
+    public void testBetterWithAllNegative() {
+        int[] sortedAllNegative = CountingSort.betterCountingSort(allNegative);
+        assertIsSorted(sortedAllNegative);
+    }
+
+    @Test
+    public void testBetterWithAllPositive() {
+        int[] sortedAllPositive = CountingSort.betterCountingSort(allPositive);
+        assertIsSorted(sortedAllPositive);
+    }
+
+    @Test
+    public void testBetterWithLengthZero() {
+        int[] sortedLengthZero = CountingSort.betterCountingSort(lengthZero);
+        assertIsSorted(sortedLengthZero);
+    }
+
+    @Test
+    public void testBetterWithLengthOne() {
+        int[] sortedLengthOnePositive = CountingSort.betterCountingSort(lengthOnePositive);
+        int[] sortedLengthOneNegative = CountingSort.betterCountingSort(lengthOneNegative);
+        assertIsSorted(sortedLengthOnePositive);
+        assertIsSorted(sortedLengthOneNegative);
     }
 
 
