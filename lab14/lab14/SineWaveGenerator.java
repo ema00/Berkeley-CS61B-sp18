@@ -4,8 +4,8 @@ import edu.princeton.cs.algs4.StdAudio;
 import lab14lib.Generator;
 
 public class SineWaveGenerator implements Generator {
-	private double frequency;
-	private int state;	
+    private double frequency;
+	private int state;
 
 	public SineWaveGenerator(double frequency) {
 		state = 0;
