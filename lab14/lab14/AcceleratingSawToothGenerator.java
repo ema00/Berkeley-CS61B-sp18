@@ -3,23 +3,24 @@ package lab14;
 import lab14lib.Generator;
 
 
-
 /**
  * CS61B Lab 14: https://sp18.datastructur.es/materials/lab/lab14/lab14
  *
- * SawToothGenerator
- * Saw Tooth Generator, uses a sample rate of 44100 Hz.
+ * AcceleratingSawToothGenerator
+ * Saw Tooth Generator that increases frequency, uses a sample rate of 44100 Hz.
  *
  * @author Emanuel Aguirre
  */
-public class SawToothGenerator implements Generator {
+public class AcceleratingSawToothGenerator implements Generator {
 
-    private final int period;
+    private int period;
+    private double factor;
     private int state;
 
 
-    public SawToothGenerator(double period) {
+    public AcceleratingSawToothGenerator(double period, double factor) {
         this.period = (int) period;
+        this.factor = factor;
         state = 0;
     }
 
@@ -28,6 +29,9 @@ public class SawToothGenerator implements Generator {
     public double next() {
         int sample = state;
         state = (state + 1) % period;
+        if (state == 0) {
+            period = (int) (factor * period);
+        }
         return normalize(sample);
     }
 
