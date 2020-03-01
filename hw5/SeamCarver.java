@@ -17,7 +17,7 @@ public class SeamCarver {
 
 
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
     }
 
 
@@ -25,7 +25,7 @@ public class SeamCarver {
      * Current picture, on which to perform seam carving.
      */
     public Picture picture() {
-        return this.picture;
+        return new Picture(picture);
     }
 
     /**
@@ -129,11 +129,11 @@ public class SeamCarver {
                 int yPrevInline = y;
                 int yPrevBelow = Math.min(y + 1, height - 1);
                 int xPrev = Math.max(x - 1, 0);
-                double minPrevEnergy = min(
-                        energy[xPrev][yPrevAbove],
-                        energy[xPrev][yPrevInline],
-                        energy[xPrev][yPrevBelow]);
-                minAccumulatedEnergy[x][y] = minPrevEnergy + energy[x][y];
+                double minPreviousEnergy = min(
+                        minAccumulatedEnergy[xPrev][yPrevAbove],
+                        minAccumulatedEnergy[xPrev][yPrevInline],
+                        minAccumulatedEnergy[xPrev][yPrevBelow]);
+                minAccumulatedEnergy[x][y] = minPreviousEnergy + energy[x][y];
             }
         }
         return minAccumulatedEnergy;
