@@ -10,7 +10,7 @@ import java.util.TreeMap;
  * Trie
  *
  * Trie (retrieval tree) data structure.
- * This implementation can store words using ASCII characters from 'a' to 'z' and space ' '.
+ * This implementation can store words using ASCII characters from 'a' to 'z'.
  * This implementation uses a Map<Character, TrieNode> to store the children of a node.
  *
  * @author Emanuel Aguirre
@@ -21,14 +21,12 @@ public class Trie {
     private static final char FIRST_VALID_LETTER = 'a';
     /* Last valid letter. */
     private static final char LAST_VALID_LETTER = 'z';
-    /* The only valid character, apart from letters. */
-    private static final char SPACE_CHAR = ' ';
     /* Sentinel node that holds references to each first letter of every word set. */
     private CharNode sentinel;
 
 
     Trie() {
-        sentinel = new CharNode(SPACE_CHAR);
+        sentinel = new CharNode(LAST_VALID_LETTER);
     }
 
 
@@ -49,7 +47,7 @@ public class Trie {
     }
 
     boolean isValidChar(char c) {
-        return (FIRST_VALID_LETTER <= c && c <= LAST_VALID_LETTER) || c == SPACE_CHAR;
+        return (FIRST_VALID_LETTER <= c && c <= LAST_VALID_LETTER);
     }
 
     /**
