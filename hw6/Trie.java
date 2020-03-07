@@ -12,6 +12,7 @@ import java.util.TreeMap;
  * Trie (retrieval tree) data structure.
  * This implementation can store words using ASCII characters from 'a' to 'z'.
  * This implementation uses a Map<Character, TrieNode> to store the children of a node.
+ * NOTE: This Trie is similar to the one from proj3, but has 2 more methods.
  *
  * @author Emanuel Aguirre
  */
@@ -48,6 +49,37 @@ public class Trie {
 
     boolean isValidChar(char c) {
         return (FIRST_VALID_LETTER <= c && c <= LAST_VALID_LETTER);
+    }
+
+    /**
+     * Returns true if the Trie contains the word passed as parameter, and false otherwise.
+     */
+    boolean contains(String word) {
+        CharNode node = sentinel;
+        for (int i = 0; i < word.length(); i++) {
+            Character character = word.charAt(i);
+            if (node.nextLetterMap == null || !node.nextLetterMap.containsKey(character)) {
+                return false;
+            }
+            node = node.nextLetterMap.get(character);
+        }
+        return node.end;
+    }
+
+    /**
+     * Returns true if the Trie contains any word that starts with the string passed as parameter,
+     * and false otherwise.
+     */
+    boolean containsPrefix(String word) {
+        CharNode node = sentinel;
+        for (int i = 0; i < word.length(); i++) {
+            Character character = word.charAt(i);
+            if (node.nextLetterMap == null || !node.nextLetterMap.containsKey(character)) {
+                return false;
+            }
+            node = node.nextLetterMap.get(character);
+        }
+        return true;
     }
 
     /**
@@ -187,6 +219,20 @@ public class Trie {
         System.out.println(trie.wordsByPrefix("b").toString());
         /* [bananas] */
         System.out.println(trie.wordsByPrefix("bananas").toString());
+        /* Test contains word */
+        System.out.println("Contains word \"an\"? " + trie.contains("an"));
+        System.out.println("Contains word \"ana\"? " + trie.contains("ana"));
+        System.out.println("Contains word \"ban\"? " + trie.contains("ban"));
+        System.out.println("Contains word \"anana\"? " + trie.contains("anana"));
+        System.out.println("Contains word \"en\"? " + trie.contains("en"));
+        System.out.println("Contains word \"ananase\"? " + trie.contains("ananase"));
+        /* Test contains prefix */
+        System.out.println("Contains prefix \"an\"? " + trie.containsPrefix("an"));
+        System.out.println("Contains prefix \"ana\"? " + trie.containsPrefix("ana"));
+        System.out.println("Contains prefix \"ban\"? " + trie.containsPrefix("ban"));
+        System.out.println("Contains prefix \"anana\"? " + trie.containsPrefix("anana"));
+        System.out.println("Contains prefix \"en\"? " + trie.containsPrefix("en"));
+        System.out.println("Contains prefix \"ananase\"? " + trie.containsPrefix("ananase"));
     }
 
 }
