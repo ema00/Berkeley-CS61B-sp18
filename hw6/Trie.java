@@ -1,7 +1,7 @@
 import java.util.Objects;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 
@@ -30,8 +30,24 @@ public class Trie {
         sentinel = new CharNode(LAST_VALID_LETTER);
     }
 
+    public static Trie create(String[] words) {
+        Trie trie = new Trie();
+        for (String word : words) {
+            trie.addWord(word);
+        }
+        return trie;
+    }
 
-    void addWord(String word) {
+    public static Trie create(List<String> words) {
+        Trie trie = new Trie();
+        for (String word : words) {
+            trie.addWord(word);
+        }
+        return trie;
+    }
+
+
+    public void addWord(String word) {
         if (word == null || word.equals("")) {
             return;
         }
@@ -47,14 +63,14 @@ public class Trie {
         charNode.end = true;
     }
 
-    boolean isValidChar(char c) {
+    public boolean isValidChar(char c) {
         return (FIRST_VALID_LETTER <= c && c <= LAST_VALID_LETTER);
     }
 
     /**
      * Returns true if the Trie contains the word passed as parameter, and false otherwise.
      */
-    boolean contains(String word) {
+    public boolean contains(String word) {
         CharNode node = sentinel;
         for (int i = 0; i < word.length(); i++) {
             Character character = word.charAt(i);
@@ -70,7 +86,7 @@ public class Trie {
      * Returns true if the Trie contains any word that starts with the string passed as parameter,
      * and false otherwise.
      */
-    boolean containsPrefix(String word) {
+    public boolean containsPrefix(String word) {
         CharNode node = sentinel;
         for (int i = 0; i < word.length(); i++) {
             Character character = word.charAt(i);
@@ -87,7 +103,7 @@ public class Trie {
      * @param prefix is the prefix to use to search for words starting with it.
      * @return a List of all the words that start with the given prefix.
      */
-    List<String> wordsByPrefix(String prefix) {
+    public List<String> wordsByPrefix(String prefix) {
         if (prefix.equals("")) {
             return new ArrayList<>();
         }
@@ -202,12 +218,8 @@ public class Trie {
     /* Simple test of Trie construction and usage. */
     public static void main(String[] args) {
         /* Test creation of a Trie. */
-        Trie trie = new Trie();
-        trie.addWord("ana");
-        trie.addWord("anana");
-        trie.addWord("ananas");
-        trie.addWord("banana");
-        trie.addWord("bananas");
+        String[] words = {"ana", "anana", "ananas", "banana", "bananas"};
+        Trie trie = Trie.create(words);
         /* Test get words that start with a prefix. */
         /* [ana, anana, ananas] */
         System.out.println(trie.wordsByPrefix("a").toString());
