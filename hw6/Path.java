@@ -54,7 +54,6 @@ public class Path implements Cloneable {
     @Override
     public Object clone() {
         Path path = new Path();
-        //path.nodes = this.nodes.clone();
         for (Node node : this.nodes) {
             path.nodes.add(node);
         }
