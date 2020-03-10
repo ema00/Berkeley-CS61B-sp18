@@ -40,14 +40,14 @@ public class Node {
         return true;
     }
 
-	@Override
-	public boolean equals(Object o) {
-		return this == o;
-	}
+    @Override
+    public boolean equals(Object o) {
+        return this == o;
+    }
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
 }

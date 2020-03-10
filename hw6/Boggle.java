@@ -1,5 +1,9 @@
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+
 
 
 /**
@@ -52,15 +56,9 @@ public class Boggle {
 
     /* Simple test of Boggle solver usage. */
     public static void main(String[] args) {
-        try {
-            String boardFilePath = args[0];
-            List<String> solution = solve(7, boardFilePath);
-            System.out.println(solution);
-        } catch (Exception ex) {
-            System.out.println("Error on program argument. Must be the path to the board file. "
-                + "Example: exampleBoard.txt" + "\n"
-                + ex.getMessage());
-        }
+        String boardFilePath = args[0];
+        List<String> solution = solve(7, boardFilePath);
+        System.out.println(solution);
     }
 
 }

@@ -105,7 +105,7 @@ public class BoggleGraph {
             if (trie.containsPrefix(word)) {
                 Node end = path.end();
                 for (Node neighbor : end.neighbors()) {
-                    if(!path.contains(neighbor)) {
+                    if (!path.contains(neighbor)) {
                         Path extended = (Path) path.clone();
                         extended.extend(neighbor);
                         fringe.add(extended);
