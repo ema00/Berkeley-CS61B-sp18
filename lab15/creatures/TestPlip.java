@@ -9,10 +9,11 @@ import huglife.Occupant;
 import huglife.Impassible;
 import huglife.Empty;
 
-/** Tests the plip class   
- *  @authr FIXME
- */
 
+
+/** Tests the Plip class
+ *  @author Emanuel Aguirre
+ */
 public class TestPlip {
 
     /* Replace with the magic word given in lab.
@@ -61,4 +62,5 @@ public class TestPlip {
     public static void main(String[] args) {
         System.exit(jh61b.junit.textui.runClasses(TestPlip.class));
     }
+
 } 
