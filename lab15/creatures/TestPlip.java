@@ -37,11 +37,17 @@ public class TestPlip {
 
     @Test
     public void testReplicate() {
-
+        double delta = 0.0000000001;
+        double energy = 1;
+        Plip parent = new Plip(energy);
+        Plip child = parent.replicate();
+        assertNotSame(parent, child);
+        assertEquals(parent.energy(), energy / 2, delta);
+        assertEquals(parent.energy(), child.energy(), delta);
     }
 
-    //@Test
-    public void testChoose() {
+    @Test
+    public void testChooseActionStay1() {
         Plip p = new Plip(1.2);
         HashMap<Direction, Occupant> surrounded = new HashMap<Direction, Occupant>();
         surrounded.put(Direction.TOP, new Impassible());
@@ -49,13 +55,36 @@ public class TestPlip {
         surrounded.put(Direction.LEFT, new Impassible());
         surrounded.put(Direction.RIGHT, new Impassible());
 
-        //You can create new empties with new Empty();
-        //Despite what the spec says, you cannot test for Cloruses nearby yet.
-        //Sorry!  
-
         Action actual = p.chooseAction(surrounded);
         Action expected = new Action(Action.ActionType.STAY);
+        assertEquals(expected, actual);
+    }
 
+    @Test
+    public void testChooseActionStay2() {
+        Plip p = new Plip(0.8);
+        HashMap<Direction, Occupant> empties = new HashMap<Direction, Occupant>();
+        empties.put(Direction.TOP, new Empty());
+        empties.put(Direction.BOTTOM, new Empty());
+        empties.put(Direction.LEFT, new Empty());
+        empties.put(Direction.RIGHT, new Empty());
+
+        Action actual = p.chooseAction(empties);
+        Action expected = new Action(Action.ActionType.STAY);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testChooseActionReplicate() {
+        Plip p = new Plip(1.5);
+        HashMap<Direction, Occupant> emptyTop = new HashMap<Direction, Occupant>();
+        emptyTop.put(Direction.TOP, new Empty());
+        emptyTop.put(Direction.BOTTOM, new Impassible());
+        emptyTop.put(Direction.LEFT, new Impassible());
+        emptyTop.put(Direction.RIGHT, new Impassible());
+
+        Action actual = p.chooseAction(emptyTop);
+        Action expected = new Action(Action.ActionType.REPLICATE, Direction.TOP);
         assertEquals(expected, actual);
     }
 

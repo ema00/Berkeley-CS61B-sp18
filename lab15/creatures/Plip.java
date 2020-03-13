@@ -1,10 +1,12 @@
 package creatures;
+import java.util.List;
 import java.util.Map;
 import java.awt.Color;
 import huglife.Creature;
 import huglife.Direction;
 import huglife.Action;
 import huglife.Occupant;
+import huglife.HugLifeUtils;
 
 
 
@@ -24,6 +26,8 @@ public class Plip extends Creature {
     private static final float MOVE_ENERGY_DIFF = -0.15f;
     /** Energy gained by a Plip on a stay action. */
     private static final float STAY_ENERGY_DIFF = 0.2f;
+    /** Minimum energy that a Plip must have in order to be able to replicate. */
+    private static final float REPLICATION_MIN_ENERGY_THRESHOLD = 1.0f;
     /** Value of red in RGB color for all Plips. */
     private static final int RED = 99;
     /** Value of blue in RGB color for all Plips. */
@@ -90,8 +94,9 @@ public class Plip extends Creature {
      *  Plip.
      */
     public Plip replicate() {
-        // TODO
-        return this;
+        double energy = this.energy / 2;
+        this.energy = energy;
+        return new Plip(energy);
     }
 
     /** Plips take exactly the following actions based on NEIGHBORS:
@@ -105,8 +110,25 @@ public class Plip extends Creature {
      *  for an example to follow.
      */
     public Action chooseAction(Map<Direction, Occupant> neighbors) {
-        // TODO
-        return new Action(Action.ActionType.STAY);
+        Action action = null;
+        List<Direction> empties = getNeighborsOfType(neighbors, "empty");
+        List<Direction> cloruses = getNeighborsOfType(neighbors, "clorus");
+        if (empties.size() == 0) {
+            action = new Action(Action.ActionType.STAY);
+        } else {
+            if (energy > REPLICATION_MIN_ENERGY_THRESHOLD) {
+                Direction moveDir = HugLifeUtils.randomEntry(empties);
+                action = new Action(Action.ActionType.REPLICATE, moveDir);
+            } else if (cloruses.size() > 0 && cloruses.size() < 4) {
+                Direction moveDir = HugLifeUtils.randomEntry(empties);
+                action = HugLifeUtils.random() < 0.5
+                        ? new Action(Action.ActionType.MOVE, moveDir)
+                        : new Action(Action.ActionType.STAY);
+            } else {
+                action = new Action(Action.ActionType.STAY);
+            }
+        }
+        return action;
     }
 
     /**
