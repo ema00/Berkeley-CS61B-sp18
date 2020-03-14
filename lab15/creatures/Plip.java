@@ -76,10 +76,7 @@ public class Plip extends Creature {
     public void attack(Creature c) {
     }
 
-    /** Plips should lose 0.15 units of energy when moving. If you want to
-     *  to avoid the magic number warning, you'll need to make a
-     *  private static final variable. This is not required for this lab.
-     */
+    /** Plips should lose 0.15 units of energy when moving. */
     public void move() {
         energy = Math.max(MIN_ENERGY, energy + MOVE_ENERGY_DIFF);
     }
